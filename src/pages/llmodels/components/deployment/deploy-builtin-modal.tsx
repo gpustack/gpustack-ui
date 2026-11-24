@@ -63,6 +63,13 @@ type AddModalProps = {
   onCancel: () => void;
 };
 
+type CatalogSpecRequest = {
+  clusterId: number;
+  axiosToken: ReturnType<typeof createAxiosToken>;
+  pending: boolean;
+  noCompatibleGPUs: boolean;
+};
+
 const FormWrapper = styled.div`
   display: flex;
   flex: 1;
@@ -99,15 +106,17 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     Global.BaseOption<string, { isBuiltIn: boolean; tips: string }>[]
   >([]);
   const sourceGroupMap = useRef<any>({});
-  const axiosToken = useRef<any>(null);
-  const specListRef = useRef<any[]>([]);
-  const noCompatibleGPUsRef = useRef<boolean>(false);
+  const specRequestRef = useRef<CatalogSpecRequest | null>(null);
+  const specListRef = useRef<CatalogSpec[]>([]);
   const backendOptionsCache = useRef<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [specLoading, setSpecLoading] = useState(false);
   const submitloadingRef = useRef<boolean>(false);
 
+  const isSpecRequestPending = () => specRequestRef.current?.pending ?? false;
+
   const handleSumit = () => {
-    if (submitloadingRef.current) {
+    if (submitloadingRef.current || isSpecRequestPending()) {
       return;
     }
     submitloadingRef.current = true;
@@ -115,7 +124,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleSubmitAnyway = async () => {
-    if (noCompatibleGPUsRef.current) {
+    if (isSpecRequestPending()) {
+      return;
+    }
+    if (specRequestRef.current?.noCompatibleGPUs) {
       message.error(intl.formatMessage({ id: 'models.catalog.nogpus.tips' }));
       return;
     }
@@ -155,9 +167,22 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     form.current?.applyRuntimeChoice(runtimeChoice);
   };
 
+  const warnIfNoCompatibleGPUs = () => {
+    if (!specRequestRef.current?.noCompatibleGPUs) {
+      return false;
+    }
+    cancelEvaluate();
+    clearCacheFormValues();
+    setWarningStatus({
+      show: true,
+      type: 'warning',
+      message: intl.formatMessage({ id: 'models.catalog.nogpus.tips' })
+    });
+    return true;
+  };
+
   const handleCheckCompatibility = async (formData: FormData) => {
-    // no compatible gpus, do nothing
-    if (noCompatibleGPUsRef.current) {
+    if (warnIfNoCompatibleGPUs()) {
       return;
     }
     handleDoEvalute(formData);
@@ -177,15 +202,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const onValuesChange = async (changedValues: any, allValues: any) => {
-    const data = getCatalogFormValues(form.current, allValues);
-
-    // no compatible gpus, do nothing
-    if (noCompatibleGPUsRef.current) {
+    if (specRequestRef.current?.noCompatibleGPUs) {
       return;
     }
     handleOnValuesChange?.({
       changedValues,
-      allValues: data,
+      allValues: getCatalogFormValues(form.current, allValues),
       source: props.source
     });
   };
@@ -225,22 +247,34 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     );
   };
 
-  const fetchSpecData = async (clusterId: number) => {
-    try {
-      axiosToken.current?.cancel?.();
-      axiosToken.current = createAxiosToken();
-      const res: any = await queryCatalogItemSpec(
-        {
-          id: current.id,
-          cluster_id: clusterId
-        },
-        {
-          token: axiosToken.current.token
-        }
-      );
-      const groupList = _.groupBy(res.items, 'source');
+  const cancelSpecRequest = () => {
+    specRequestRef.current?.axiosToken.cancel();
+    specRequestRef.current = null;
+    setSpecLoading(false);
+  };
 
-      const modes: string[] = res.items?.map((item: CatalogSpec) => {
+  const fetchSpecData = async (clusterId: number) => {
+    cancelSpecRequest();
+    const request: CatalogSpecRequest = {
+      clusterId,
+      axiosToken: createAxiosToken(),
+      pending: true,
+      noCompatibleGPUs: false
+    };
+    specRequestRef.current = request;
+    setSpecLoading(true);
+    try {
+      const { items } = await queryCatalogItemSpec(
+        { id: current.id, cluster_id: clusterId },
+        { cancelToken: request.axiosToken.token }
+      );
+      if (specRequestRef.current !== request) {
+        return;
+      }
+      request.noCompatibleGPUs = !items.length;
+      const groupList = _.groupBy(items, 'source');
+
+      const modes = items.map((item) => {
         return item.mode;
       });
 
@@ -255,15 +289,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
       sourceGroupMap.current = groupList;
 
-      specListRef.current = res.items;
+      specListRef.current = items;
 
       const sources = _.filter(sourceOptions, (item: any) => {
         return groupList[item.value];
       });
 
-      const list = _.sortBy(res.items, 'size');
+      const list = _.sortBy(items, 'size');
 
-      const defaultSpec =
+      const defaultSpec: Partial<CatalogSpec> =
         _.find(
           list,
           (item: CatalogSpec) => item.mode === modeDataList[0]?.value
@@ -285,30 +319,22 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         cluster_id: clusterId
       });
 
-      const name = _.toLower(current.name).replace(/\s/g, '-') || '';
-      form.current.setFieldValue('name', name);
-
       if (defaultSpec.backend === backendOptionsMap.llamaBox) {
         setIsGGUF(true);
       } else {
         setIsGGUF(false);
       }
+      const name = _.toLower(current.name).replace(/\s/g, '-') || '';
+      form.current.setFieldValue('name', name);
       const allValues = generateSubmitData(form.current.getFieldsValue(true));
-
-      // If no avaliable gpus for the model, show warning message
-      if (!res.items.length) {
-        noCompatibleGPUsRef.current = true;
-        setWarningStatus({
-          show: true,
-          type: 'warning',
-          message: intl.formatMessage({ id: 'models.catalog.nogpus.tips' })
-        });
-        return;
-      }
-      noCompatibleGPUsRef.current = false;
       handleCheckCompatibility(allValues);
     } catch (error) {
-      // ignore
+      // Ignore cancelled catalog queries.
+    } finally {
+      request.pending = false;
+      if (specRequestRef.current === request) {
+        setSpecLoading(false);
+      }
     }
   };
 
@@ -325,6 +351,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const handleOk = async (values: FormData) => {
     const data = getCatalogFormValues(form.current, values);
+    if (isSpecRequestPending() || warnIfNoCompatibleGPUs()) {
+      submitloadingRef.current = false;
+      return;
+    }
     setLoading(true);
     try {
       await onOk(data);
@@ -336,11 +366,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const handleCancel = () => {
     onCancel?.();
-    axiosToken.current?.cancel?.();
+    cancelSpecRequest();
   };
 
-  const init = async () => {
-    const clusterId = initClusterId();
+  const init = async (isCurrent: () => boolean) => {
+    const clusterId =
+      form.current?.getFieldValue?.('cluster_id') ?? initClusterId();
     // No cluster available for the current scope (zero clusters, or none
     // owned by the picked org). Leave the form's cluster field empty and
     // skip downstream fetches — the user resolves it by picking an org
@@ -353,10 +384,21 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     form.current?.getGPUOptionList?.({
       clusterId: clusterId
     });
-    backendOptionsCache.current = await form.current?.getBackendOptions?.({
+    const backendOptions = await form.current?.getBackendOptions?.({
       cluster_id: clusterId
     });
-    fetchSpecData(clusterId);
+    const selectedClusterId = form.current?.getFieldValue?.('cluster_id');
+    if (
+      !isCurrent() ||
+      (selectedClusterId && selectedClusterId !== clusterId) ||
+      (specRequestRef.current && specRequestRef.current.clusterId !== clusterId)
+    ) {
+      return;
+    }
+    backendOptionsCache.current = backendOptions;
+    if (!specRequestRef.current) {
+      fetchSpecData(clusterId);
+    }
   };
 
   const showExtraButton =
@@ -368,13 +410,14 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    if (open) {
-      setTimeout(() => {
-        init();
-      }, 100);
-    }
+    let currentDrawer = true;
+    const timer = open
+      ? setTimeout(() => init(() => currentDrawer), 100)
+      : undefined;
     return () => {
-      axiosToken.current?.cancel?.();
+      currentDrawer = false;
+      clearTimeout(timer);
+      cancelSpecRequest();
       cancelEvaluate();
       setWarningStatus({
         show: false,
@@ -431,11 +474,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 <ModalFooter
                   onCancel={handleCancel}
                   onOk={handleSumit}
-                  loading={loading}
+                  loading={loading || specLoading}
                   showOkBtn={!showExtraButton}
                   extra={
                     showExtraButton && (
-                      <Button type="primary" onClick={handleSubmitAnyway}>
+                      <Button
+                        type="primary"
+                        loading={specLoading}
+                        onClick={handleSubmitAnyway}
+                      >
                         {intl.formatMessage({
                           id: 'models.form.submit.anyway'
                         })}

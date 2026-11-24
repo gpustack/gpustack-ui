@@ -15,8 +15,28 @@ const services = [11, 12].map((value) => ({
   provider_name: 'lmcache',
   disabled: false
 }));
-const request = mock.fn(async (url: string, _options: any) => {
-  if (url === '/model-evaluations') return { results: [] };
+const skipEnv = { GPUSTACK_SKIP_MODEL_EVALUATION: '1' };
+const evaluateModel = async (spec: EvaluateSpec) => ({
+  results: spec.env?.GPUSTACK_SKIP_MODEL_EVALUATION
+    ? [
+        {
+          compatible: true,
+          cluster_id: 1,
+          resource_claim_by_cluster_id: { 1: { ram: 1024, vram: 2048 } },
+          ...(spec.roles?.length && {
+            role_resource_claims_by_cluster_id: {
+              1: [{ role: 'prefill', replicas: 1, vram: 2048 }]
+            }
+          })
+        }
+      ]
+    : []
+});
+let evaluate = evaluateModel;
+const request = mock.fn(async (url: string, options: any) => {
+  if (url === '/model-evaluations') {
+    return evaluate(options.data.model_specs[0]);
+  }
   if (url === '/pd-modes') return { items: modes };
   if (url === '/pd-modes/resolve') {
     return {
@@ -195,36 +215,51 @@ mock.module(new URL('../roles/role-form.tsx', import.meta.url).href, {
 });
 mock.module(new URL('../basic.tsx', import.meta.url).href, {
   defaultExport: () =>
-    ['backend', 'cluster_id', 'local_path', 'replicas', 'name', 'source'].map(
-      (name) => h(Form.Item, { key: name, name, hidden: true }, h(Input))
-    )
+    [
+      'backend',
+      'cluster_id',
+      'env',
+      'local_path',
+      'replicas',
+      'name',
+      'source'
+    ].map((name) => h(Form.Item, { key: name, name, hidden: true }, h(Input)))
 });
 
 const { default: DataForm } = await import('../index.tsx');
 const { useCheckCompatibility } = await import('../../hooks/index.ts');
 const source = 'local_path';
 const Harness = ({ formRef }: { formRef: React.Ref<any> }) => {
-  const { handleOnValuesChange } = useCheckCompatibility();
-  return h(DataForm, {
-    ref: formRef,
-    initialValues: {
-      backend: 'vLLM',
-      cluster_id: 1,
-      local_path: '/models/test-model',
-      replicas: 1,
+  const { handleOnValuesChange, warningStatus } = useCheckCompatibility();
+  return h(
+    Fragment,
+    null,
+    h(DataForm, {
+      ref: formRef,
+      initialValues: {
+        backend: 'vLLM',
+        cluster_id: 1,
+        local_path: '/models/test-model',
+        replicas: 1,
+        source,
+        name: 'test-model',
+        extended_kv_cache: { enabled: false }
+      },
       source,
-      name: 'test-model',
-      extended_kv_cache: { enabled: false }
-    },
-    source,
-    action: 'create',
-    formKey: 'deployment',
-    isGGUF: false,
-    clusterList: [],
-    onOk: empty,
-    onValuesChange: (changedValues, allValues) =>
-      handleOnValuesChange({ changedValues, allValues, source })
-  });
+      action: 'create',
+      formKey: 'deployment',
+      isGGUF: false,
+      clusterList: [],
+      onOk: empty,
+      onValuesChange: (changedValues, allValues) =>
+        handleOnValuesChange({ changedValues, allValues, source })
+    }),
+    h(
+      'output',
+      { 'data-type': warningStatus.type },
+      warningStatus.show && warningStatus.message
+    )
+  );
 };
 
 const document = dom.window.document;
@@ -240,7 +275,122 @@ const requests = () =>
     ({ arguments: [url] }) => url === '/model-evaluations'
   );
 
+test('an earlier result cannot replace the status of a later evaluation', async () => {
+  const root = createRoot(find('#root'));
+  let evaluateForm!: ReturnType<
+    typeof useCheckCompatibility
+  >['handleDoEvalute'];
+  const Status = () => {
+    const { handleDoEvalute, warningStatus } = useCheckCompatibility();
+    evaluateForm = handleDoEvalute;
+    return h(
+      'output',
+      { 'data-type': warningStatus.type },
+      warningStatus.message
+    );
+  };
+  const spec = { cluster_id: 1, source, local_path: '/models/test-model' };
+  try {
+    await act(async () => root.render(h(Status)));
+    await act(async () => evaluateForm({ ...spec, env: skipEnv } as any));
+    let release!: (result: Awaited<ReturnType<typeof evaluateModel>>) => void;
+    evaluate = () => new Promise((resolve) => (release = resolve));
+    let pending!: ReturnType<typeof evaluateForm>;
+    await act(async () => {
+      pending = evaluateForm(spec as any);
+    });
+    await act(async () => new Promise((resolve) => setTimeout(resolve, 350)));
+    assert.equal(find('output').getAttribute('data-type'), 'transition');
+    await act(async () => {
+      release({ results: [] });
+      await pending;
+    });
+  } finally {
+    evaluate = evaluateModel;
+    await act(async () => root.unmount());
+  }
+});
+
+test('the evaluation env flag leaves zero replicas unevaluated', async () => {
+  const root = createRoot(find('#root'));
+  let changeForm!: ReturnType<
+    typeof useCheckCompatibility
+  >['handleOnValuesChange'];
+  const Status = () => {
+    const { handleOnValuesChange, warningStatus } = useCheckCompatibility();
+    changeForm = handleOnValuesChange;
+    return h(
+      'output',
+      { 'data-type': warningStatus.type },
+      warningStatus.message
+    );
+  };
+  const spec = {
+    cluster_id: 1,
+    source,
+    local_path: '/models/test-model'
+  };
+  const legacyEnv = { GPUSTACK_SKIP_MODEL_EVALUATION: '0' };
+  const changeReplicas = async (replicas: number) => {
+    await act(async () =>
+      changeForm({
+        changedValues: { replicas },
+        allValues: { ...spec, replicas, env: legacyEnv },
+        source
+      })
+    );
+  };
+  try {
+    await act(async () => root.render(h(Status)));
+    request.mock.resetCalls();
+    await changeReplicas(1);
+    assert.equal(requests().length, 1);
+    await changeReplicas(0);
+    assert.equal(requests().length, 1);
+    await act(async () => new Promise((resolve) => setTimeout(resolve, 330)));
+    assert.equal(find('output').textContent, '');
+
+    await changeReplicas(1);
+    assert.equal(requests().length, 2);
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
 for (const pd of [false, true]) {
+  test(`${pd ? 'PD' : 'ordinary'} model evaluation shows resource claims with the env flag`, async () => {
+    const root = createRoot(find('#root'));
+    const formRef = { current: null as any };
+    try {
+      await act(async () => root.render(h(Harness, { formRef })));
+      if (pd) {
+        await act(async () => find('[role="switch"]').click());
+        await settle();
+      }
+      request.mock.resetCalls();
+      await act(async () => {
+        formRef.current.form.setFieldValue('env', skipEnv);
+        find(
+          pd ? '.section-title [role="switch"]' : 'input[type="checkbox"]'
+        ).click();
+      });
+      await act(async () => new Promise((resolve) => setTimeout(resolve, 450)));
+      const [call] = requests();
+      const [spec]: EvaluateSpec[] = call.arguments[1].data.model_specs;
+      assert.deepEqual(spec.env, skipEnv);
+      assert.equal(!!spec.roles?.length, pd);
+      assert.equal(find('output').getAttribute('data-type'), 'success');
+      assert.match(
+        find('output').textContent ?? '',
+        pd
+          ? /models\.form\.check\.claims\.group/
+          : /models\.form\.check\.claims/
+      );
+    } finally {
+      await act(async () => root.unmount());
+    }
+  });
+
   test(`${pd ? 'PD' : 'ordinary'} KV cache evaluates once per committed change`, async () => {
     const root = createRoot(find('#root'));
     const formRef = { current: null as any };

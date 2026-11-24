@@ -249,11 +249,17 @@ const renderForm = async (
     // The enable handler waits for conditional fields to register before evaluation.
     await act(async () => new Promise((resolve) => setTimeout(resolve, 110)));
   };
-  const changeBackend = async (backend: string) => {
+  const changeBackend = async (
+    backend: string,
+    default_env?: Record<string, string>
+  ) => {
     let pending: any;
     await act(async () => {
       ref.current.form.setFieldValue('backend', backend);
-      pending = context.onBackendChange(backend, { isBuiltIn: true });
+      pending = context.onBackendChange(backend, {
+        isBuiltIn: true,
+        default_env
+      });
     });
     await act(async () => pending);
   };
@@ -344,6 +350,25 @@ test('switching between PD-capable backends preserves role edits', async () => {
         ?.getAttribute('aria-checked'),
       'true'
     );
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
+test('leaving PD for another engine applies its ordinary environment defaults and keeps the explicit opt-out', async () => {
+  const { root, ref, changeBackend } = await renderForm(true);
+  const env = { GPUSTACK_SKIP_MODEL_EVALUATION: '1' };
+  try {
+    await act(async () => ref.current.form.setFieldValue('env', env));
+    await changeBackend('llama-box', {
+      LLAMA_BOX_LOG_LEVEL: 'info',
+      GPUSTACK_SKIP_MODEL_EVALUATION: '0'
+    });
+    assert.equal(ref.current.form.getFieldValue('roles'), null);
+    assert.deepEqual(ref.current.form.getFieldValue('env'), {
+      LLAMA_BOX_LOG_LEVEL: 'info',
+      ...env
+    });
   } finally {
     await act(async () => root.unmount());
   }

@@ -176,11 +176,13 @@ test('normalized submit values override raw form roles and selectors', () => {
       { name: 'prefill', backend_parameters: ['--max-model-len=32768'] },
       { name: 'decode', backend_parameters: ['--max-model-len=16384'] }
     ],
+    env: { GPUSTACK_SKIP_MODEL_EVALUATION: '1' },
     gpu_selector: null,
     scaling_schedule: null
   };
   const result = getCatalogFormValues(form, values as any);
   assert.deepEqual(result.roles, values.roles);
+  assert.deepEqual(result.env, values.env);
   assert.equal(result.gpu_selector, null);
   assert.equal(result.scaling_schedule, null);
   assert.equal(result.cpu_offloading, false);

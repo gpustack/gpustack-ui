@@ -44,6 +44,7 @@ import { knownCacheService } from '../services/use-query-cache-services';
 import { useQueryContextLength } from '../services/use-query-context-length';
 import { derivesNativeAnthropicApi, generateGPUIds } from '../utils';
 import { getDeploymentFormReplicas } from '../utils/deployment-lifecycle';
+import { SKIP_MODEL_EVALUATION_ENV } from '../utils/model-evaluation';
 import { clearUnsupportedPDCacheServices } from '../utils/pd-cache-services';
 import { pdEngineConfigs } from '../utils/pd-role-backends';
 import AdvanceConfig from './advance-config';
@@ -251,6 +252,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   // arrives rather than letting it sit true and re-clear on every render.
   const handlePDEffectsChange = (next: PDEffects) => {
     clearIncompatibleRoleCaches(next.modeData);
+    const env = form.getFieldValue('env');
     const loraCleared =
       next.clearModelLora && !!form.getFieldValue('lora_list')?.length;
     setPDEffects((previous) => ({
@@ -267,7 +269,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         extended_kv_cache: form.getFieldValue('extended_kv_cache'),
         speculative_config: form.getFieldValue('speculative_config'),
         backend_parameters: form.getFieldValue('backend_parameters'),
-        env: form.getFieldValue('env'),
+        env: next.clearModelScheduling
+          ? _.omit(env, [SKIP_MODEL_EVALUATION_ENV])
+          : {},
         lora_list: form.getFieldValue('lora_list'),
         replicas: form.getFieldValue('replicas') ?? 1
       });
@@ -285,6 +289,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         placement_strategy: undefined
       } as any);
       form.setFieldValue('worker_selector', {});
+      // Keep the deployment opt-out and stash the ordinary engine env above.
+      form.setFieldValue('env', _.pick(env, [SKIP_MODEL_EVALUATION_ENV]));
     }
     if (next.clearModelKVCache) {
       form.setFieldValue('extended_kv_cache', { enabled: false });
@@ -293,8 +299,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       // Same reason as `clearModelScheduling`: hidden-but-set would keep
       // projecting onto every role through `role_effective_model`.
       form.setFieldsValue({ backend_parameters: [] });
-      // Replace object fields so nested keys are cleared as well.
-      form.setFieldValue('env', {});
     }
     if (next.clearModelLora) {
       // PD and LoRA cannot be submitted together. Clear the hidden field and
@@ -305,9 +309,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     // rather than on a transition flag, which is what keeps it to the one
     // notification that matters — the ref is non-null only after an enable.
     if (!next.enabled && preservedModelFields.current) {
-      Object.entries(preservedModelFields.current).forEach(([field, value]) => {
+      const { env: ordinaryEnv, ...ordinaryFields } =
+        preservedModelFields.current;
+      Object.entries(ordinaryFields).forEach(([field, value]) => {
         form.setFieldValue(field, value);
       });
+      form.setFieldValue('env', { ...ordinaryEnv, ...env });
       preservedModelFields.current = null;
     }
     // Only when it actually differs. An unconditional write fires the form's
@@ -491,6 +498,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     await new Promise((resolve) => {
       setTimeout(resolve, 100);
     });
+    if (clearPD && nextDefaults.roles?.length) {
+      form.setFieldValue('env', {
+        ...option?.default_env,
+        ...form.getFieldValue('env')
+      });
+    }
     form.setFieldsValue({
       ...(clearPD ? { roles: null, disaggregation: null } : {}),
       backend_version: null, // don't set default version here, let the user select it
@@ -789,12 +802,25 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           !!form.getFieldValue('roles')?.length ||
           !!form.getFieldValue(['disaggregation', 'mode']);
         const modelFields = _.cloneDeep(getCatalogModelFields(values));
+        const env = form.getFieldValue('env');
         // A new spec replaces the configuration to restore when PD turns off.
         // Missing model fields use defaults instead of inheriting the old spec.
-        preservedModelFields.current = pdActive ? modelFields : null;
+        preservedModelFields.current = pdActive
+          ? {
+              ...modelFields,
+              env: _.omit(modelFields.env, [SKIP_MODEL_EVALUATION_ENV])
+            }
+          : null;
         form.setFieldsValue(_.omit(values, Object.keys(modelFields)));
         const activeFields = pdActive
-          ? { ...getCatalogModelFields({}), placement_strategy: undefined }
+          ? {
+              ...getCatalogModelFields({}),
+              env: {
+                ..._.pick(modelFields.env, [SKIP_MODEL_EVALUATION_ENV]),
+                ...env
+              },
+              placement_strategy: undefined
+            }
           : modelFields;
         // Replace nested maps and cache objects; setFieldsValue deep-merges
         // them and would retain keys from the previous catalog spec.

@@ -17,14 +17,6 @@ import { backendOptionsMap } from '../constants/backend-parameters';
 import BackendParametersList from './backend-parameters-list';
 import ModelLoraList from './model-lora-list';
 
-/**
- * @param pdActive Whether PD is on. When it is, this card drops its
- *   model-level backend parameters and env: every role carries its own pair,
- *   so keeping these here showed the same two controls twice and the role
- *   card's "Same as model" pointed back at a copy nobody should be filling.
- *   The values are cleared by the mount site (`clearModelParams`), not just
- *   hidden — see the effect's declaration for why.
- */
 const AdvanceConfig = ({ pdActive }: { pdActive?: boolean } = {}) => {
   const intl = useIntl();
   const form = Form.useFormInstance();
@@ -97,24 +89,16 @@ const AdvanceConfig = ({ pdActive }: { pdActive?: boolean } = {}) => {
           options={modelCategories}
         ></SealSelect>
       </Form.Item>
-      {!pdActive && (
-        <>
-          <BackendParametersList></BackendParametersList>
-          <Form.Item<FormData> name="env">
-            <LabelSelector
-              label={intl.formatMessage({
-                id: 'models.form.env'
-              })}
-              btnText={intl.formatMessage({ id: 'common.button.vars' })}
-              onBlur={handleEnvSelectorOnBlur}
-              onDelete={handleDeleteEnvSelector}
-            ></LabelSelector>
-          </Form.Item>
-          {/* GPUStack does not support LoRA under PD. The form clears these
-              adapters and submits an empty list while their control is hidden. */}
-          <ModelLoraList></ModelLoraList>
-        </>
-      )}
+      {!pdActive && <BackendParametersList />}
+      <Form.Item<FormData> name="env">
+        <LabelSelector
+          label={intl.formatMessage({ id: 'models.form.env' })}
+          btnText={intl.formatMessage({ id: 'common.button.vars' })}
+          onBlur={handleEnvSelectorOnBlur}
+          onDelete={handleDeleteEnvSelector}
+        />
+      </Form.Item>
+      {!pdActive && <ModelLoraList />}
       {(backend === backendOptionsMap.custom ||
         !currentBackendOptions?.isBuiltIn) && (
         <Form.Item<FormData>

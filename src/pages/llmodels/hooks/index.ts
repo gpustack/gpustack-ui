@@ -457,7 +457,6 @@ export const useCheckCompatibility = () => {
         message: ''
       };
     }
-
     const {
       compatible,
       compatibility_messages = [],
@@ -576,8 +575,11 @@ export const useCheckCompatibility = () => {
     if (updateStatusTimer.current) {
       clearTimeout(updateStatusTimer.current);
     }
+    const requestId = requestIdRef.current;
     updateStatusTimer.current = setTimeout(() => {
-      updateWarningStatus(result, options);
+      if (requestId === requestIdRef.current) {
+        updateWarningStatus(result, options);
+      }
     }, 300);
   };
 
@@ -680,13 +682,17 @@ export const useCheckCompatibility = () => {
     source: string;
   }) => {
     const { allValues, source } = params;
+    if (_.isEqual(cacheFormValuesRef.current, allValues)) {
+      return;
+    }
     if (
-      _.isEqual(cacheFormValuesRef.current, allValues) ||
       noLocalPathValue(allValues) ||
       noModelSelected(allValues) ||
       !allValues.replicas
     ) {
-      console.log('No changes detected, skipping evaluation.');
+      cancelEvaluate();
+      clearCacheFormValues();
+      setWarningStatus({ show: false, message: '' });
       return;
     }
 
@@ -695,6 +701,8 @@ export const useCheckCompatibility = () => {
       backendOptionsMap.custom === allValues.backend &&
       (!allValues.run_command || !allValues.image_name)
     ) {
+      cancelEvaluate();
+      clearCacheFormValues();
       setWarningStatus({
         show: false,
         type: 'warning',
@@ -709,6 +717,7 @@ export const useCheckCompatibility = () => {
       checkIsGGUFFileOrNotSupport(allValues.local_path, allValues) &&
       BuiltInBackendOptions.includes(allValues.backend)
     ) {
+      cancelEvaluate();
       clearCacheFormValues();
       setWarningStatus({
         show: true,
@@ -742,9 +751,12 @@ export const useCheckCompatibility = () => {
     const res = handleUpdateWarning?.({
       backend,
       localPath: local_path,
-      source: source
+      source
     });
 
+    if (res.show) {
+      cancelEvaluate();
+    }
     setWarningStatus?.(res);
     return res;
   };
@@ -754,6 +766,8 @@ export const useCheckCompatibility = () => {
     updateRequestId();
     checkTokenRef.current?.cancel();
     checkTokenRef.current = null;
+    clearTimeout(updateStatusTimer.current);
+    updateStatusTimer.current = null;
   };
 
   useEffect(() => {

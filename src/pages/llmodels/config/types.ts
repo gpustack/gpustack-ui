@@ -763,6 +763,7 @@ export interface CatalogItem {
   name: string;
   id: number;
   description: string;
+  experimental?: boolean | null;
   deployment_notes?: string;
   home: string;
   icon: string;

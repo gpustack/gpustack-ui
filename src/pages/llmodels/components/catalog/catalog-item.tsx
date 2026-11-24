@@ -1,8 +1,13 @@
 import fallbackImg from '@/assets/images/img.png';
 import { categoryConfig } from '@/pages/_components/model-tag';
-import { AutoTooltip, IconFont, ThemeTag } from '@gpustack/core-ui';
+import {
+  AutoTooltip,
+  IconFont,
+  TextAttribute,
+  ThemeTag
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Typography } from 'antd';
+import { Flex, Typography } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
@@ -67,7 +72,16 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
               onError={handleOnError}
             />
           </div>
-          <AutoTooltip ghost>{data.name}</AutoTooltip>
+          <Flex align="center" gap="small" className="name">
+            <AutoTooltip ghost style={{ minWidth: 0 }}>
+              {data.name}
+            </AutoTooltip>
+            {data.experimental === true ? (
+              <TextAttribute variant="filled" className="experimental-tag">
+                {intl.formatMessage({ id: 'common.tag.experimental' })}
+              </TextAttribute>
+            ) : null}
+          </Flex>
         </div>
       </div>
       <div className="item-footer">

@@ -1,5 +1,5 @@
 import { BaseSelect, DeleteModal } from '@gpustack/core-ui';
-import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
+import { Link, useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn, useThrottleFn } from 'ahooks';
 import { Flex } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
@@ -22,6 +22,9 @@ import useQueryDetail from './services/use-query-detail';
 import useQueryProfiles from './services/use-query-profiles';
 import useStopBenchmark from './services/use-stop-benchmark';
 import useWatchBenchmarkDetail from './services/use-watch-detail';
+
+const benchmarkListPath = '/models/benchmark';
+
 const Details: React.FC = () => {
   const modalRef = useRef<any>(null);
   const navigate = useNavigate();
@@ -97,8 +100,11 @@ const Details: React.FC = () => {
 
   const breadcrumbItems = [
     {
-      title: <a>{intl.formatMessage({ id: 'benchmark.title' })}</a>,
-      onClick: () => navigate(-1)
+      title: (
+        <Link to={benchmarkListPath}>
+          {intl.formatMessage({ id: 'benchmark.title' })}
+        </Link>
+      )
     },
     {
       title: (
@@ -126,7 +132,7 @@ const Details: React.FC = () => {
         await deleteBenchmark(row.id);
         fetchBenchmarkList({ page: -1 }).then((items) => {
           if (items.length === 0) {
-            navigate(-1);
+            navigate(benchmarkListPath, { replace: true });
           } else {
             handleOnChange(items[0].id, {
               value: items[0].id,

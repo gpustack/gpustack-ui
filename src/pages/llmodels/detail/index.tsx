@@ -6,6 +6,7 @@ import PageBreadcrumb from '../../_components/page-breadcrumb';
 import DetailHeader from './components/detail-header';
 import { DeviceDrawer } from './components/hardware-content';
 import { RequestNotice } from './components/metric-state';
+import ModelSwitcher from './components/model-switcher';
 import { DetailContext } from './config/context';
 import type {
   DetailTab,
@@ -74,7 +75,15 @@ const DetailPage = ({ id, tenant }: { id: number; tenant: string }) => {
         <PageBreadcrumb
           items={[
             { title: <a href="#/models/deployments">{t('deployments')}</a> },
-            { title: model?.name || `#${id}` }
+            {
+              title: (
+                <ModelSwitcher
+                  id={id}
+                  name={model?.name || `#${id}`}
+                  tenant={tenant}
+                />
+              )
+            }
           ]}
         />
       </HeaderLeft>

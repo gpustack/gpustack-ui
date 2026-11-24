@@ -18,11 +18,13 @@ import { AvailabilityNotice, RequestNotice } from './metric-state';
 const ResourceTable = ({
   showTitle = true,
   compact = false,
-  showNotices = true
+  showNotices = true,
+  showHistory = true
 }: {
   showTitle?: boolean;
   compact?: boolean;
   showNotices?: boolean;
+  showHistory?: boolean;
 }) => {
   const intl = useIntl();
   const { resources, instances, inspectDevice } = useDetail();
@@ -186,17 +188,21 @@ const ResourceTable = ({
                 }
               ]
             : []),
-          {
-            dataIndex: 'history_available',
-            title: t('history'),
-            minWidth: 150,
-            render: (available: boolean) => {
-              const label = t(
-                available ? 'historyAvailable' : 'historyUnavailable'
-              );
-              return compact ? compactText(label) : label;
-            }
-          },
+          ...(showHistory
+            ? [
+                {
+                  dataIndex: 'history_available',
+                  title: t('history'),
+                  minWidth: 150,
+                  render: (available: boolean) => {
+                    const label = t(
+                      available ? 'historyAvailable' : 'historyUnavailable'
+                    );
+                    return compact ? compactText(label) : label;
+                  }
+                }
+              ]
+            : []),
           {
             dataIndex: 'id',
             title: t('actions'),

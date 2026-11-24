@@ -19,6 +19,7 @@ const navigate = mock.fn();
 const pass = ({ children }: any) => createElement('div', {}, children);
 mock.module('@umijs/max', {
   namedExports: {
+    Link: ({ to, children }: any) => createElement('a', { href: to }, children),
     useSearchParams: () => [params],
     useNavigate: () => navigate,
     useIntl: () => ({
@@ -142,6 +143,10 @@ test('id-only detail derives its selected label and page title from the matching
   assert.equal(select['aria-label'], record.name);
   assert.ok(document.body.textContent!.includes(record.name));
   assert.equal(document.title, 'Benchmarks - Authoritative API name');
+  assert.equal(
+    document.querySelector('a')?.getAttribute('href'),
+    '/models/benchmark'
+  );
   params = new URLSearchParams('id=58&name=stale-url-name');
   await act(async () => root.render(createElement(Details)));
   assert.equal(select.title, record.name);

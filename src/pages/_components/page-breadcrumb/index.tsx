@@ -1,5 +1,5 @@
-import { IconFont } from '@gpustack/core-ui';
-import { Breadcrumb, Tooltip, type BreadcrumbProps } from 'antd';
+import { AutoTooltip, IconFont } from '@gpustack/core-ui';
+import { Breadcrumb, type BreadcrumbProps } from 'antd';
 import React from 'react';
 import styles from './index.module.less';
 
@@ -11,11 +11,15 @@ const App: React.FC<BreadcrumbProps> = ({ items }) => (
       ...item,
       title:
         typeof item.title === 'string' || typeof item.title === 'number' ? (
-          <Tooltip title={item.title} trigger={['hover', 'focus']}>
-            <span className={styles.text} tabIndex={0}>
-              {item.title}
-            </span>
-          </Tooltip>
+          <AutoTooltip
+            ghost
+            showTitle
+            title={item.title}
+            style={{ width: 'fit-content' }}
+            tooltipProps={{ trigger: ['hover', 'focus'] }}
+          >
+            <span tabIndex={0}>{item.title}</span>
+          </AutoTooltip>
         ) : (
           item.title
         )

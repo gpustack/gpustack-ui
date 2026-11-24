@@ -6,7 +6,7 @@ const GPUResourcesTab = () => {
   return (
     <Flex vertical gap={16}>
       <ScopeToolbar />
-      <ResourceTable compact />
+      <ResourceTable compact showHistory={false} />
     </Flex>
   );
 };

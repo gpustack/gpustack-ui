@@ -313,15 +313,12 @@ const StageMonitoring = forwardRef<
     },
     selectPoint: (point) => {
       const phase = phaseForPoint(point, data.context?.stages || []);
-      onInspectionChange(
-        {
-          pointId: point.id,
-          phaseId: phase?.id ?? null,
-          zoom: zoom && !!exactRange(phase),
-          cursor: null
-        },
-        'push'
-      );
+      onInspectionChange({
+        pointId: point.id,
+        phaseId: phase?.id ?? null,
+        zoom: zoom && !!exactRange(phase),
+        cursor: null
+      });
       if (point.raw.rate == null) setComparison(null);
       if (!exactRange(phaseForPoint(point, data.context?.stages || []))) {
         setComparison(null);
@@ -758,15 +755,12 @@ const StageMonitoring = forwardRef<
           data
         )}
         onPinnedTimestampChange={(cursor) =>
-          onInspectionChange(
-            {
-              pointId: selected?.id ?? null,
-              phaseId:
-                phaseForPoint(selected, data.context?.stages || [])?.id ?? null,
-              cursor
-            },
-            'push'
-          )
+          onInspectionChange({
+            pointId: selected?.id ?? null,
+            phaseId:
+              phaseForPoint(selected, data.context?.stages || [])?.id ?? null,
+            cursor
+          })
         }
         untimedCount={segmented ? Math.max(0, untimed) : 0}
       />

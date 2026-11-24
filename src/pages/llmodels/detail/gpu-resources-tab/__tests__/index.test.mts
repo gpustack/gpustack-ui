@@ -56,6 +56,8 @@ mock.module(
   }
 );
 const { default: GPUResourcesTab } = await import('../index');
+const { default: ResourceTable } =
+  await import('../../components/resource-table');
 
 const prepare = () => {
   tables.length = 0;
@@ -111,6 +113,21 @@ test('GPU resources use one compact row per authorized physical device without d
   assert.ok(!html.includes('modelMonitoring.liveResourceSnapshot'));
   assert.ok(!html.includes('modelMonitoring.sharedHardware'));
   assert.deepEqual(tables[0].scroll, { x: true });
+  assert.ok(
+    !tables[0].columns.some(
+      (column: any) => column.dataIndex === 'history_available'
+    )
+  );
+});
+
+test('shared resource tables retain History by default', () => {
+  prepare();
+  renderToStaticMarkup(createElement(ResourceTable));
+  assert.ok(
+    tables[0].columns.some(
+      (column: any) => column.dataIndex === 'history_available'
+    )
+  );
 });
 
 test('compact readings retain real zeroes, missing values and explicit partition chips', () => {

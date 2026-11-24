@@ -597,11 +597,14 @@ async function _breakdown(
   data: ResourceBreakdownRequest,
   options?: {
     token?: any;
-  }
+  },
+  includeGpuAllocation?: boolean
 ): Promise<ResourceBreakdownResponse> {
   const { body, groupBy } = toServerRequest(data);
   const res = await request<ServerBreakdownResponse>(url, {
-    data: body,
+    data: includeGpuAllocation
+      ? { ...body, include_gpu_allocation: true }
+      : body,
     method: 'POST',
     cancelToken: options?.token
   });
@@ -634,9 +637,15 @@ export async function queryGpuInstancesBreakdown(
   data: ResourceBreakdownRequest,
   options?: {
     token?: any;
+    includeGpuAllocation?: boolean;
   }
 ): Promise<ResourceBreakdownResponse> {
-  return _breakdown(URL.GPU_BREAKDOWN, data, options);
+  return _breakdown(
+    URL.GPU_BREAKDOWN,
+    data,
+    options,
+    options?.includeGpuAllocation
+  );
 }
 
 export async function queryStorageBreakdown(

@@ -12,6 +12,11 @@ import {
 } from '../../config';
 import { RoleFormItem, RoleSpec } from '../../config/types';
 import { generateGPUIds, generateGPUSelector } from '../../utils';
+import { SKIP_MODEL_EVALUATION_ENV } from '../../utils/model-evaluation';
+
+// The opt-out is evaluated for the deployment as a whole.
+export const getRoleInheritedEnv = (env?: RoleSpec['env']) =>
+  _.omit(env, [SKIP_MODEL_EVALUATION_ENV]);
 
 /**
  * Whether a stored `worker_selector` means the router was scheduled by hand.
@@ -454,7 +459,11 @@ const demoteUntouchedGroups = (
     const identical = fields.every((field) =>
       _.isEqual(
         normalizeForCompare((role as Record<string, any>)[field]),
-        normalizeForCompare(modelValues[field])
+        normalizeForCompare(
+          field === 'env'
+            ? getRoleInheritedEnv(modelValues.env)
+            : modelValues[field]
+        )
       )
     );
     if (identical) {

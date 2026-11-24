@@ -189,12 +189,20 @@ const BackendFields: React.FC<BackendFieldsProps> = ({
     }
   };
 
-  const handleBackendVersionOnChange = (value: any, option: any) => {
-    setImageModePicked(false);
-    if (Object.keys(option.data?.env || {}).length > 0) {
-      form.setFieldValue(path('env'), { ...(option?.data?.env || {}) });
+  const applyBackendEnv = (defaults?: Record<string, string> | null) => {
+    // PD engine defaults are applied through the role editors.
+    if (!namePrefix && form.getFieldValue('roles')?.length) {
+      return;
     }
+    form.setFieldValue(path('env'), { ...defaults });
+  };
 
+  const handleBackendVersionOnChange = (value: any, option?: any) => {
+    setImageModePicked(false);
+    const defaults = option?.data?.env;
+    if (defaults && Object.keys(defaults).length > 0) {
+      applyBackendEnv(defaults);
+    }
     notifyValuesChange({});
   };
 
@@ -298,7 +306,7 @@ const BackendFields: React.FC<BackendFieldsProps> = ({
     );
   };
 
-  const handleOnBackendChange = (value: any, option: any) => {
+  const handleOnBackendChange = (value: any, option?: any) => {
     setImageModePicked(false);
     if (canInherit) {
       const inherit = value === ROLE_BACKEND_INHERIT;
@@ -330,9 +338,9 @@ const BackendFields: React.FC<BackendFieldsProps> = ({
       }
     }
     form.setFieldValue(path('backend'), value);
-    form.setFieldValue(path('env'), {
-      ...(option.default_env || {})
-    });
+    if (option) {
+      applyBackendEnv(option.default_env);
+    }
     if (namePrefix) {
       // The context handler writes MODEL-level fields (backend_version,
       // backend_parameters, the KV-cache and speculative blocks,
@@ -347,7 +355,7 @@ const BackendFields: React.FC<BackendFieldsProps> = ({
       form.setFieldValue(path('run_command'), null);
       form.setFieldValue(
         path('backend_parameters'),
-        option.default_backend_param || []
+        option?.default_backend_param || []
       );
       notifyValuesChange({});
       return;

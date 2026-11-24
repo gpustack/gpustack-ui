@@ -251,7 +251,8 @@ mock.module(new URL('../advance-config.tsx', import.meta.url).href, {
     [
       'image_name',
       'run_command',
-      ...(!pdActive ? ['backend_parameters', 'env', 'lora_list'] : [])
+      'env',
+      ...(!pdActive ? ['backend_parameters', 'lora_list'] : [])
     ].map((name) =>
       createElement(
         Form.Item,
@@ -283,7 +284,11 @@ const ordinaryCache = {
   ram_size: 16
 };
 
-const renderForm = async (savedPD = false, catalog = false) => {
+const renderForm = async (
+  savedPD = false,
+  catalog = false,
+  env?: Record<string, string>
+) => {
   const root = createRoot(dom.window.document.getElementById('root')!);
   const ref: any = { current: null };
   const submitted = mock.fn(clone);
@@ -302,6 +307,7 @@ const renderForm = async (savedPD = false, catalog = false) => {
               replicas: 1,
               source: 'local_path',
               name: 'model',
+              env,
               roles: savedPD ? createDefaultRoles() : null,
               disaggregation: savedPD
                 ? { mode: 'vllm-nixl', vendor: 'NVIDIA' }
@@ -498,6 +504,37 @@ test('a PD round trip restores the original ordinary model cache', async () => {
   }
 });
 
+const skipEvaluationEnv = { GPUSTACK_SKIP_MODEL_EVALUATION: '1' };
+
+test('turning PD on retains the model evaluation opt-out and honors its removal', async () => {
+  const env = { ...skipEvaluationEnv, VLLM_LOGGING_LEVEL: 'INFO' };
+  const form = await renderForm(false, false, env);
+  try {
+    await form.toggle();
+    assert.deepEqual((await form.submit()).env, skipEvaluationEnv);
+
+    // Removing the flag in PD must also disable the opt-out after a mode change.
+    await act(async () => form.ref.current.form.setFieldValue('env', {}));
+    await form.toggle();
+    assert.deepEqual((await form.submit()).env, {
+      VLLM_LOGGING_LEVEL: 'INFO'
+    });
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('editing a saved PD deployment retains its evaluation opt-out', async () => {
+  const form = await renderForm(true, false, skipEvaluationEnv);
+  try {
+    assert.deepEqual((await form.submit()).env, skipEvaluationEnv);
+    await form.toggle();
+    assert.deepEqual((await form.submit()).env, skipEvaluationEnv);
+  } finally {
+    await form.unmount();
+  }
+});
+
 test('pending enable cleanup cannot erase cache edited after quickly disabling PD', async (context) => {
   const form = await renderForm();
   context.mock.timers.enable({ apis: ['setTimeout'] });
@@ -601,6 +638,39 @@ const assertSpecBPayload = (
   assert.equal(payload.disaggregation, null);
 };
 
+test('a catalog spec carries its declared env through enabling PD', async () => {
+  const form = await renderForm(false, true);
+  try {
+    const spec = catalogSpec('A');
+    const env = { ...spec.env, ...skipEvaluationEnv };
+    await form.applyCatalogSpec({ ...spec, env });
+    assert.deepEqual(form.values().env, env);
+    await form.toggle();
+    assert.deepEqual((await form.submit()).env, skipEvaluationEnv);
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('deleting a catalog opt-out in PD keeps it removed when PD is disabled', async () => {
+  const form = await renderForm(false, true);
+  try {
+    await form.applyCatalogSpec(catalogSpec('A'));
+    await form.toggle();
+    const spec = catalogSpec('B');
+    await form.applyCatalogSpec({
+      ...spec,
+      env: { ...spec.env, ...skipEvaluationEnv }
+    });
+    assert.deepEqual((await form.submit()).env, skipEvaluationEnv);
+    await act(async () => form.ref.current.form.setFieldValue('env', {}));
+    await form.toggle();
+    assert.deepEqual((await form.submit()).env, spec.env);
+  } finally {
+    await form.unmount();
+  }
+});
+
 test('replacing a catalog spec while PD is on restores the new ordinary settings', async () => {
   const form = await renderForm(false, true);
   const specB = catalogSpec('B');
@@ -617,6 +687,30 @@ test('replacing a catalog spec while PD is on restores the new ordinary settings
     assert.equal(form.switchChecked(), 'false');
     assert.deepEqual(modelValues(form.values()), modelValues(specB));
     assertSpecBPayload(await form.submit(), specB);
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('changing the catalog spec in PD retains the manually entered opt-out', async () => {
+  const form = await renderForm(false, true);
+  try {
+    await form.applyCatalogSpec(catalogSpec('A'));
+    await form.toggle();
+    await act(async () =>
+      form.ref.current.form.setFieldValue('env', skipEvaluationEnv)
+    );
+    const specB = catalogSpec('B');
+    await form.applyCatalogSpec({
+      ...specB,
+      env: { ...specB.env, GPUSTACK_SKIP_MODEL_EVALUATION: '0' }
+    });
+    assert.deepEqual((await form.submit()).env, skipEvaluationEnv);
+    await form.toggle();
+    assert.deepEqual((await form.submit()).env, {
+      ...specB.env,
+      ...skipEvaluationEnv
+    });
   } finally {
     await form.unmount();
   }

@@ -247,11 +247,13 @@ mock.module(
     namedExports: { ProviderValueMap: { Docker: 'Docker' } }
   }
 );
+let spanningPreview = async (): Promise<any> => null;
+const spanningRequests = mock.fn(() => spanningPreview());
 mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
   namedExports: {
     resolvePDMode: resolutionRequests,
     queryPDModes: async () => ({ items: modes }),
-    queryModelSpanningRoles: async () => null
+    queryModelSpanningRoles: spanningRequests
   }
 });
 mock.module(
@@ -332,6 +334,7 @@ mock.module(new URL('../basic.tsx', import.meta.url).href, {
       'backend',
       'backend_version',
       'cluster_id',
+      'env',
       'replicas',
       'name',
       'source'
@@ -390,7 +393,8 @@ const renderForm = async ({
   roles = savedRoles(),
   workers = [],
   backendVersion = '0.29.0',
-  imageName = null
+  imageName = null,
+  env
 }: {
   mode?: string;
   vendor?: string;
@@ -400,6 +404,7 @@ const renderForm = async ({
   workers?: any[];
   backendVersion?: string | null;
   imageName?: string | null;
+  env?: Record<string, string>;
 } = {}) => {
   getDefaultStore().set(workerListAtom, workers);
   const root = createRoot(dom.window.document.getElementById('root')!);
@@ -413,6 +418,7 @@ const renderForm = async ({
     replicas: 1,
     source: 'local_path',
     name: 'model',
+    env,
     ...(pd
       ? {
           roles,
@@ -520,6 +526,46 @@ for (const action of ['edit', 'create']) {
     }
   });
 }
+
+test('role editors inherit the deployment environment without seeding the evaluation opt-out', async () => {
+  const env = { GPUSTACK_SKIP_MODEL_EVALUATION: '1', USER_VARIABLE: 'shared' };
+  const { root, ref, submit } = await renderForm({
+    mode: 'custom',
+    roles: createDefaultRoles(),
+    env
+  });
+  try {
+    assert.deepEqual(ref.current.form.getFieldValue(['roles', 0, 'env']), {
+      USER_VARIABLE: 'shared'
+    });
+    const payload = await submit();
+    assert.deepEqual(payload.env, env);
+    assert.equal(payload.roles[0].env, null);
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
+test('the PD placement preview still runs with the deployment env flag', async () => {
+  spanningRequests.mock.resetCalls();
+  spanningPreview = async () => ({
+    roles: [{ name: 'prefill', gpus: 8 }],
+    widest_worker_gpus: 4
+  });
+  const env = { GPUSTACK_SKIP_MODEL_EVALUATION: '1' };
+  const { root } = await renderForm({ mode: 'custom', env });
+  try {
+    await act(async () => new Promise((resolve) => setTimeout(resolve, 550)));
+    assert.equal(spanningRequests.mock.callCount(), 1);
+    assert.match(
+      dom.window.document.body.textContent ?? '',
+      /models\.form\.gather\.spanning/
+    );
+  } finally {
+    spanningPreview = async () => null;
+    await act(async () => root.unmount());
+  }
+});
 
 test('opening a saved explicit built-in transport preserves it over the recommendation', async () => {
   const { root, ref, submit } = await renderForm({ mode: 'vllm-alternate' });
@@ -701,6 +747,18 @@ test('a retained ineligible transport is rejected and its error clears when elig
         }
       );
     });
+    await act(async () => {
+      ref.current.form.setFieldValue('env', {
+        GPUSTACK_SKIP_MODEL_EVALUATION: '1'
+      });
+    });
+    await act(async () => {
+      await ref.current.form.validateFields([modePath]);
+    });
+    assert.deepEqual(ref.current.form.getFieldError(modePath), []);
+
+    await act(async () => ref.current.form.setFieldValue('env', {}));
+    assert.deepEqual(ref.current.form.getFieldError(modePath), [reason]);
     await changeCluster(1);
     assert.equal(ref.current.form.getFieldValue(modePath), 'vllm-nixl');
     assert.deepEqual(ref.current.form.getFieldError(modePath), []);

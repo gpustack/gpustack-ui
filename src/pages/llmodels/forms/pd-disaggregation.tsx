@@ -29,6 +29,7 @@ import {
 } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
 import useQueryPDModes, { transportLabel } from '../hooks/use-query-pd-modes';
+import { shouldSkipModelEvaluation } from '../utils/model-evaluation';
 import { pdBackendVersionWarning } from '../utils/pd-cache-services';
 import { membershipUpdateNotice } from '../utils/pd-membership';
 import {
@@ -139,13 +140,8 @@ export interface PDEffects {
   // on screen explains why all three members landed on the same labelled
   // workers.
   clearModelScheduling?: boolean;
-  // 🆕 Same argument as `clearModelScheduling`, applied to the other pair the
-  // role card duplicates: every role carries its own backend parameters and
-  // env, so the model-level copies in "Advanced" showed the same two controls
-  // a second time. Removed under PD, and *cleared* rather than hidden —
-  // `role_effective_model` projects a model-level value onto any role that has
-  // none, so a leftover `--tensor-parallel-size` would silently constrain all
-  // three members with nothing on screen saying where it came from.
+  // Each role owns its parameters under PD. Clear the hidden model-level
+  // parameters so they cannot affect every role through role_effective_model.
   clearModelParams?: boolean;
   // GPUStack does not support LoRA under PD. Clear the hidden adapter field
   // so it cannot conflict with the disaggregated deployment on submit.
@@ -235,6 +231,11 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
   Form.useWatch('backend_version', { form, preserve: true });
   Form.useWatch('image_name', { form, preserve: true });
   const mode = Form.useWatch(['disaggregation', 'mode'], form);
+  const skipRecipeEligibility =
+    Form.useWatch((values) => shouldSkipModelEvaluation(values.env), {
+      form,
+      preserve: true
+    }) ?? shouldSkipModelEvaluation(form.getFieldValue('env'));
   // Read-only reads of other sections: the role ratio and the model-level cache
   // are owned elsewhere, this block only reflects them.
   // See the note in forms/roles/index.tsx: without `preserve` this reads only
@@ -449,6 +450,12 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       form.validateFields([['disaggregation', 'mode']]).catch(() => {});
     }
   };
+
+  useEffect(() => {
+    if (variant === 'body') {
+      revalidateMode();
+    }
+  }, [skipRecipeEligibility]);
 
   // A resolve in flight is invalidated by any later change to its inputs.
   // Without this a slow answer for the previous engine lands after the fast
@@ -937,8 +944,6 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       return;
     }
     // Debounced because the inputs include a text field the user types into.
-    // Nothing downstream of this blocks, so a late answer only ever adds a
-    // note; there is no state it can arrive too late for.
     const timer = setTimeout(async () => {
       const values = form.getFieldsValue(true) as Record<string, any>;
       try {
@@ -975,7 +980,10 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
         }
       }
     }, 500);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      spanningSessionRef.current += 1;
+    };
   }, [spanningSignature]);
 
   const spanningNote = (() => {
@@ -1012,6 +1020,9 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
     currentBackends = resolverBackends,
     currentClusterId = clusterId
   ) => {
+    const skipRuntimeCheck = shouldSkipModelEvaluation(
+      form.getFieldValue('env')
+    );
     const clusterVendors = Array.from(
       new Set(
         workerList
@@ -1035,15 +1046,20 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
       currentBackends,
       currentClusterId
     );
-    const modeVerdicts = resolution?.options?.length
-      ? Object.fromEntries(
-          resolution.options.map((option) => [option.name, option])
-        )
-      : undefined;
+    const modeVerdicts =
+      !skipRuntimeCheck && resolution?.options?.length
+        ? Object.fromEntries(
+            resolution.options.map((option) => [option.name, option])
+          )
+        : undefined;
     const options = currentBackends.map((engineBackend) =>
       buildOptions(
         engineBackend,
-        usePartition ? [selectedVendor] : clusterVendors,
+        skipRuntimeCheck
+          ? undefined
+          : usePartition
+            ? [selectedVendor]
+            : clusterVendors,
         modeVerdicts,
         snapshot.modes,
         usePartition ? 'partition' : 'cluster'
@@ -1103,7 +1119,10 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
    */
   const unresolvedNote = (() => {
     const resolution = currentResolution;
-    if (!resolution?.unresolved_reason && !resolution?.unresolved_code) {
+    if (
+      skipRecipeEligibility ||
+      (!resolution?.unresolved_reason && !resolution?.unresolved_code)
+    ) {
       return null;
     }
     const id = `models.form.pd.unresolved.${resolution.unresolved_code}`;
@@ -1396,7 +1415,8 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
                * catch it either: `gpu_filters.vendor` is enforced by
                * `PDModeRuntimeFilter` at schedule time, so the group is created
                * and then waits forever for a worker that cannot exist. This
-               * field is the last gate in front of that.
+               * field catches the mismatch during ordinary preflight. With
+               * the opt-out enabled the catalog still limits recipes by engine.
                *
                * Looked up in `modeOptions` rather than `visibleModeOptions`:
                * the disabled rows are precisely what the latter filters out.

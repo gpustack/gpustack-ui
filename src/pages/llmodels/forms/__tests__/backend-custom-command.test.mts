@@ -6,6 +6,10 @@ import { act, createElement, createRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 const empty = () => null;
+const selectChanges = new Map<
+  string,
+  (value: string | null, option?: unknown) => void
+>();
 const InputField = ({ value, onChange, label, labelExtra }: any) =>
   createElement(
     'label',
@@ -20,7 +24,10 @@ const InputField = ({ value, onChange, label, labelExtra }: any) =>
 mock.module('@gpustack/core-ui', {
   namedExports: {
     Input: { Input: InputField },
-    Select: ({ footer }: any) => createElement('div', null, footer),
+    Select: ({ footer, label, onChange }: any) => {
+      selectChanges.set(label, onChange);
+      return createElement('div', null, footer);
+    },
     Textarea: ({ value, onChange, label, placeholder }: any) =>
       createElement('textarea', {
         'aria-label': label,
@@ -78,6 +85,75 @@ after(() => dom.window.close());
 const { Form } = await import('antd');
 const { FormContext } = await import('../../config/form-context.ts');
 const { default: BackendFields } = await import('../backend.tsx');
+
+test('backend selections without option data preserve the role environment', async () => {
+  const root = createRoot(dom.window.document.getElementById('root')!);
+  const formRef = createRef<FormInstance>();
+  const env = { GPUSTACK_SKIP_MODEL_EVALUATION: '1', LOG_LEVEL: 'debug' };
+  const onValuesChange = mock.fn();
+  const Harness = () => {
+    const [form] = Form.useForm();
+    return createElement(
+      Form,
+      {
+        form,
+        ref: formRef,
+        initialValues: {
+          roles: [{ backend: 'vLLM', backend_version: '1.0', env }]
+        }
+      },
+      createElement(
+        FormContext.Provider,
+        {
+          value: {
+            backendOptions: [],
+            flatBackendOptions: [],
+            onValuesChange
+          } as any
+        },
+        createElement(BackendFields, { namePrefix: ['roles', 0] })
+      )
+    );
+  };
+  const select = async (
+    label: string,
+    value: string | null,
+    option?: unknown
+  ) => {
+    const change = selectChanges.get(label);
+    assert.ok(change);
+    await act(async () => change(value, option));
+  };
+  try {
+    await act(async () => root.render(createElement(Harness)));
+    const form = formRef.current!;
+
+    await select('models.form.backendVersion', null);
+    assert.equal(form.getFieldValue(['roles', 0, 'backend_version']), null);
+    assert.deepEqual(form.getFieldValue(['roles', 0, 'env']), env);
+    assert.equal(onValuesChange.mock.callCount(), 1);
+
+    await select('models.form.backend', 'SGLang');
+    assert.equal(form.getFieldValue(['roles', 0, 'backend']), 'SGLang');
+    assert.deepEqual(form.getFieldValue(['roles', 0, 'env']), env);
+    assert.deepEqual(
+      form.getFieldValue(['roles', 0, 'backend_parameters']),
+      []
+    );
+    assert.equal(onValuesChange.mock.callCount(), 2);
+
+    const defaults = {
+      GPUSTACK_SKIP_MODEL_EVALUATION: '0',
+      VERSION_ENV: 'configured'
+    };
+    await select('models.form.backendVersion', '2.0', {
+      data: { env: defaults }
+    });
+    assert.deepEqual(form.getFieldValue(['roles', 0, 'env']), defaults);
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
 
 for (const backend of ['vLLM', 'SGLang']) {
   for (const nested of [false, true]) {

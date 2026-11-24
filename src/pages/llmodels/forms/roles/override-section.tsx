@@ -9,7 +9,7 @@ import {
   OverrideGroupLabelMap,
   OverrideGroupTipsMap
 } from '../../config';
-import { isGroupOverridden } from './transform';
+import { getRoleInheritedEnv, isGroupOverridden } from './transform';
 
 // A role's sections reuse the bordered card the Scheduled Scaling and GPU
 // Allocation sections already use, with the switch in the title row.
@@ -230,6 +230,15 @@ const OverrideSection: React.FC<OverrideSectionProps> = ({
   const fields = OverrideGroupFields[group] || [];
   const uiFields = GroupUIFields[group] || [];
   const overridden = Form.useWatch(['roles', index, 'overrides', group], form);
+  const seedGroup = () => {
+    [...fields, ...uiFields].forEach((field) => {
+      const value = form.getFieldValue(field);
+      form.setFieldValue(
+        ['roles', index, field],
+        _.cloneDeep(field === 'env' ? getRoleInheritedEnv(value) : value)
+      );
+    });
+  };
 
   // Seed once, on the way in. `handleModeChange` did this when the user flipped
   // the switch; with no switch there is no gesture to hang it on, so it happens
@@ -254,9 +263,7 @@ const OverrideSection: React.FC<OverrideSectionProps> = ({
      * `undefined` — whatever the store holds. Every role therefore took the
      * seeding branch, including one opened from an existing deployment with
      * its own stored parameters, and `setFieldValue` wrote the MODEL's values
-     * over them. Under PD the model's are empty by then, because
-     * `clearModelParams` blanks them the moment the group is enabled, so what
-     * landed on the role was `[]` and `{}`.
+     * over them.
      *
      * Reported as: added parameters and env to prefill, deployed, reopened —
      * the injected rows were back (`role-form` re-seeds those from the mode
@@ -274,12 +281,7 @@ const OverrideSection: React.FC<OverrideSectionProps> = ({
       return;
     }
     if (seedFromModel) {
-      [...fields, ...uiFields].forEach((field) => {
-        form.setFieldValue(
-          ['roles', index, field],
-          _.cloneDeep(form.getFieldValue(field))
-        );
-      });
+      seedGroup();
     }
     form.setFieldValue(['roles', index, 'overrides', group], true);
   }, []);
@@ -291,12 +293,7 @@ const OverrideSection: React.FC<OverrideSectionProps> = ({
       }
       // Start from what the group was inheriting, so "custom" is an edit of
       // the effective configuration rather than a blank form.
-      [...fields, ...uiFields].forEach((field) => {
-        form.setFieldValue(
-          ['roles', index, field],
-          _.cloneDeep(form.getFieldValue(field))
-        );
-      });
+      seedGroup();
       return;
     }
     // Null, not delete: null is what the backend reads as "inherit", and it

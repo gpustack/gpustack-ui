@@ -16,14 +16,26 @@ const passChildren = ({ children }: any) =>
   createElement(Fragment, null, children);
 let store: any;
 let childProps: any;
+let footerProps: any;
 let specs: any[];
+let clusterList: any[] = [];
+let getBackendOptions = async (): Promise<any[]> => [];
 const evaluated = mock.fn(clone);
+const queryCatalogItemSpec = mock.fn(
+  async (_params: any, _options?: { cancelToken: string }) => ({
+    items: clone(specs)
+  })
+);
 
 mock.module('@gpustack/core-ui', {
   namedExports: {
-    ColumnWrapper: passChildren,
+    ColumnWrapper: ({ children, footer }: any) =>
+      createElement(Fragment, null, children, footer),
     GSDrawer: passChildren,
-    ModalFooter: empty,
+    ModalFooter: (props: any) => {
+      footerProps = props;
+      return null;
+    },
     createAxiosToken: () => ({ token: 'catalog-test', cancel() {} })
   }
 });
@@ -47,9 +59,7 @@ mock.module(
   { namedExports: { ClusterStatusValueMap: { Ready: 'ready' } } }
 );
 mock.module(new URL('../../../apis/index.ts', import.meta.url).href, {
-  namedExports: {
-    queryCatalogItemSpec: async () => ({ items: clone(specs) })
-  }
+  namedExports: { queryCatalogItemSpec }
 });
 mock.module(new URL('../../../hooks/index.ts', import.meta.url).href, {
   namedExports: {
@@ -59,7 +69,7 @@ mock.module(new URL('../../../hooks/index.ts', import.meta.url).href, {
       cancelEvaluate: empty,
       clearCacheFormValues: empty,
       submitAnyway: { current: false },
-      handleOnValuesChange: empty,
+      handleOnValuesChange: ({ allValues }: any) => evaluated(allValues),
       warningStatus: { show: false }
     })
   }
@@ -70,7 +80,7 @@ mock.module(
     defaultExport: () => ({
       getClusterList: empty,
       getWorkerList: empty,
-      clusterList: []
+      clusterList
     })
   }
 );
@@ -84,19 +94,30 @@ mock.module(new URL('../../compatible-alert.tsx', import.meta.url).href, {
 const DataForm = forwardRef((props: any, ref) => {
   childProps = props;
   useImperativeHandle(ref, () => ({
+    submit: () => props.onOk(clone(store)),
     getFieldsValue: () => clone(store),
     getFieldValue: (name: string) => store[name],
     setFieldValue: (name: string, value: any) => {
       store[name] = value;
     },
+    getBackendOptions: () => getBackendOptions(),
     applyCatalogSpec: (values: any) => {
       const pdActive = !!store.roles?.length;
-      Object.assign(store, clone(values));
+      const env = store.env ?? {};
+      const optOut = env.GPUSTACK_SKIP_MODEL_EVALUATION;
+      Object.assign(store, clone(values), {
+        env: {
+          ...values.env,
+          ...(optOut === undefined
+            ? {}
+            : { GPUSTACK_SKIP_MODEL_EVALUATION: optOut })
+        }
+      });
       if (pdActive) {
         Object.assign(store, {
           replicas: 1,
           backend_parameters: [],
-          env: {},
+          env,
           worker_selector: {},
           gpu_selector: null,
           gpu_type_selector: null,
@@ -236,4 +257,128 @@ test('ordinary manual vGPU evaluation normalizes selectors and removes UI-only f
   });
   assert.equal(values.extended_kv_cache.enabled, true);
   assertSourceAndRuntime(values);
+});
+
+for (const hasMatchingSpec of [true, false]) {
+  test(
+    hasMatchingSpec
+      ? 'editing a selected catalog spec environment only evaluates the deployment draft'
+      : 'deployment environment cannot bypass a missing matching catalog spec',
+    async () => {
+      store = { replicas: 1 };
+      specs = hasMatchingSpec ? [specB] : [];
+      queryCatalogItemSpec.mock.resetCalls();
+      evaluated.mock.resetCalls();
+      const submitted = mock.fn(clone);
+      const root = createRoot(dom.window.document.getElementById('root')!);
+      try {
+        await act(async () =>
+          root.render(
+            createElement(DeployBuiltinModal, {
+              title: 'Deploy catalog model',
+              open: false,
+              action: 'create',
+              source: 'huggingface',
+              current: { id: 22, name: 'Catalog Model', categories: ['llm'] },
+              onOk: submitted,
+              onCancel: empty
+            })
+          )
+        );
+        await act(async () => childProps.onClusterChange(2));
+        evaluated.mock.resetCalls();
+        const env = { ...store.env, GPUSTACK_SKIP_MODEL_EVALUATION: 'false' };
+        store.env = env;
+        await act(async () => childProps.onValuesChange({ env }, clone(store)));
+        assert.deepEqual(
+          queryCatalogItemSpec.mock.calls.map(
+            ({ arguments: [params] }) => params
+          ),
+          [{ id: 22, cluster_id: 2 }]
+        );
+
+        await act(async () => footerProps.onOk());
+        if (hasMatchingSpec) {
+          assert.equal(evaluated.mock.callCount(), 1);
+          const values = evaluated.mock.calls[0].result;
+          assertSourceAndRuntime(values);
+          assert.deepEqual(values.env, env);
+          assert.equal(submitted.mock.callCount(), 1);
+          assert.deepEqual(submitted.mock.calls[0].result.env, env);
+        } else {
+          assert.equal(evaluated.mock.callCount(), 0);
+          assert.equal(submitted.mock.callCount(), 0);
+        }
+      } finally {
+        await act(async () => root.unmount());
+      }
+    }
+  );
+}
+
+test('late initialization cannot replace a new cluster selection or submit an older spec during the lookup', async () => {
+  store = { replicas: 1 };
+  specs = [specB];
+  clusterList = [{ value: 1, is_default: true }];
+  queryCatalogItemSpec.mock.resetCalls();
+  let releaseBackendOptions!: (options: any[]) => void;
+  getBackendOptions = () =>
+    new Promise((resolve) => (releaseBackendOptions = resolve));
+  const submitted = mock.fn(clone);
+  const root = createRoot(dom.window.document.getElementById('root')!);
+  try {
+    await act(async () =>
+      root.render(
+        createElement(DeployBuiltinModal, {
+          title: 'Deploy catalog model',
+          open: true,
+          action: 'create',
+          source: 'local_path',
+          current: { id: 22, name: 'Catalog Model', categories: ['llm'] },
+          onOk: submitted,
+          onCancel: empty
+        })
+      )
+    );
+    await act(async () => new Promise((resolve) => setTimeout(resolve, 120)));
+    assert.equal(typeof releaseBackendOptions, 'function');
+    await act(async () => childProps.onClusterChange(2));
+    await act(async () => releaseBackendOptions([]));
+    assert.deepEqual(
+      queryCatalogItemSpec.mock.calls.map(
+        ({ arguments: [params] }) => params.cluster_id
+      ),
+      [2]
+    );
+    assert.deepEqual(queryCatalogItemSpec.mock.calls[0].arguments[1], {
+      cancelToken: 'catalog-test'
+    });
+
+    let releaseSpecs!: (response: { items: any[] }) => void;
+    queryCatalogItemSpec.mock.mockImplementationOnce(
+      () => new Promise((resolve) => (releaseSpecs = resolve))
+    );
+    let pending!: Promise<void>;
+    await act(async () => {
+      pending = childProps.onClusterChange(3);
+    });
+    assert.equal(footerProps.loading, true);
+    await act(async () => {
+      footerProps.onOk();
+      await childProps.onOk(clone(store));
+    });
+    assert.equal(submitted.mock.callCount(), 0);
+    await act(async () => {
+      releaseSpecs({ items: [specB] });
+      await pending;
+    });
+    assert.equal(footerProps.loading, false);
+    await act(async () => footerProps.onOk());
+    assert.equal(submitted.mock.callCount(), 1);
+    assert.equal(submitted.mock.calls[0].result.cluster_id, 3);
+  } finally {
+    getBackendOptions = async () => [];
+    clusterList = [];
+    await act(async () => root.unmount());
+  }
 });

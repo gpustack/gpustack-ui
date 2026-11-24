@@ -16,13 +16,12 @@ export function getCatalogFormValues<T extends Partial<FormData>>(
   if (!result.roles?.length) {
     return result;
   }
-  // PD hides model-level controls. With preserve=false their unmount can
-  // remove clears or restore initialValues, so encode the clears in the
-  // request itself. Role overrides remain the source of runtime settings.
+  // Keep the registered deployment env and reset the hidden ordinary-model
+  // controls, whose unmount can restore initialValues with preserve=false.
   return {
     ...result,
     backend_parameters: [],
-    env: {},
+    env: values.env ?? {},
     worker_selector: {},
     gpu_selector: null,
     gpu_type_selector: null,

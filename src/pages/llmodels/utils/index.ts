@@ -9,8 +9,13 @@ export const generateGPUSelector = (data: any, gpuOptions: any[]) => {
   // backend as `gpu_ids: null`, and `_.get` only replaces `undefined`.
   const gpu_ids = data?.gpu_selector?.gpu_ids ?? [];
   if (gpu_ids.length === 0) {
+    // A count-only selector keeps its count: the model-level drawer writes
+    // this result into the form, and `null` would erase it on the next save.
+    const gpusPerReplica = data?.gpu_selector?.gpus_per_replica ?? null;
     return {
-      gpu_selector: null
+      gpu_selector: gpusPerReplica
+        ? { gpu_ids: [], gpus_per_replica: gpusPerReplica }
+        : null
     };
   }
 

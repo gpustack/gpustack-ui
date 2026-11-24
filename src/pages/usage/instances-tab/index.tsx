@@ -524,7 +524,9 @@ const GpuInstancesTab: React.FC = () => {
         open={exportMode !== null}
         onCancel={() => setExportMode(null)}
         title={intl.formatMessage({ id: 'usage.export.chart' })}
-        queryFn={queryGpuInstancesBreakdown}
+        queryFn={(req) =>
+          queryGpuInstancesBreakdown(req, { includeGpuAllocation: true })
+        }
         exportEndpoints={GPU_INSTANCES_EXPORT_ENDPOINTS}
         groupBy={exportConfig.groupBy}
         scope={scope}

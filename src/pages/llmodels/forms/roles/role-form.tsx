@@ -1,4 +1,4 @@
-import { InputNumber, LabelSelector, useAppUtils } from '@gpustack/core-ui';
+import { InputNumber, useAppUtils } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form, Input } from 'antd';
 import React from 'react';
@@ -10,6 +10,7 @@ import SpeculativeDecode from '../speculative-decode';
 import OverrideSection from './override-section';
 import { reseedRoleInjection } from './reseed-injection';
 import RoleBackend from './role-backend';
+import RoleEnvironment, { RoleEnvironmentMode } from './role-environment';
 import RoleKVCache from './role-kv-cache';
 import SystemManaged, { LockedRow, flagLines } from './system-managed';
 
@@ -164,15 +165,9 @@ const RoleForm: React.FC<RoleFormProps> = ({
       description: intl.formatMessage({
         id: 'models.form.roles.managed.env.tips'
       }),
+      titleExtra: <RoleEnvironmentMode index={index} />,
       rows: [],
-      footer: (
-        <Form.Item name={['roles', index, 'env']}>
-          <LabelSelector
-            label={intl.formatMessage({ id: 'models.form.env' })}
-            btnText={intl.formatMessage({ id: 'common.button.vars' })}
-          ></LabelSelector>
-        </Form.Item>
-      )
+      footer: <RoleEnvironment index={index} />
     }
     // 🔴 No «宿主机挂载» card. It listed what the PD recipe bind-mounts
     // (Ascend's `/etc/hccn.conf`), and it was the one group here the user

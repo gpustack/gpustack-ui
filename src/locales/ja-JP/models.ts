@@ -760,6 +760,9 @@ export default {
     'このロールのエンジンに渡される引数です。鍵付きは PD モードに基づいて GPUStack が注入し、自分で追加したものはその後ろに続きます。',
   'models.form.roles.managed.env.tips':
     'このロールのコンテナに設定される環境変数です。鍵付きは GPUStack が注入するもので、多くは制御プレーンのアドレスと NIC です。',
+  'models.form.roles.env.mode': 'ロールの環境変数モード',
+  'models.form.roles.env.merge': '継承して上書き',
+  'models.form.roles.env.replace': 'ロールの変数のみを使用',
   'models.form.roles.managed.mounts.tips':
     'ホストからコンテナにバインドマウントされるパスです。追加できるのは GPUStack だけです。転送方式が読む必要のあるホストファイルで、アクセラレータランタイムは自動では取り込みません。',
   'models.form.roles.resources': 'リソース',

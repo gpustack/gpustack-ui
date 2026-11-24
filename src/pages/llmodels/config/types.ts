@@ -108,9 +108,8 @@ export interface ListItem {
 // One role's overrides. Every deployment field left undefined inherits the
 // Model-level field of the same name, which is what lets a homogeneous 1P1D
 // be "flip a switch and type two numbers" rather than three full forms. The
-// override surface is the *whole* of `backend_parameters` and `env` on
-// purpose: measured on Ascend 910B2, prefill and decode differ in nearly every
-// performance-related parameter.
+// Parameters use whole-list overrides. Roles can select key-by-key inheritance
+// for environment variables through env_mode.
 export interface RoleSpec {
   name: string;
   replicas: number;
@@ -120,6 +119,7 @@ export interface RoleSpec {
   run_command?: string | null;
   backend_parameters?: string[] | null;
   env?: Record<string, any> | null;
+  env_mode?: 'merge' | 'replace' | null;
   gpu_selector?: {
     gpu_ids?: string[];
     gpus_per_replica?: number;

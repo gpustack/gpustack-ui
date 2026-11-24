@@ -756,6 +756,9 @@ export default {
     'Bu rolün motorunun başlatıldığı argümanlar. Kilitli olanları GPUStack, PD moduna göre ekler; sizinkiler bunların ardına eklenir.',
   'models.form.roles.managed.env.tips':
     'Bu rolün kapsayıcısına ayarlanan ortam değişkenleri. Kilitli olanları GPUStack ekler; çoğu denetim düzlemi adresleri ve kullanılacak ağ arayüzüdür.',
+  'models.form.roles.env.mode': 'Rol ortam değişkeni modu',
+  'models.form.roles.env.merge': 'Devral ve geçersiz kıl',
+  'models.form.roles.env.replace': 'Yalnızca rol değişkenlerini kullan',
   'models.form.roles.managed.mounts.tips':
     'Ana makineden kapsayıcıya bağlanan yollar. Yalnızca GPUStack ekleyebilir: bunlar aktarımın okuması gereken, hızlandırıcı çalışma zamanının kendiliğinden getirmediği ana makine dosyalarıdır.',
   'models.form.roles.resources': 'Kaynaklar',

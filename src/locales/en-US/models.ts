@@ -752,6 +752,9 @@ export default {
     "The arguments this role's engine starts with. Locked ones are injected by GPUStack from the PD mode; yours are appended after them.",
   'models.form.roles.managed.env.tips':
     "Environment variables set on this role's container. Locked ones are injected by GPUStack, mostly control-plane addresses and the NIC to use.",
+  'models.form.roles.env.mode': 'Role environment mode',
+  'models.form.roles.env.merge': 'Inherit and override',
+  'models.form.roles.env.replace': 'Use only role variables',
   'models.form.roles.managed.mounts.tips':
     'Host paths bind-mounted into the container. Only GPUStack can add one: these are host files the transport has to read that the accelerator runtime does not bring in by itself.',
   'models.form.roles.resources': 'Resources',

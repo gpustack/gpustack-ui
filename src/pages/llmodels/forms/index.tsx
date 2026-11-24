@@ -269,9 +269,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         extended_kv_cache: form.getFieldValue('extended_kv_cache'),
         speculative_config: form.getFieldValue('speculative_config'),
         backend_parameters: form.getFieldValue('backend_parameters'),
-        env: next.clearModelScheduling
+        envBeforePD: next.clearModelScheduling
           ? _.omit(env, [SKIP_MODEL_EVALUATION_ENV])
-          : {},
+          : undefined,
         lora_list: form.getFieldValue('lora_list'),
         replicas: form.getFieldValue('replicas') ?? 1
       });
@@ -289,8 +289,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         placement_strategy: undefined
       } as any);
       form.setFieldValue('worker_selector', {});
-      // Keep the deployment opt-out and stash the ordinary engine env above.
-      form.setFieldValue('env', _.pick(env, [SKIP_MODEL_EVALUATION_ENV]));
     }
     if (next.clearModelKVCache) {
       form.setFieldValue('extended_kv_cache', { enabled: false });
@@ -309,12 +307,17 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     // rather than on a transition flag, which is what keeps it to the one
     // notification that matters — the ref is non-null only after an enable.
     if (!next.enabled && preservedModelFields.current) {
-      const { env: ordinaryEnv, ...ordinaryFields } =
-        preservedModelFields.current;
+      const ordinaryEnv = preservedModelFields.current.env;
+      const ordinaryFields = _.omit(preservedModelFields.current, [
+        'env',
+        'envBeforePD'
+      ]);
       Object.entries(ordinaryFields).forEach(([field, value]) => {
         form.setFieldValue(field, value);
       });
-      form.setFieldValue('env', { ...ordinaryEnv, ...env });
+      if (ordinaryEnv) {
+        form.setFieldValue('env', { ...ordinaryEnv, ...env });
+      }
       preservedModelFields.current = null;
     }
     // Only when it actually differs. An unconditional write fires the form's
@@ -803,6 +806,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           !!form.getFieldValue(['disaggregation', 'mode']);
         const modelFields = _.cloneDeep(getCatalogModelFields(values));
         const env = form.getFieldValue('env');
+        const envBeforePD = preservedModelFields.current?.envBeforePD;
         // A new spec replaces the configuration to restore when PD turns off.
         // Missing model fields use defaults instead of inheriting the old spec.
         preservedModelFields.current = pdActive
@@ -817,7 +821,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
               ...getCatalogModelFields({}),
               env: {
                 ..._.pick(modelFields.env, [SKIP_MODEL_EVALUATION_ENV]),
-                ...env
+                ..._.omitBy(env, (value, key) => envBeforePD?.[key] === value)
               },
               placement_strategy: undefined
             }

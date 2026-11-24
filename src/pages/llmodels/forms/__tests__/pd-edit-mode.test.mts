@@ -325,7 +325,8 @@ dom.window.matchMedia = (media) => ({
 after(() => dom.window.close());
 const { Form } = await import('antd');
 const { FormContext } = await import('../../config/form-context.ts');
-const { createDefaultRoles } = await import('../roles/transform.ts');
+const { createDefaultRoles, rolesSpecToForm } =
+  await import('../roles/transform.ts');
 let context: any;
 mock.module(new URL('../basic.tsx', import.meta.url).href, {
   defaultExport: () => {
@@ -527,7 +528,7 @@ for (const action of ['edit', 'create']) {
   });
 }
 
-test('role editors inherit the deployment environment without seeding the evaluation opt-out', async () => {
+test('role editors submit overrides without copying deployment environment variables', async () => {
   const env = { GPUSTACK_SKIP_MODEL_EVALUATION: '1', USER_VARIABLE: 'shared' };
   const { root, ref, submit } = await renderForm({
     mode: 'custom',
@@ -535,12 +536,91 @@ test('role editors inherit the deployment environment without seeding the evalua
     env
   });
   try {
-    assert.deepEqual(ref.current.form.getFieldValue(['roles', 0, 'env']), {
-      USER_VARIABLE: 'shared'
-    });
+    assert.deepEqual(
+      ref.current.form.getFieldValue(['roles', 0, 'env']) ?? {},
+      {}
+    );
     const payload = await submit();
     assert.deepEqual(payload.env, env);
+    assert.equal(payload.roles[0].env_mode, 'merge');
     assert.equal(payload.roles[0].env, null);
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
+test('role env mode appears in the env card header and survives hiding', async () => {
+  const { root, ref, submit } = await renderForm({
+    mode: 'custom',
+    roles: createDefaultRoles()
+  });
+  const form = ref.current.form;
+  const options = (mode: string) =>
+    Array.from(
+      dom.window.document.querySelectorAll<HTMLInputElement>(
+        '[aria-label="models.form.roles.env.mode"] input[type="radio"]'
+      )
+    ).filter(
+      (option) =>
+        option.closest('label')?.textContent === `models.form.roles.env.${mode}`
+    );
+  const deploymentEnv = { COMMON: 'deployment', SHARED: 'same' };
+
+  try {
+    assert.equal(options('merge').length, 0);
+
+    await act(async () => form.setFieldValue('env', deploymentEnv));
+    assert.equal(options('merge').length, 3);
+    assert.equal(
+      dom.window.document.querySelectorAll(
+        '.managed-title > [aria-label="models.form.roles.env.mode"]'
+      ).length,
+      3
+    );
+    assert.ok(options('merge').every((option) => option.checked));
+    await act(async () => options('replace')[0].click());
+
+    await act(async () => form.setFieldValue('env', {}));
+    assert.equal(options('replace').length, 0);
+    const replacement = (await submit()).roles[0];
+    assert.equal(replacement.env_mode, 'replace');
+    assert.deepEqual(replacement.env, {});
+
+    await act(async () => form.setFieldValue('env', deploymentEnv));
+    assert.equal(options('replace')[0].checked, true);
+    await act(async () => {
+      options('merge')[0].click();
+      form.setFieldValue(['roles', 0, 'env'], { SHARED: 'same' });
+    });
+    const merged = (await submit()).roles[0];
+    assert.equal(merged.env_mode, 'merge');
+    assert.deepEqual(merged.env, { SHARED: 'same' });
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
+test('editing legacy roles preserves their existing inherited or replacement maps', async () => {
+  const env = { COMMON: 'deployment' };
+  const { root, submit } = await renderForm({
+    mode: 'custom',
+    roles: rolesSpecToForm([
+      { name: 'prefill', replicas: 1, env },
+      { name: 'decode', replicas: 1, env: {} },
+      { name: 'router', replicas: 1, env: null }
+    ]),
+    env
+  });
+  try {
+    const payload = await submit();
+    assert.deepEqual(
+      payload.roles.map(({ env, env_mode }: any) => [env_mode, env]),
+      [
+        ['replace', env],
+        ['replace', {}],
+        ['merge', null]
+      ]
+    );
   } finally {
     await act(async () => root.unmount());
   }

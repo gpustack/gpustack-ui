@@ -506,19 +506,16 @@ test('a PD round trip restores the original ordinary model cache', async () => {
 
 const skipEvaluationEnv = { GPUSTACK_SKIP_MODEL_EVALUATION: '1' };
 
-test('turning PD on retains the model evaluation opt-out and honors its removal', async () => {
+test('switching PD on preserves deployment variables and switching off keeps edits', async () => {
   const env = { ...skipEvaluationEnv, VLLM_LOGGING_LEVEL: 'INFO' };
   const form = await renderForm(false, false, env);
   try {
     await form.toggle();
-    assert.deepEqual((await form.submit()).env, skipEvaluationEnv);
+    assert.deepEqual((await form.submit()).env, env);
 
-    // Removing the flag in PD must also disable the opt-out after a mode change.
     await act(async () => form.ref.current.form.setFieldValue('env', {}));
     await form.toggle();
-    assert.deepEqual((await form.submit()).env, {
-      VLLM_LOGGING_LEVEL: 'INFO'
-    });
+    assert.deepEqual((await form.submit()).env, {});
   } finally {
     await form.unmount();
   }
@@ -646,7 +643,7 @@ test('a catalog spec carries its declared env through enabling PD', async () => 
     await form.applyCatalogSpec({ ...spec, env });
     assert.deepEqual(form.values().env, env);
     await form.toggle();
-    assert.deepEqual((await form.submit()).env, skipEvaluationEnv);
+    assert.deepEqual((await form.submit()).env, env);
   } finally {
     await form.unmount();
   }

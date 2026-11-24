@@ -136,6 +136,7 @@ export const rolesSpecToForm = (
 
     return {
       ...role,
+      env_mode: role.env_mode ?? (role.env == null ? 'merge' : 'replace'),
       gpu_selector: role.gpu_selector
         ? (gpuSelector as any)
         : role.gpu_selector,
@@ -250,6 +251,12 @@ const roleFormToPayload = (role: RoleFormItem): RoleSpec => {
       payload[field] = empty ? null : value;
     });
   });
+  if (role.env_mode) {
+    payload.env_mode = role.env_mode;
+    if (role.env_mode === 'replace') {
+      payload.env = role.env ?? {};
+    }
+  }
 
   // 🔴 No `cpu_only` here any more, and nothing replaces it: the server reads
   // "this role takes no accelerator" off the role's NAME. There used to be a
@@ -456,19 +463,29 @@ const demoteUntouchedGroups = (
       return;
     }
     const fields = OverrideGroupFields[group];
-    const identical = fields.every((field) =>
-      _.isEqual(
-        normalizeForCompare((role as Record<string, any>)[field]),
-        normalizeForCompare(
-          field === 'env'
-            ? getRoleInheritedEnv(modelValues.env)
-            : modelValues[field]
-        )
-      )
-    );
+    const identical = fields.every((field) => {
+      const roleValue = (role as Record<string, any>)[field];
+      if (field === 'env') {
+        const inheritedEnv = getRoleInheritedEnv(modelValues.env);
+        const effectiveEnv =
+          role.env_mode === 'merge'
+            ? { ...inheritedEnv, ...role.env }
+            : roleValue;
+        return _.isEqual(
+          normalizeForCompare(effectiveEnv),
+          normalizeForCompare(inheritedEnv)
+        );
+      }
+      return _.isEqual(
+        normalizeForCompare(roleValue),
+        normalizeForCompare(modelValues[field])
+      );
+    });
     if (identical) {
       fields.forEach((field) => {
-        demoted[field] = null;
+        if (field !== 'env' || !role.env_mode) {
+          demoted[field] = null;
+        }
       });
     }
   });
@@ -496,6 +513,7 @@ export const createDefaultRoles = (): RoleFormItem[] =>
   RoleOrder.map((name) => ({
     name,
     replicas: 1,
+    env_mode: 'merge',
     overrides: {
       [OverrideGroupMap.Backend]: false,
       [OverrideGroupMap.Parameters]: false,

@@ -371,6 +371,7 @@ const SystemManaged: React.FC<SystemManagedProps> = ({ groups }) => {
                 align="center"
                 justify="space-between"
                 gap={8}
+                wrap="wrap"
               >
                 <LabelInfo
                   label={group.title}

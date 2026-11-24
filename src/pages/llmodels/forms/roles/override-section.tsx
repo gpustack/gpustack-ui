@@ -232,6 +232,9 @@ const OverrideSection: React.FC<OverrideSectionProps> = ({
   const overridden = Form.useWatch(['roles', index, 'overrides', group], form);
   const seedGroup = () => {
     [...fields, ...uiFields].forEach((field) => {
+      if (field === 'env' && form.getFieldValue(['roles', index, 'env_mode'])) {
+        return;
+      }
       const value = form.getFieldValue(field);
       form.setFieldValue(
         ['roles', index, field],

@@ -576,6 +576,7 @@ export const catalogSourceTemplate = `# A YAML mapping with model_sets (and opti
 # model_sets:
 #   - name: Qwen3-0.6B
 #     description: Dense causal language model with a 128K context.
+#     # experimental: true  # Optional. Marks the catalog item as experimental.
 #     home: https://qwenlm.github.io
 #     # icon must be an absolute URL, a '/'-rooted path, or a raster data: URI
 #     icon: https://example.com/icons/qwen.png

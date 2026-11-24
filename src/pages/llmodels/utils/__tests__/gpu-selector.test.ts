@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { generateGPUIds, generateGPUSelector } from './index';
+import { generateGPUIds, generateGPUSelector } from '../index';
 
 // The backend normalizes a count-only selector (`gpus_per_replica` without
 // explicit ids) to `{ gpu_ids: null, gpus_per_replica: N }`. Lodash's `_.get`

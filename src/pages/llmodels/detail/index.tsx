@@ -1,6 +1,6 @@
 import { HeaderLeft, PageBreadcrumb } from '@gpustack/core-ui';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Flex, Result, Tabs } from 'antd';
+import { App, Button, Flex, Result, Tabs } from 'antd';
 import {
   useCallback,
   useEffect,
@@ -42,7 +42,8 @@ const DetailPage = ({
   onModelLabel,
   preparing,
   switching,
-  onPrepared
+  onPrepared,
+  onPrepareFailed
 }: {
   id: number;
   tenant: string;
@@ -52,9 +53,10 @@ const DetailPage = ({
   preparing: boolean;
   switching: boolean;
   onPrepared: (id: number, name?: string) => void;
+  onPrepareFailed: (id: number) => void;
 }) => {
   const intl = useIntl();
-  const data = useMonitoringData(id, tenant, tab);
+  const data = useMonitoringData(id, tenant, { initialTab: tab, preparing });
   const setTab = (next: DetailTab) => {
     if (switching) return;
     data.changeTabScope(next);
@@ -95,10 +97,21 @@ const DetailPage = ({
     [data.instances, data.runtime, data.resources].some(
       ({ data, key, loading }) => !data && (!key || loading)
     );
-  const ready = model ? !initialDataPending : !pending;
+  const ready = !!model && !initialDataPending;
+  const preparationFailed = !model && !pending;
   useLayoutEffect(() => {
-    if (preparing && ready) onPrepared(id, modelName);
-  }, [id, modelName, onPrepared, preparing, ready]);
+    if (!preparing) return;
+    if (ready) onPrepared(id, modelName);
+    if (preparationFailed) onPrepareFailed(id);
+  }, [
+    id,
+    modelName,
+    onPrepared,
+    onPrepareFailed,
+    preparationFailed,
+    preparing,
+    ready
+  ]);
 
   useEffect(() => {
     if (!preparing) onModelLabel(modelName ? { id, name: modelName } : null);
@@ -195,6 +208,7 @@ const DetailShell = ({
   replaceId: (id: number) => void;
 }) => {
   const intl = useIntl();
+  const { message } = App.useApp();
   const [tab, setTab] = useState<DetailTab>('overview');
   const [modelLabel, setModelLabel] = useState<ModelLabel | null>(null);
   const [selection, setSelection] = useState<{ from: number; to: number }>();
@@ -208,6 +222,16 @@ const DetailShell = ({
       replaceId(preparedId);
     },
     [pendingId, replaceId, tenant]
+  );
+  const handlePrepareFailed = useCallback(
+    (failedId: number) => {
+      if (failedId !== pendingId || tenantKey() !== tenant) return;
+      setSelection(undefined);
+      message.error(
+        intl.formatMessage({ id: 'modelMonitoring.switchDeploymentFailed' })
+      );
+    },
+    [intl, message, pendingId, tenant]
   );
   if (tenantKey() !== tenant) return <DetailPending />;
   return (
@@ -267,6 +291,7 @@ const DetailShell = ({
               preparing={preparing}
               switching={retaining}
               onPrepared={handlePrepared}
+              onPrepareFailed={handlePrepareFailed}
             />
           </div>
         );

@@ -136,6 +136,8 @@ export default {
   'modelMonitoring.deployments': 'Model deployments',
   'modelMonitoring.deployment': 'Deployment',
   'modelMonitoring.deploymentUnavailable': 'Deployment is unavailable',
+  'modelMonitoring.switchDeploymentFailed':
+    'Could not open the selected deployment.',
   'modelMonitoring.overview': 'Overview',
   'modelMonitoring.monitoring': 'Monitoring',
   'modelMonitoring.instances': 'Instances',

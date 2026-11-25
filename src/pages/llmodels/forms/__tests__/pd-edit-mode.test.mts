@@ -549,6 +549,54 @@ test('role editors submit overrides without copying deployment environment varia
   }
 });
 
+test('editing deployment env preserves inheritance until a role overrides it', async () => {
+  const deploymentEnv = {
+    NCCL_SOCKET_IFNAME: 'eth0',
+    GPUSTACK_SKIP_MODEL_EVALUATION: '1'
+  };
+  const { root, ref, submit } = await renderForm({
+    mode: 'vllm-nixl',
+    roles: rolesSpecToForm([
+      { name: 'prefill', replicas: 1, env: null },
+      { name: 'decode', replicas: 1, env: null },
+      { name: 'router', replicas: 1, env: null }
+    ]),
+    env: deploymentEnv
+  });
+  const form = ref.current.form;
+  const updatedEnv = { ...deploymentEnv, NCCL_SOCKET_IFNAME: 'eth1' };
+
+  try {
+    assert.equal(
+      form.getFieldValue(['roles', 0, 'env', 'NIXL_ROLE']),
+      'prefill'
+    );
+    await act(async () => form.setFieldValue('env', updatedEnv));
+
+    const inherited = await submit();
+    assert.deepEqual(inherited.env, updatedEnv);
+    assert.deepEqual(
+      inherited.roles.slice(0, 2).map((role: any) => role.env),
+      [null, null]
+    );
+
+    await act(async () =>
+      form.setFieldValue(['roles', 0, 'env'], {
+        ...form.getFieldValue(['roles', 0, 'env']),
+        NCCL_SOCKET_IFNAME: 'eth2'
+      })
+    );
+    const overridden = await submit();
+    assert.deepEqual(overridden.env, updatedEnv);
+    assert.deepEqual(
+      overridden.roles.slice(0, 2).map((role: any) => role.env),
+      [{ NCCL_SOCKET_IFNAME: 'eth2' }, null]
+    );
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
 test('role env mode appears in the env card header and survives hiding', async () => {
   const { root, ref, submit } = await renderForm({
     mode: 'custom',

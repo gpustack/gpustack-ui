@@ -1,10 +1,15 @@
-import { BaseSelect, DeleteModal } from '@gpustack/core-ui';
+import {
+  AutoTooltip,
+  BaseSelect,
+  DeleteModal,
+  PageBreadcrumb
+} from '@gpustack/core-ui';
 import { Link, useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn, useThrottleFn } from 'ahooks';
 import { Flex } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { HeaderLeft } from '../_components/page-box';
-import PageBreadcrumb from '../_components/page-breadcrumb';
+import breadcrumbStyles from '../_components/page-breadcrumb/index.module.less';
 import { deleteBenchmark } from './apis';
 import BenchmarkStateTag from './components/benchmark-state-tag';
 import DashboardLink from './components/dashboard-link';
@@ -27,6 +32,7 @@ const benchmarkListPath = '/models/benchmark';
 
 const Details: React.FC = () => {
   const modalRef = useRef<any>(null);
+  const [benchmarkSelectOpen, setBenchmarkSelectOpen] = useState(false);
   const navigate = useNavigate();
   const intl = useIntl();
   const {
@@ -113,10 +119,21 @@ const Details: React.FC = () => {
           variant="borderless"
           options={benchmarkOptions}
           value={currentId}
-          title={name}
           aria-label={name}
           style={{ minWidth: 100 }}
+          // The read-only input overlays the selected label in Ant Design.
+          styles={{ input: { pointerEvents: 'none' } }}
           popupMatchSelectWidth={false}
+          labelRender={({ label }) => (
+            <AutoTooltip
+              ghost
+              style={{ width: 'fit-content' }}
+              tooltipProps={{ open: benchmarkSelectOpen ? false : undefined }}
+            >
+              {label}
+            </AutoTooltip>
+          )}
+          onOpenChange={setBenchmarkSelectOpen}
           onChange={handleOnChange}
         ></BaseSelect>
       )
@@ -187,7 +204,9 @@ const Details: React.FC = () => {
         {/* Run status sits next to the name so it's visible on every tab; it
             updates live via the watch-driven detailData refresh. */}
         <Flex align="center" gap={12}>
-          <PageBreadcrumb items={breadcrumbItems} />
+          <div className={breadcrumbStyles.breadcrumb}>
+            <PageBreadcrumb items={breadcrumbItems} />
+          </div>
           <BenchmarkStateTag data={hasCurrentDetail ? detailData : null} />
         </Flex>
       </HeaderLeft>

@@ -37,31 +37,40 @@ mock.module('ahooks', {
 mock.module('antd', { namedExports: { Flex: pass } });
 mock.module('@gpustack/core-ui', {
   namedExports: {
+    AutoTooltip: ({ children, tooltipProps }: any) =>
+      createElement(
+        'span',
+        { 'data-overflow-tooltip': tooltipProps.open ?? 'auto' },
+        children
+      ),
     BaseSelect: (props: any) => {
       select = props;
-      return createElement(
-        'span',
-        { title: props.title },
-        props.options.find((o: any) => o.value === props.value)?.label
-      );
+      const label = props.options.find(
+        (o: any) => o.value === props.value
+      )?.label;
+      return createElement('span', {}, props.labelRender?.({ label }) ?? label);
     },
-    DeleteModal: forwardRef(() => null)
+    DeleteModal: forwardRef(() => null),
+    PageBreadcrumb: ({ items }: any) =>
+      createElement(
+        'nav',
+        {},
+        items.map((item: any, i: number) =>
+          createElement('span', { key: i }, item.title)
+        )
+      )
   }
 });
 mock.module(new URL('../../_components/page-box.tsx', import.meta.url).href, {
   namedExports: { HeaderLeft: pass }
 });
 mock.module(
-  new URL('../../_components/page-breadcrumb/index.tsx', import.meta.url).href,
+  new URL(
+    '../../_components/page-breadcrumb/index.module.less',
+    import.meta.url
+  ).href,
   {
-    defaultExport: ({ items }: any) =>
-      createElement(
-        'div',
-        {},
-        items.map((item: any, i: number) =>
-          createElement('span', { key: i }, item.title)
-        )
-      )
+    defaultExport: { breadcrumb: 'breadcrumb' }
   }
 );
 mock.module(new URL('../apis/index.ts', import.meta.url).href, {
@@ -139,9 +148,11 @@ test('id-only detail derives its selected label and page title from the matching
   record = { id: 58, name: 'Authoritative API name' };
   await act(async () => root.render(createElement(Details)));
   assert.equal(select.value, 58);
-  assert.equal(select.title, record.name);
   assert.equal(select['aria-label'], record.name);
-  assert.ok(document.body.textContent!.includes(record.name));
+  assert.equal(
+    document.querySelector('[data-overflow-tooltip]')?.textContent,
+    record.name
+  );
   assert.equal(document.title, 'Benchmarks - Authoritative API name');
   assert.equal(
     document.querySelector('a')?.getAttribute('href'),
@@ -149,7 +160,17 @@ test('id-only detail derives its selected label and page title from the matching
   );
   params = new URLSearchParams('id=58&name=stale-url-name');
   await act(async () => root.render(createElement(Details)));
-  assert.equal(select.title, record.name);
+  assert.equal(select['aria-label'], record.name);
+});
+
+test('the overflow tooltip yields to the opened run switcher', async () => {
+  const tooltip = () => document.querySelector('[data-overflow-tooltip]');
+  await act(async () => root.render(createElement(Details)));
+  assert.equal(tooltip()?.getAttribute('data-overflow-tooltip'), 'auto');
+  await act(async () => select.onOpenChange(true));
+  assert.equal(tooltip()?.getAttribute('data-overflow-tooltip'), 'false');
+  await act(async () => select.onOpenChange(false));
+  assert.equal(tooltip()?.getAttribute('data-overflow-tooltip'), 'auto');
 });
 
 test('a different pending run cannot borrow the previous record name, and selecting a run safely encodes its name', async () => {
@@ -158,7 +179,7 @@ test('a different pending run cannot borrow the previous record name, and select
   record = { id: 58, name: 'Previous run' };
   await act(async () => root.render(createElement(Details)));
   assert.equal(select.value, 59);
-  assert.ok(!select.title.includes('Previous run'));
+  assert.ok(!select['aria-label'].includes('Previous run'));
   const label = 'PD & name #中文';
   select.onChange(60, { value: 60, label });
   const path = navigate.mock.calls.at(-1)!.arguments[0];

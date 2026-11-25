@@ -47,7 +47,10 @@ export const useMonitoringTenant = () =>
 export const useMonitoringData = (
   id: number,
   tenant: string,
-  initialTab: DetailTab = 'overview'
+  {
+    initialTab = 'overview',
+    preparing = false
+  }: { initialTab?: DetailTab; preparing?: boolean } = {}
 ) => {
   const [stores] = useState(() => ({
     model: new ScopedResource<ListItem>(),
@@ -80,6 +83,8 @@ export const useMonitoringData = (
   const scopeRef = useRef(scope);
   const activeRef = useRef(true);
   const tabRef = useRef(initialTab);
+  const preparingRef = useRef(preparing);
+  preparingRef.current = preparing;
   const effectiveScope = (next: MonitoringScope, tab = tabRef.current) =>
     tab === 'monitoring' ||
     (tab === 'overview' && isPDModel(stores.model.snapshot.data || {}))
@@ -107,7 +112,11 @@ export const useMonitoringData = (
     if (!activeRef.current) return;
     await stores.model.load(
       requestKey({ kind: 'model' }),
-      () => queryModelDetail(id),
+      (signal) =>
+        queryModelDetail(id, {
+          signal,
+          skipErrorHandler: preparingRef.current
+        }),
       isCurrent
     );
     if (!isCurrent()) return;

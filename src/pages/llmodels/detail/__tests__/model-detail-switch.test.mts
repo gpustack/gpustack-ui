@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
 import { after, beforeEach, mock, test } from 'node:test';
-import { act, createElement, useState } from 'react';
+import { act, createElement, forwardRef, useState } from 'react';
 
 const dom = new JSDOM('<div id="root"></div>', { url: 'http://localhost/' });
 Object.defineProperties(globalThis, {
@@ -14,6 +14,8 @@ after(() => dom.window.close());
 
 const wrap = ({ children }: any) => createElement('div', {}, children);
 const resultRenders: string[] = [];
+const reportError = mock.fn();
+const message = { error: reportError };
 let selectedId = 7;
 let tenant = 'org-a';
 let finishMetrics: (() => void) | undefined;
@@ -27,10 +29,12 @@ const requests = new Map<
   {
     resolve: (model: { id: number; name: string }) => void;
     reject: (error: unknown) => void;
+    options: { signal: AbortSignal; skipErrorHandler: boolean };
   }
 >();
 beforeEach(() => {
   resultRenders.length = 0;
+  reportError.mock.resetCalls();
   requests.clear();
   selectedId = 7;
   tenant = 'org-a';
@@ -93,6 +97,7 @@ mock.module('@gpustack/core-ui', {
 });
 mock.module('antd', {
   namedExports: {
+    App: { useApp: () => ({ message }) },
     Button: ({ children, onClick }: any) =>
       createElement('button', { onClick }, children),
     Flex: wrap,
@@ -144,8 +149,13 @@ mock.module(
 );
 mock.module(new URL('../../apis/index.ts', import.meta.url).href, {
   namedExports: {
-    queryModelDetail: (id: number) =>
-      new Promise((resolve, reject) => requests.set(id, { resolve, reject })),
+    queryModelDetail: (
+      id: number,
+      options: { signal: AbortSignal; skipErrorHandler: boolean }
+    ) =>
+      new Promise((resolve, reject) =>
+        requests.set(id, { resolve, reject, options })
+      ),
     queryModelInstancesList: async () => ({ items: [] })
   }
 });
@@ -176,17 +186,17 @@ mock.module(
     defaultExport: () => ({ loading: false, data: null })
   }
 );
-for (const tab of [
-  'configuration',
-  'gpu-resources',
-  'instances',
-  'monitoring'
-]) {
+for (const tab of ['configuration', 'gpu-resources', 'instances']) {
   mock.module(new URL(`../${tab}-tab/index.tsx`, import.meta.url).href, {
     defaultExport: () => createElement('div', {}, `${tab} contents`)
   });
 }
 
+mock.module(new URL('../monitoring-tab/index.tsx', import.meta.url).href, {
+  defaultExport: forwardRef(() =>
+    createElement('div', {}, 'monitoring contents')
+  )
+});
 mock.module(new URL('../overview-tab/index.tsx', import.meta.url).href, {
   defaultExport: () => createElement('div', {}, 'overview contents')
 });
@@ -205,18 +215,15 @@ const tabButton = (tab: string) =>
 const pending = () => document.querySelector('[aria-busy="true"]');
 const status = () =>
   document.querySelector('[data-status]')?.getAttribute('data-status');
+const select = (id: number) =>
+  act(async () => {
+    switcher().value = String(id);
+    switcher().dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+  });
 
 test('model switching keeps the current detail visible until the latest target is ready', async () => {
   const root = createRoot(document.getElementById('root')!);
   const render = () => root.render(createElement(ModelDetail));
-  const select = (id: number) =>
-    act(async () => {
-      switcher().value = String(id);
-      switcher().dispatchEvent(
-        new dom.window.Event('change', { bubbles: true })
-      );
-      render();
-    });
   try {
     await act(async () => render());
     const element = switcher();
@@ -266,11 +273,13 @@ test('model switching keeps the current detail visible until the latest target i
 
     await select(8);
     await select(9);
+    assert.equal(requests.get(8)!.options.signal.aborted, true);
     await act(async () =>
-      requests.get(8)!.resolve({ id: 8, name: 'Cancelled model' })
+      requests.get(8)!.reject({ response: { status: 404 } })
     );
     assert.equal(heading(), 'API model C');
     assert.equal(pending(), null);
+    assert.equal(reportError.mock.callCount(), 0);
 
     await select(8);
     tenant = 'org-b';
@@ -287,6 +296,51 @@ test('model switching keeps the current detail visible until the latest target i
   }
 });
 
+test('a failed model switch keeps the current detail, URL and tab and lets the user retry', async () => {
+  const root = createRoot(document.getElementById('root')!);
+  try {
+    await act(async () => root.render(createElement(ModelDetail)));
+    await act(async () =>
+      requests.get(7)!.resolve({ id: 7, name: 'API model A' })
+    );
+    await act(async () => tabButton('monitoring').click());
+
+    const failures = [
+      { response: { status: 403 } },
+      { response: { status: 404 } },
+      new Error('Network error')
+    ];
+    for (const [index, failure] of failures.entries()) {
+      await select(8);
+      const request = requests.get(8)!;
+      assert.equal(request.options.skipErrorHandler, true);
+      assert.ok(pending()?.hasAttribute('inert'));
+      await act(async () => request.reject(failure));
+      assert.equal(selectedId, 7);
+      assert.equal(selectedName(), 'API model A');
+      assert.equal(heading(), 'API model A');
+      assert.equal(activeTab(), 'modelMonitoring.monitoring');
+      assert.equal(pending(), null);
+      assert.equal(status(), undefined);
+      assert.equal(reportError.mock.callCount(), index + 1);
+      assert.deepEqual(reportError.mock.calls[index].arguments, [
+        'modelMonitoring.switchDeploymentFailed'
+      ]);
+    }
+
+    await select(8);
+    await act(async () =>
+      requests.get(8)!.resolve({ id: 8, name: 'API model B' })
+    );
+    assert.equal(selectedId, 8);
+    assert.equal(heading(), 'API model B');
+    assert.equal(activeTab(), 'modelMonitoring.monitoring');
+    assert.equal(reportError.mock.callCount(), failures.length);
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
 test('a failed detail request shows its unavailable state and can be retried', async () => {
   const root = createRoot(document.getElementById('root')!);
   const retry = () =>
@@ -295,6 +349,7 @@ test('a failed detail request shows its unavailable state and can be retried', a
     );
   try {
     await act(async () => root.render(createElement(ModelDetail)));
+    assert.equal(requests.get(selectedId)!.options.skipErrorHandler, false);
     await act(async () =>
       requests.get(selectedId)!.reject({ response: { status: 403 } })
     );

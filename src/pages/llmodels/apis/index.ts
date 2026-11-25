@@ -152,9 +152,13 @@ export async function restartModel(id: number) {
   });
 }
 
-export async function queryModelDetail(id: number) {
+export async function queryModelDetail(
+  id: number,
+  options?: { signal?: AbortSignal; skipErrorHandler?: boolean }
+) {
   return request(`${MODELS_API}/${id}`, {
-    method: 'GET'
+    method: 'GET',
+    ...options
   });
 }
 

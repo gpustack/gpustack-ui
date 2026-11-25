@@ -131,6 +131,7 @@ export default {
   'modelMonitoring.deployments': '模型部署',
   'modelMonitoring.deployment': '部署',
   'modelMonitoring.deploymentUnavailable': '部署不存在或无权访问',
+  'modelMonitoring.switchDeploymentFailed': '无法打开所选部署。',
   'modelMonitoring.overview': '概览',
   'modelMonitoring.monitoring': '监控',
   'modelMonitoring.instances': '实例',

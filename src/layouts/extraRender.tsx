@@ -303,12 +303,6 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   const userMenu = {
     items: [
       {
-        key: 'version',
-        label: intl.formatMessage({ id: 'common.button.version' }),
-        icon: <IconFont type="icon-version" />,
-        onClick: showVersion
-      },
-      {
         key: 'settings',
         label: (
           <span className="flex flex-center">
@@ -366,7 +360,6 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
         </span>
       )}
       <div
-        className={styles.secondary}
         style={{
           display: 'flex',
           alignItems: 'center'

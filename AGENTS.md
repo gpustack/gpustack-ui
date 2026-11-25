@@ -4,6 +4,11 @@
 
 @CLAUDE.md
 
+## Responsive layout
+
+- Use `@media` queries only when explicitly requested by a developer.
+- For card pages that need responsive columns, use the Ant Design grid (`Row` and `Col`).
+
 ## Test organization
 
 - Preserve existing test locations until those tests are next maintained. Migrate incrementally; do not perform a repository-wide move solely to normalize the layout.

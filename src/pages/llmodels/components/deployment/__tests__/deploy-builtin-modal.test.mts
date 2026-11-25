@@ -6,6 +6,7 @@ import {
   createElement,
   forwardRef,
   Fragment,
+  useEffect,
   useImperativeHandle
 } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -18,13 +19,15 @@ let store: any;
 let childProps: any;
 let footerProps: any;
 let specs: any[];
-let clusterList: any[] = [];
-let getBackendOptions = async (): Promise<any[]> => [];
+let autoSeedCluster: number | undefined;
+let getBackendOptions = async (_params: {
+  cluster_id: number;
+}): Promise<any[]> => [];
+let appliedBackendOptions: any[];
+let getCatalogSpecs = async (_params: any) => ({ items: clone(specs) });
 const evaluated = mock.fn(clone);
 const queryCatalogItemSpec = mock.fn(
-  async (_params: any, _options?: { cancelToken: string }) => ({
-    items: clone(specs)
-  })
+  (params: any, _options?: { cancelToken: string }) => getCatalogSpecs(params)
 );
 
 mock.module('@gpustack/core-ui', {
@@ -80,7 +83,7 @@ mock.module(
     defaultExport: () => ({
       getClusterList: empty,
       getWorkerList: empty,
-      clusterList
+      clusterList: []
     })
   }
 );
@@ -93,6 +96,12 @@ mock.module(new URL('../../compatible-alert.tsx', import.meta.url).href, {
 // completed action rather than the raw catalog response that preceded it.
 const DataForm = forwardRef((props: any, ref) => {
   childProps = props;
+  useEffect(() => {
+    if (autoSeedCluster != null) {
+      store.cluster_id = autoSeedCluster;
+      props.onClusterChange(autoSeedCluster);
+    }
+  }, []);
   useImperativeHandle(ref, () => ({
     submit: () => props.onOk(clone(store)),
     getFieldsValue: () => clone(store),
@@ -100,7 +109,13 @@ const DataForm = forwardRef((props: any, ref) => {
     setFieldValue: (name: string, value: any) => {
       store[name] = value;
     },
-    getBackendOptions: () => getBackendOptions(),
+    getBackendOptions: async (params: any, isCurrent?: () => boolean) => {
+      const options = await getBackendOptions(params);
+      if (!isCurrent || isCurrent()) {
+        appliedBackendOptions = options;
+      }
+      return options;
+    },
     applyCatalogSpec: (values: any) => {
       const pdActive = !!store.roles?.length;
       const env = store.env ?? {};
@@ -186,7 +201,7 @@ const fetchClusterSpec = async (
     root.render(
       createElement(DeployBuiltinModal, {
         title: 'Deploy catalog model',
-        open: false,
+        open: true,
         action: 'create',
         source: 'local_path',
         current: { id: 22, name: 'Catalog Model', categories: ['llm'] },
@@ -196,12 +211,17 @@ const fetchClusterSpec = async (
     )
   );
   try {
-    await act(async () => childProps.onClusterChange(2));
+    await act(async () => selectCluster(2));
     assert.equal(evaluated.mock.callCount(), 1);
     return evaluated.mock.calls[0].result;
   } finally {
     await act(async () => root.unmount());
   }
+};
+
+const selectCluster = (clusterId: number) => {
+  store.cluster_id = clusterId;
+  return childProps.onClusterChange(clusterId);
 };
 
 const assertSourceAndRuntime = (values: any) => {
@@ -276,7 +296,7 @@ for (const hasMatchingSpec of [true, false]) {
           root.render(
             createElement(DeployBuiltinModal, {
               title: 'Deploy catalog model',
-              open: false,
+              open: true,
               action: 'create',
               source: 'huggingface',
               current: { id: 22, name: 'Catalog Model', categories: ['llm'] },
@@ -285,7 +305,7 @@ for (const hasMatchingSpec of [true, false]) {
             })
           )
         );
-        await act(async () => childProps.onClusterChange(2));
+        await act(async () => selectCluster(2));
         evaluated.mock.resetCalls();
         const env = { ...store.env, GPUSTACK_SKIP_MODEL_EVALUATION: 'false' };
         store.env = env;
@@ -316,69 +336,224 @@ for (const hasMatchingSpec of [true, false]) {
   );
 }
 
-test('late initialization cannot replace a new cluster selection or submit an older spec during the lookup', async () => {
-  store = { replicas: 1 };
-  specs = [specB];
-  clusterList = [{ value: 1, is_default: true }];
-  queryCatalogItemSpec.mock.resetCalls();
-  let releaseBackendOptions!: (options: any[]) => void;
-  getBackendOptions = () =>
-    new Promise((resolve) => (releaseBackendOptions = resolve));
-  const submitted = mock.fn(clone);
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((done) => {
+    resolve = done;
+  });
+  return { promise, resolve };
+}
+
+function backendOptions(...params: string[]) {
+  return [{ value: 'vLLM', default_backend_param: params }];
+}
+
+async function renderCatalog(onOk: (values: any) => void) {
   const root = createRoot(dom.window.document.getElementById('root')!);
-  try {
-    await act(async () =>
+  const current = { id: 22, name: 'Catalog Model', categories: ['llm'] };
+  const render = (open: boolean) =>
+    act(async () =>
       root.render(
         createElement(DeployBuiltinModal, {
           title: 'Deploy catalog model',
-          open: true,
+          open,
           action: 'create',
           source: 'local_path',
-          current: { id: 22, name: 'Catalog Model', categories: ['llm'] },
-          onOk: submitted,
+          current,
+          onOk,
           onCancel: empty
         })
       )
     );
-    await act(async () => new Promise((resolve) => setTimeout(resolve, 120)));
-    assert.equal(typeof releaseBackendOptions, 'function');
-    await act(async () => childProps.onClusterChange(2));
-    await act(async () => releaseBackendOptions([]));
-    assert.deepEqual(
-      queryCatalogItemSpec.mock.calls.map(
-        ({ arguments: [params] }) => params.cluster_id
-      ),
-      [2]
-    );
-    assert.deepEqual(queryCatalogItemSpec.mock.calls[0].arguments[1], {
-      cancelToken: 'catalog-test'
-    });
+  await render(true);
+  return { root, render };
+}
 
-    let releaseSpecs!: (response: { items: any[] }) => void;
-    queryCatalogItemSpec.mock.mockImplementationOnce(
-      () => new Promise((resolve) => (releaseSpecs = resolve))
-    );
-    let pending!: Promise<void>;
-    await act(async () => {
-      pending = childProps.onClusterChange(3);
-    });
-    assert.equal(footerProps.loading, true);
+function resetCatalogRequests() {
+  autoSeedCluster = undefined;
+  getBackendOptions = async () => [];
+  getCatalogSpecs = async () => ({ items: clone(specs) });
+}
+
+test('catalog submission stays disabled before a cluster is selected', async () => {
+  store = { replicas: 1 };
+  const submitted = mock.fn(clone);
+  const { root } = await renderCatalog(submitted);
+  try {
+    assert.equal(footerProps.okBtnProps.disabled, true);
     await act(async () => {
       footerProps.onOk();
       await childProps.onOk(clone(store));
     });
     assert.equal(submitted.mock.callCount(), 0);
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
+
+test('automatically selected cluster waits for backend defaults before applying the catalog spec', async () => {
+  store = { replicas: 1 };
+  autoSeedCluster = 1;
+  const backend = deferred<any[]>();
+  const catalog = deferred<{ items: any[] }>();
+  getBackendOptions = () => backend.promise;
+  getCatalogSpecs = () => catalog.promise;
+  queryCatalogItemSpec.mock.resetCalls();
+  evaluated.mock.resetCalls();
+  const submitted = mock.fn(clone);
+  const { root } = await renderCatalog(submitted);
+  try {
+    await act(async () => catalog.resolve({ items: [specB] }));
     await act(async () => {
-      releaseSpecs({ items: [specB] });
-      await pending;
+      footerProps.onOk();
+      await childProps.onOk(clone(store));
+    });
+    assert.equal(submitted.mock.callCount(), 0);
+    assert.equal(evaluated.mock.callCount(), 0);
+    assert.equal(footerProps.loading, true);
+    await act(async () =>
+      backend.resolve(
+        backendOptions('--trust-remote-code', '--max-model-len=2048')
+      )
+    );
+    assert.equal(footerProps.loading, false);
+    await act(async () => childProps.onSourceChange('huggingface'));
+    await act(async () => footerProps.onOk());
+    assert.equal(submitted.mock.callCount(), 1);
+    assert.deepEqual(submitted.mock.calls[0].result.backend_parameters, [
+      '--trust-remote-code',
+      '--max-model-len=4096'
+    ]);
+    assert.equal(submitted.mock.calls[0].result.cluster_id, 1);
+    assert.deepEqual(queryCatalogItemSpec.mock.calls[0].arguments, [
+      { id: 22, cluster_id: 1 },
+      { cancelToken: 'catalog-test' }
+    ]);
+  } finally {
+    resetCatalogRequests();
+    await act(async () => root.unmount());
+  }
+});
+
+test('rapid cluster changes discard old catalog specs and backend defaults', async () => {
+  store = { replicas: 1 };
+  autoSeedCluster = 1;
+  const oldBackend = deferred<any[]>();
+  const oldCatalog = deferred<{ items: any[] }>();
+  const newBackend = deferred<any[]>();
+  const newCatalog = deferred<{ items: any[] }>();
+  getBackendOptions = ({ cluster_id }) =>
+    cluster_id === 1 ? oldBackend.promise : newBackend.promise;
+  getCatalogSpecs = ({ cluster_id }) =>
+    cluster_id === 1 ? oldCatalog.promise : newCatalog.promise;
+  evaluated.mock.resetCalls();
+  const submitted = mock.fn(clone);
+  const { root } = await renderCatalog(submitted);
+  try {
+    let newest!: Promise<void>;
+    await act(async () => {
+      newest = selectCluster(2);
+    });
+    await act(async () => {
+      newBackend.resolve(backendOptions('--new-backend-default'));
+      newCatalog.resolve({ items: [specB] });
+      await newest;
+    });
+    await act(async () => {
+      oldBackend.resolve(backendOptions('--old-backend-default'));
+      oldCatalog.resolve({
+        items: [{ ...specB, huggingface_repo_id: 'org/old-cluster-model' }]
+      });
+    });
+    assert.equal(evaluated.mock.callCount(), 1);
+    assert.equal(footerProps.loading, false);
+    assert.deepEqual(
+      appliedBackendOptions,
+      backendOptions('--new-backend-default')
+    );
+    await act(async () => footerProps.onOk());
+    assert.equal(submitted.mock.callCount(), 1);
+    const values = submitted.mock.calls[0].result;
+    assert.equal(values.cluster_id, 2);
+    assert.equal(values.huggingface_repo_id, 'org/model-B');
+    assert.deepEqual(values.backend_parameters, [
+      '--new-backend-default',
+      '--max-model-len=4096'
+    ]);
+  } finally {
+    resetCatalogRequests();
+    await act(async () => root.unmount());
+  }
+});
+
+test('closing a catalog drawer discards both in-flight cluster responses', async () => {
+  store = { replicas: 1 };
+  autoSeedCluster = 1;
+  appliedBackendOptions = [];
+  const backend = deferred<any[]>();
+  const catalog = deferred<{ items: any[] }>();
+  getBackendOptions = () => backend.promise;
+  getCatalogSpecs = () => catalog.promise;
+  evaluated.mock.resetCalls();
+  const submitted = mock.fn(clone);
+  const { root } = await renderCatalog(submitted);
+  try {
+    await act(async () => footerProps.onCancel());
+    await act(async () => {
+      backend.resolve(backendOptions('--trust-remote-code'));
+      catalog.resolve({ items: [specB] });
+    });
+    assert.equal(evaluated.mock.callCount(), 0);
+    assert.deepEqual(appliedBackendOptions, []);
+    assert.equal(store.huggingface_repo_id, undefined);
+    await act(async () => footerProps.onOk());
+    assert.equal(submitted.mock.callCount(), 0);
+  } finally {
+    resetCatalogRequests();
+    await act(async () => root.unmount());
+  }
+});
+
+test('reopening before the form unmounts reloads the retained cluster selection', async () => {
+  store = { replicas: 1 };
+  autoSeedCluster = 1;
+  const firstBackend = deferred<any[]>();
+  const firstCatalog = deferred<{ items: any[] }>();
+  const nextBackend = deferred<any[]>();
+  const nextCatalog = deferred<{ items: any[] }>();
+  const backendRequests = [firstBackend, nextBackend];
+  const catalogRequests = [firstCatalog, nextCatalog];
+  getBackendOptions = () => backendRequests.shift()!.promise;
+  getCatalogSpecs = () => catalogRequests.shift()!.promise;
+  evaluated.mock.resetCalls();
+  const submitted = mock.fn(clone);
+  const { root, render } = await renderCatalog(submitted);
+  try {
+    await act(async () => footerProps.onCancel());
+    await render(false);
+    await render(true);
+    assert.equal(backendRequests.length, 0);
+    assert.equal(catalogRequests.length, 0);
+    assert.equal(footerProps.loading, true);
+    await act(async () => {
+      firstBackend.resolve(backendOptions('--before-reopen'));
+      firstCatalog.resolve({ items: [specB] });
+    });
+    assert.equal(evaluated.mock.callCount(), 0);
+    assert.equal(footerProps.loading, true);
+    await act(async () => {
+      nextBackend.resolve(backendOptions('--after-reopen'));
+      nextCatalog.resolve({ items: [specB] });
     });
     assert.equal(footerProps.loading, false);
     await act(async () => footerProps.onOk());
     assert.equal(submitted.mock.callCount(), 1);
-    assert.equal(submitted.mock.calls[0].result.cluster_id, 3);
+    assert.deepEqual(submitted.mock.calls[0].result.backend_parameters, [
+      '--after-reopen',
+      '--max-model-len=4096'
+    ]);
   } finally {
-    getBackendOptions = async () => [];
-    clusterList = [];
+    resetCatalogRequests();
     await act(async () => root.unmount());
   }
 });

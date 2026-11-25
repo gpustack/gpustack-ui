@@ -52,7 +52,10 @@ export default function useQueryBackends() {
     });
   };
 
-  const getBackendOptions = async (params?: { cluster_id: number }) => {
+  const getBackendOptions = async (
+    params?: { cluster_id: number },
+    isCurrent?: () => boolean
+  ) => {
     try {
       const res = await queryBackendList(params);
       const list: BackendOption[] = res?.items?.map((item) => {
@@ -94,6 +97,7 @@ export default function useQueryBackends() {
         };
       });
 
+      if (isCurrent && !isCurrent()) return;
       const groupList = groupByBackendSource(list);
       setFlatBackendOptions(list);
       setBackendOptions(groupList);
@@ -102,10 +106,11 @@ export default function useQueryBackends() {
 
       return list || [];
     } catch (error) {
-      // ignore
+      if (isCurrent && !isCurrent()) return;
       setBackendOptions([]);
       setFlatBackendOptions([]);
-      return [];
+      // A catalog load needs successful defaults before it can submit.
+      return isCurrent ? undefined : [];
     }
   };
 

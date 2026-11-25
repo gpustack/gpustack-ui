@@ -589,16 +589,20 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onOk(allValues);
   };
 
-  // Shared work when the target cluster changes: refetch the GPU/backend
-  // options for the new cluster and reset the per-cluster GPU selections.
+  const catalogLoadsScopedOptions =
+    formKey === DeployFormKeyMap.CATALOG && !!onClusterChange;
+
+  // Reset per-cluster GPU selections before loading options for the new scope.
   // The schedule mode itself is kept: switching cluster must not kick a
   // vGPU-mode form back to Auto (the auto-seed fires exactly on that path).
   // The manual mode's GPU source is the exception — a Docker cluster publishes
   // no InstanceTypes, so vGPU slicing has nothing to select there and the
   // source falls back to whole cards (schedule-type hides the switch to match).
   const applyClusterScopedOptions = (value: number) => {
-    getGPUOptionList({ clusterId: value });
-    getBackendOptions({ cluster_id: value });
+    if (!catalogLoadsScopedOptions) {
+      getGPUOptionList({ clusterId: value });
+      getBackendOptions({ cluster_id: value });
+    }
     const isDocker =
       clusterList.find((item) => item.value === value)?.provider ===
       ProviderValueMap.Docker;
@@ -611,8 +615,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
   // User explicitly picked a cluster: refresh scoped options and re-evaluate.
   const handleClusterChange = async (value: number) => {
-    await onClusterChange?.(value);
     applyClusterScopedOptions(value);
+    await onClusterChange?.(value);
+    // The catalog drawer evaluates its complete spec after both lookups.
+    if (catalogLoadsScopedOptions) return;
     await new Promise((resolve) => {
       setTimeout(resolve, 150);
     });
@@ -622,9 +628,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   // The basic form seeds a default cluster on open, before a model is picked.
   // Refresh scoped options for it but don't fire the evaluate request — there
   // is no model to evaluate yet.
-  const handleClusterSeed = async (value: number) => {
-    await onClusterChange?.(value);
+  const handleClusterSeed = (value: number) => {
     applyClusterScopedOptions(value);
+    return onClusterChange?.(value);
   };
 
   /**
@@ -845,9 +851,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         return all ? form.getFieldsValue(true) : form.getFieldsValue();
       },
       getGPUOptionList,
-      getBackendOptions: async (params?: { cluster_id: number }) => {
-        return await getBackendOptions(params);
-      }
+      getBackendOptions
     };
   });
 

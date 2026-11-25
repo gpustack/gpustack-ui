@@ -1,5 +1,4 @@
 import { PageActionType } from '@/config/types';
-import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
 import {
   ColumnWrapper,
   createAxiosToken,
@@ -19,6 +18,7 @@ import {
 } from '../../config';
 import { CatalogFormContext } from '../../config/form-context';
 import {
+  BackendOption,
   CatalogSpec,
   FormData,
   ListItem,
@@ -66,8 +66,10 @@ type AddModalProps = {
 type CatalogSpecRequest = {
   clusterId: number;
   axiosToken: ReturnType<typeof createAxiosToken>;
-  pending: boolean;
+  gpuOptionsController: AbortController;
+  ready: boolean;
   noCompatibleGPUs: boolean;
+  backendOptions: BackendOption[];
 };
 
 const FormWrapper = styled.div`
@@ -108,15 +110,20 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const sourceGroupMap = useRef<any>({});
   const specRequestRef = useRef<CatalogSpecRequest | null>(null);
   const specListRef = useRef<CatalogSpec[]>([]);
-  const backendOptionsCache = useRef<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [specLoading, setSpecLoading] = useState(false);
   const submitloadingRef = useRef<boolean>(false);
 
-  const isSpecRequestPending = () => specRequestRef.current?.pending ?? false;
+  const isSpecReady = () => {
+    const request = specRequestRef.current;
+    return (
+      !!request?.ready &&
+      request.clusterId === form.current?.getFieldValue?.('cluster_id')
+    );
+  };
 
   const handleSumit = () => {
-    if (submitloadingRef.current || isSpecRequestPending()) {
+    if (submitloadingRef.current || !isSpecReady()) {
       return;
     }
     submitloadingRef.current = true;
@@ -124,7 +131,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleSubmitAnyway = async () => {
-    if (isSpecRequestPending()) {
+    if (!isSpecReady()) {
       return;
     }
     if (specRequestRef.current?.noCompatibleGPUs) {
@@ -160,8 +167,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const applyCatalogSpec = (data: Partial<CatalogSpec>) => {
     const runtimeChoice = resolveRuntimeChoice(data);
+    const defaultBackendParams = specRequestRef.current?.backendOptions.find(
+      (item) => item.value === data.backend
+    )?.default_backend_param;
     form.current?.applyCatalogSpec({
       ..._.omit(data, ['name', ...Object.keys(runtimeChoice)]),
+      backend_parameters: mergeBackendParameters(
+        defaultBackendParams,
+        data.backend_parameters ?? []
+      ),
       categories: _.get(current, 'categories.0', null)
     });
     form.current?.applyRuntimeChoice(runtimeChoice);
@@ -195,6 +209,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleSourceChange = (source: string) => {
+    if (!isSpecReady()) return;
     const defaultSpec = _.get(sourceGroupMap.current, `${source}.0`, {});
     // set form value
     applyCatalogSpec(defaultSpec);
@@ -202,7 +217,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const onValuesChange = async (changedValues: any, allValues: any) => {
-    if (specRequestRef.current?.noCompatibleGPUs) {
+    if (!isSpecReady() || specRequestRef.current?.noCompatibleGPUs) {
       return;
     }
     handleOnValuesChange?.({
@@ -213,9 +228,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleBackendChange = (backend: string) => {
+    if (!isSpecReady()) return;
     const defaultBackendParameters =
-      backendOptionsCache.current?.find((item: any) => item.value === backend)
-        ?.default_backend_param || [];
+      specRequestRef.current?.backendOptions.find(
+        (item) => item.value === backend
+      )?.default_backend_param;
 
     form.current?.setFieldsValue({
       backend_parameters: mergeBackendParameters(
@@ -227,50 +244,51 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     handleCheckFormData();
   };
 
-  const initClusterId = (): number | undefined => {
-    // When a platform admin has targeted an org via the create-scope picker,
-    // seed the cluster from that org's own clusters so the initial selection
-    // matches the (org-filtered) dropdown the form renders.
-    const scopeOrgId = form.current?.getFieldValue?.('organization_id');
-    const scopedList =
-      scopeOrgId == null
-        ? clusterList
-        : clusterList?.filter((item) => item.owner_principal_id === scopeOrgId);
-
-    const defaultCluster = scopedList?.find((item) => item.is_default);
-    if (defaultCluster) {
-      return defaultCluster.value;
-    }
-    return (
-      scopedList?.find((item) => item.state === ClusterStatusValueMap.Ready)
-        ?.value || scopedList?.[0]?.value
-    );
-  };
-
   const cancelSpecRequest = () => {
-    specRequestRef.current?.axiosToken.cancel();
+    const request = specRequestRef.current;
     specRequestRef.current = null;
+    request?.axiosToken.cancel();
+    request?.gpuOptionsController.abort();
     setSpecLoading(false);
   };
 
-  const fetchSpecData = async (clusterId: number) => {
+  const handleOnClusterChange = async (clusterId: number) => {
+    if (!open || current?.id == null) return;
+
     cancelSpecRequest();
+    cancelEvaluate();
+    clearCacheFormValues();
+    setWarningStatus({ show: false, title: '', message: [] });
     const request: CatalogSpecRequest = {
       clusterId,
       axiosToken: createAxiosToken(),
-      pending: true,
-      noCompatibleGPUs: false
+      gpuOptionsController: new AbortController(),
+      ready: false,
+      noCompatibleGPUs: false,
+      backendOptions: []
     };
+    const isCurrent = () =>
+      specRequestRef.current === request &&
+      form.current?.getFieldValue?.('cluster_id') === clusterId;
     specRequestRef.current = request;
     setSpecLoading(true);
+    form.current
+      ?.getGPUOptionList?.({
+        clusterId,
+        signal: request.gpuOptionsController.signal
+      })
+      ?.catch(() => {});
     try {
-      const { items } = await queryCatalogItemSpec(
-        { id: current.id, cluster_id: clusterId },
-        { cancelToken: request.axiosToken.token }
-      );
-      if (specRequestRef.current !== request) {
-        return;
-      }
+      const [{ items }, backendOptions] = await Promise.all([
+        queryCatalogItemSpec(
+          { id: current.id, cluster_id: clusterId },
+          { cancelToken: request.axiosToken.token }
+        ),
+        form.current.getBackendOptions({ cluster_id: clusterId }, isCurrent)
+      ]);
+      if (!isCurrent() || backendOptions == null) return;
+
+      request.backendOptions = backendOptions;
       request.noCompatibleGPUs = !items.length;
       const groupList = _.groupBy(items, 'source');
 
@@ -303,21 +321,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           (item: CatalogSpec) => item.mode === modeDataList[0]?.value
         ) || {};
 
-      const defaultBackendParams =
-        backendOptionsCache.current?.find(
-          (item: any) => item.value === defaultSpec.backend
-        )?.default_backend_param || [];
-
       setModeList(modeDataList);
       setSourceList(sources);
-      applyCatalogSpec({
-        ...defaultSpec,
-        backend_parameters: mergeBackendParameters(
-          defaultBackendParams,
-          defaultSpec.backend_parameters || []
-        ),
-        cluster_id: clusterId
-      });
+      applyCatalogSpec({ ...defaultSpec, cluster_id: clusterId });
 
       if (defaultSpec.backend === backendOptionsMap.llamaBox) {
         setIsGGUF(true);
@@ -327,11 +333,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       const name = _.toLower(current.name).replace(/\s/g, '-') || '';
       form.current.setFieldValue('name', name);
       const allValues = generateSubmitData(form.current.getFieldsValue(true));
+      request.ready = true;
       handleCheckCompatibility(allValues);
     } catch (error) {
-      // Ignore cancelled catalog queries.
+      // The request remains unready if either lookup fails.
     } finally {
-      request.pending = false;
       if (specRequestRef.current === request) {
         setSpecLoading(false);
       }
@@ -339,19 +345,20 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleOnModeChange = (val: string) => {
+    if (!isSpecReady()) return;
     const data = getModelSpec(val);
 
     applyCatalogSpec(data);
     handleCheckFormData();
   };
 
-  const handleOnClusterChange = async (clusterId: number) => {
-    await fetchSpecData(clusterId);
-  };
-
   const handleOk = async (values: FormData) => {
     const data = getCatalogFormValues(form.current, values);
-    if (isSpecRequestPending() || warnIfNoCompatibleGPUs()) {
+    if (
+      !isSpecReady() ||
+      data.cluster_id !== specRequestRef.current?.clusterId ||
+      warnIfNoCompatibleGPUs()
+    ) {
       submitloadingRef.current = false;
       return;
     }
@@ -365,40 +372,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleCancel = () => {
-    onCancel?.();
     cancelSpecRequest();
-  };
-
-  const init = async (isCurrent: () => boolean) => {
-    const clusterId =
-      form.current?.getFieldValue?.('cluster_id') ?? initClusterId();
-    // No cluster available for the current scope (zero clusters, or none
-    // owned by the picked org). Leave the form's cluster field empty and
-    // skip downstream fetches — the user resolves it by picking an org
-    // that owns clusters, which triggers the scope-change re-pick in the
-    // basic form.
-    if (!clusterId) return;
-
-    // The GPU options don't depend on the backend options, so start that
-    // request before awaiting instead of queueing it behind two round trips.
-    form.current?.getGPUOptionList?.({
-      clusterId: clusterId
-    });
-    const backendOptions = await form.current?.getBackendOptions?.({
-      cluster_id: clusterId
-    });
-    const selectedClusterId = form.current?.getFieldValue?.('cluster_id');
-    if (
-      !isCurrent() ||
-      (selectedClusterId && selectedClusterId !== clusterId) ||
-      (specRequestRef.current && specRequestRef.current.clusterId !== clusterId)
-    ) {
-      return;
-    }
-    backendOptionsCache.current = backendOptions;
-    if (!specRequestRef.current) {
-      fetchSpecData(clusterId);
-    }
+    onCancel?.();
   };
 
   const showExtraButton =
@@ -410,13 +385,13 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    let currentDrawer = true;
-    const timer = open
-      ? setTimeout(() => init(() => currentDrawer), 100)
-      : undefined;
+    // BasicForm normally seeds the cluster. A retained selection can already
+    // be present when the drawer opens or its catalog entry changes.
+    const clusterId = form.current?.getFieldValue?.('cluster_id');
+    if (open && clusterId != null && !specRequestRef.current) {
+      handleOnClusterChange(clusterId);
+    }
     return () => {
-      currentDrawer = false;
-      clearTimeout(timer);
       cancelSpecRequest();
       cancelEvaluate();
       setWarningStatus({
@@ -475,12 +450,14 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                   onCancel={handleCancel}
                   onOk={handleSumit}
                   loading={loading || specLoading}
+                  okBtnProps={{ disabled: !isSpecReady() }}
                   showOkBtn={!showExtraButton}
                   extra={
                     showExtraButton && (
                       <Button
                         type="primary"
                         loading={specLoading}
+                        disabled={!isSpecReady()}
                         onClick={handleSubmitAnyway}
                       >
                         {intl.formatMessage({

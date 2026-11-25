@@ -234,6 +234,16 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
    * would be a render triggered by a field write.
    */
   const preservedModelFields = React.useRef<Record<string, any> | null>(null);
+  const catalogEvaluationOptOut = React.useRef<{
+    defaultValue?: string;
+    // Undefined follows the catalog. Null records an explicit deletion.
+    editedValue?: string | null;
+  }>({});
+
+  const getCatalogEvaluationOptOut = () => {
+    const { defaultValue, editedValue } = catalogEvaluationOptOut.current;
+    return editedValue === undefined ? defaultValue : editedValue;
+  };
 
   const clearIncompatibleRoleCaches = (mode?: PDMode) => {
     const clusterId = form.getFieldValue('cluster_id');
@@ -633,16 +643,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     return onClusterChange?.(value);
   };
 
-  /**
-   * What a role contributes to the evaluation, and nothing else.
-   *
-   * The replica count is the x and the y of xPyD, and the card selection
-   * decides what one member lands on — those two are the whole of what changes
-   * the group's footprint or whether it fits. A role's engine parameters are
-   * deliberately out, exactly as the model-level `backend_parameters` are:
-   * they are typed through, and each keystroke would otherwise cost a full
-   * group solve.
-   */
+  // Track role settings that require a fresh evaluation as soon as they
+  // change. The environment mode determines whether deployment variables
+  // participate in compatibility checks for this role.
   const rolesEvaluationSignature = (roles?: any[] | null) =>
     JSON.stringify(
       (roles || []).map((role: any) => [
@@ -650,7 +653,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         role?.replicas,
         role?.gpu_selector,
         role?.gpu_type_selector,
-        role?.resources
+        role?.resources,
+        role?.env_mode
       ])
     );
 
@@ -695,6 +699,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
    * @returns
    */
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
+    if (formKey === DeployFormKeyMap.CATALOG && _.has(changedValues, 'env')) {
+      const value = changedValues.env?.[SKIP_MODEL_EVALUATION_ENV] ?? null;
+      if (value !== (getCatalogEvaluationOptOut() ?? null)) {
+        catalogEvaluationOptOut.current.editedValue = value;
+      }
+    }
     if (pdEffects.enabled) {
       clearIncompatibleRoleCaches(pdEffects.modeData);
     }
@@ -706,11 +716,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     ) {
       return;
     }
-    // A role edit only moves the answer when it moves the group's SIZE or the
-    // cards its members want; everything else in a role is typed through
-    // character by character, and evaluating a group is a whole solve over the
-    // cluster. `roles` used to sit in DO_NOT_TRIGGER_CHECK_COMPATIBILITY for
-    // that reason, which also meant changing 1P1D to 4P4D never re-evaluated.
+    // Role inputs such as engine parameters can change on every keystroke.
+    // Use the evaluation signature to avoid a full group solve while typing.
     if (fieldName === 'roles') {
       const roleChange = Array.isArray(changedValues.roles)
         ? changedValues.roles.find(Boolean)
@@ -813,6 +820,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         const modelFields = _.cloneDeep(getCatalogModelFields(values));
         const env = form.getFieldValue('env');
         const envBeforePD = preservedModelFields.current?.envBeforePD;
+        catalogEvaluationOptOut.current.defaultValue =
+          modelFields.env[SKIP_MODEL_EVALUATION_ENV];
+        const skipEvaluationValue = getCatalogEvaluationOptOut();
         // A new spec replaces the configuration to restore when PD turns off.
         // Missing model fields use defaults instead of inheriting the old spec.
         preservedModelFields.current = pdActive
@@ -825,13 +835,16 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         const activeFields = pdActive
           ? {
               ...getCatalogModelFields({}),
-              env: {
-                ..._.pick(modelFields.env, [SKIP_MODEL_EVALUATION_ENV]),
-                ..._.omitBy(env, (value, key) => envBeforePD?.[key] === value)
-              },
+              env: _.omitBy(env, (value, key) => envBeforePD?.[key] === value),
               placement_strategy: undefined
             }
           : modelFields;
+        activeFields.env = _.omit(activeFields.env, [
+          SKIP_MODEL_EVALUATION_ENV
+        ]);
+        if (skipEvaluationValue != null) {
+          activeFields.env[SKIP_MODEL_EVALUATION_ENV] = skipEvaluationValue;
+        }
         // Replace nested maps and cache objects; setFieldsValue deep-merges
         // them and would retain keys from the previous catalog spec.
         Object.entries(activeFields).forEach(([field, value]) => {

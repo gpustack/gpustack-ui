@@ -3,7 +3,11 @@ import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
 import { after, mock, test } from 'node:test';
 import { act, forwardRef, Fragment, createElement as h } from 'react';
-import type { EvaluateSpec } from '../../config/types';
+import type {
+  EvaluateResult,
+  EvaluateSpec,
+  FormData
+} from '../../config/types';
 
 const empty = () => null;
 const ScrollSpyTabs = forwardRef(({ children }: any, _ref) => children);
@@ -16,7 +20,9 @@ const services = [11, 12].map((value) => ({
   disabled: false
 }));
 const skipEnv = { GPUSTACK_SKIP_MODEL_EVALUATION: '1' };
-const evaluateModel = async (spec: EvaluateSpec) => ({
+const evaluateModel = async (
+  spec: EvaluateSpec
+): Promise<{ results: Partial<EvaluateResult>[] }> => ({
   results: spec.env?.GPUSTACK_SKIP_MODEL_EVALUATION
     ? [
         {
@@ -209,9 +215,17 @@ after(() => dom.window.close());
 
 const { Checkbox, Form, Input, InputNumber } = await import('antd');
 const { createRoot } = await import('react-dom/client');
+const { RoleEnvironmentMode } = await import('../roles/role-environment.tsx');
 const { default: RoleKVCache } = await import('../roles/role-kv-cache.tsx');
+const { createDefaultRoles } = await import('../roles/transform.ts');
 mock.module(new URL('../roles/role-form.tsx', import.meta.url).href, {
-  defaultExport: (props: any) => h(RoleKVCache, props)
+  defaultExport: (props: any) =>
+    h(
+      Fragment,
+      null,
+      h(RoleKVCache, props),
+      h(RoleEnvironmentMode, { index: props.index })
+    )
 });
 mock.module(new URL('../basic.tsx', import.meta.url).href, {
   defaultExport: () =>
@@ -229,7 +243,13 @@ mock.module(new URL('../basic.tsx', import.meta.url).href, {
 const { default: DataForm } = await import('../index.tsx');
 const { useCheckCompatibility } = await import('../../hooks/index.ts');
 const source = 'local_path';
-const Harness = ({ formRef }: { formRef: React.Ref<any> }) => {
+const Harness = ({
+  formRef,
+  initialValues
+}: {
+  formRef: React.Ref<any>;
+  initialValues?: Partial<FormData>;
+}) => {
   const { handleOnValuesChange, warningStatus } = useCheckCompatibility();
   return h(
     Fragment,
@@ -243,7 +263,8 @@ const Harness = ({ formRef }: { formRef: React.Ref<any> }) => {
         replicas: 1,
         source,
         name: 'test-model',
-        extended_kv_cache: { enabled: false }
+        extended_kv_cache: { enabled: false },
+        ...initialValues
       },
       source,
       action: 'create',
@@ -274,6 +295,100 @@ const requests = () =>
   request.mock.calls.filter(
     ({ arguments: [url] }) => url === '/model-evaluations'
   );
+
+test('switching the PD role environment mode refreshes the compatibility warning', async () => {
+  const root = createRoot(find('#root'));
+  const formRef = { current: null as any };
+  const env = { VLLM_KV_CACHE_LAYOUT: 'NHD' };
+  const decodeEnv = { VLLM_KV_CACHE_LAYOUT: 'HND' };
+  const roles = createDefaultRoles().map((role) =>
+    role.name === 'decode' ? { ...role, env: decodeEnv } : role
+  );
+  const conflict = 'Prefill and Decode KV cache layouts are incompatible';
+  const preview = async (spec: EvaluateSpec) => {
+    const compatible = spec.roles?.[0]?.env_mode === 'replace';
+    return {
+      results: [
+        compatible
+          ? {
+              compatible,
+              resource_claim_by_cluster_id: { 1: { ram: 0, vram: 2048 } }
+            }
+          : { compatible, compatibility_messages: [conflict] }
+      ]
+    };
+  };
+  const settleWarning = () =>
+    act(async () => new Promise((resolve) => setTimeout(resolve, 350)));
+  const switchMode = async (mode: 'merge' | 'replace') => {
+    request.mock.resetCalls();
+    const option = Array.from(
+      find(
+        '[aria-label="models.form.roles.env.mode"]'
+      ).querySelectorAll<HTMLInputElement>('input[type="radio"]')
+    ).find(
+      (input) =>
+        input.closest('label')?.textContent === `models.form.roles.env.${mode}`
+    );
+    assert.ok(option, `Missing ${mode} environment mode`);
+    await act(async () => option.click());
+    assert.equal(requests().length, 1);
+    const [spec]: EvaluateSpec[] = requests()[0].arguments[1].data.model_specs;
+    assert.deepEqual(spec.env, env);
+    assert.equal(spec.disaggregation?.mode, 'vllm-nixl');
+    assert.equal(spec.roles?.[0].env_mode, mode);
+    assert.deepEqual(spec.roles?.[0].env, mode === 'replace' ? {} : null);
+    assert.deepEqual(spec.roles?.[1].env, decodeEnv);
+  };
+
+  try {
+    evaluate = preview;
+    await act(async () =>
+      root.render(
+        h(Harness, {
+          formRef,
+          initialValues: { env, roles, disaggregation: { mode: 'vllm-nixl' } }
+        })
+      )
+    );
+    await act(async () => find('.section-title [role="switch"]').click());
+    await settle();
+    await settleWarning();
+    assert.equal(find('output').textContent, conflict);
+
+    await switchMode('replace');
+    await settleWarning();
+    assert.equal(requests().length, 1);
+    assert.equal(find('output').getAttribute('data-type'), 'success');
+    assert.match(
+      find('output').textContent ?? '',
+      /models\.form\.check\.claims/
+    );
+
+    await switchMode('merge');
+    await settleWarning();
+    assert.equal(requests().length, 1);
+    assert.equal(find('output').textContent, conflict);
+
+    let releasePrevious!: () => void;
+    evaluate = async (spec) => {
+      if (spec.roles?.[0].env_mode === 'replace') {
+        await new Promise<void>((resolve) => (releasePrevious = resolve));
+      }
+      return preview(spec);
+    };
+    await switchMode('replace');
+    await switchMode('merge');
+    await settleWarning();
+    assert.equal(find('output').textContent, conflict);
+    await act(async () => releasePrevious());
+    await settleWarning();
+    assert.equal(find('output').textContent, conflict);
+  } finally {
+    evaluate = evaluateModel;
+    await act(async () => root.unmount());
+  }
+});
 
 test('an earlier result cannot replace the status of a later evaluation', async () => {
   const root = createRoot(find('#root'));

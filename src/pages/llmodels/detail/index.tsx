@@ -1,8 +1,8 @@
-import { HeaderLeft } from '@gpustack/core-ui';
+import { HeaderLeft, PageBreadcrumb } from '@gpustack/core-ui';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Flex, Result, Skeleton, Tabs } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import PageBreadcrumb from '../../_components/page-breadcrumb';
+import breadcrumbStyles from '../../_components/page-breadcrumb/index.module.less';
 import DetailHeader from './components/detail-header';
 import { DeviceDrawer } from './components/hardware-content';
 import { RequestNotice } from './components/metric-state';
@@ -72,20 +72,26 @@ const DetailPage = ({ id, tenant }: { id: number; tenant: string }) => {
       }}
     >
       <HeaderLeft>
-        <PageBreadcrumb
-          items={[
-            { title: <a href="#/models/deployments">{t('deployments')}</a> },
-            {
-              title: (
-                <ModelSwitcher
-                  id={id}
-                  name={model?.name || `#${id}`}
-                  tenant={tenant}
-                />
-              )
-            }
-          ]}
-        />
+        <Flex align="center">
+          <div className={breadcrumbStyles.breadcrumb}>
+            <PageBreadcrumb
+              items={[
+                {
+                  title: <a href="#/models/deployments">{t('deployments')}</a>
+                },
+                {
+                  title: (
+                    <ModelSwitcher
+                      id={id}
+                      name={model?.name || `#${id}`}
+                      tenant={tenant}
+                    />
+                  )
+                }
+              ]}
+            />
+          </div>
+        </Flex>
       </HeaderLeft>
       <Flex vertical gap={16}>
         <RequestNotice state={data.model} />

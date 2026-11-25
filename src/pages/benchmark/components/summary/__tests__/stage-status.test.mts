@@ -21,7 +21,8 @@ mock.module(new URL('../stage-chart.tsx', import.meta.url).href, {
 });
 
 const { getStageStatus } = await import('../ui');
-const { buildStagePoints, isSloCapacityPoint } = await import('../metrics');
+const { buildStagePoints, isSloCapacityPoint, stageTotals } =
+  await import('../metrics');
 const { buildLoadSweepOption } = await import('../load-sweep');
 
 const row = (rate: number, tps: number | null, failed = 0) =>
@@ -58,6 +59,30 @@ const chart = (points: ReturnType<typeof buildStagePoints>): any =>
     },
     '#ddd'
   );
+
+test('sampling-boundary cancellations keep SLO status and totals healthy', () => {
+  const source = {
+    ...row(16, 1000),
+    request_total: 65,
+    request_successful: 54,
+    request_errored: 0,
+    request_incomplete: 11,
+    raw_metrics: {
+      termination: { reason: 'min_requests', cancelled_at_boundary: 11 }
+    }
+  };
+  const points = buildStagePoints([source], {
+    recommendedRate: 16,
+    peakRate: 16,
+    sloTargets: { slo_avg_ttft_ms: 500 }
+  });
+  assert.equal(getStageStatus(source), 'ok');
+  assert.equal(points[0].sloPass, true);
+  const totals = stageTotals(points);
+  assert.equal(totals.requests, 65);
+  assert.equal(totals.successRate, 1);
+  assert.equal(totals.hasFailures, false);
+});
 
 test('100%-successful benchmark 14 keeps its SLO capacity when total throughput falls 10.6% past the peak', () => {
   const points = buildStagePoints(

@@ -449,6 +449,10 @@ export default {
   'benchmark.detail.requests.total': 'Всего запросов',
   'benchmark.detail.requests.success': 'Успешные запросы',
   'benchmark.detail.requests.failed': 'Неудачные запросы',
+  'benchmark.detail.requests.samplingCancelled':
+    'Отменено при достижении цели выборки',
+  'benchmark.detail.requests.samplingCancelledTip':
+    'После достижения цели выборки отменено {count} запросов; они исключены из расчёта успешности. Всего измерено запросов: {total}.',
   'benchmark.detail.requests.incomplete': 'Незавершённые запросы',
   'benchmark.detail.requests.concurrency': 'Достигнутая параллельность (сред.)',
   'benchmark.detail.requests.concurrency.max':

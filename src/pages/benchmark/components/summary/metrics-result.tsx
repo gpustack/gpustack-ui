@@ -7,6 +7,7 @@ import { round } from 'lodash';
 import React, { useId, useState } from 'react';
 import { loadAxisLabelId } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
+import { requestAccounting } from '../../utils/request-accounting';
 import { recordedNumber } from '../../utils/stage-detail-metrics';
 import StageStatisticsTable from './stage-statistics-table';
 import { SectionTitle } from './ui';
@@ -85,21 +86,13 @@ const MetricsResult: React.FC<{ data?: any }> = (props) => {
   const [requestSizeOpen, setRequestSizeOpen] = useState(false);
   const requestSizeId = useId();
   const benchmark = data?.raw_metrics?.benchmarks?.[0] ?? data?.raw_metrics;
-  const totals = benchmark?.metrics?.request_totals;
-  const success =
-    recordedNumber(data?.request_successful) ??
-    recordedNumber(totals?.successful);
-  const failed =
-    recordedNumber(data?.request_errored) ?? recordedNumber(totals?.errored);
-  const incomplete =
-    recordedNumber(data?.request_incomplete) ??
-    recordedNumber(totals?.incomplete);
-  const total =
-    recordedNumber(data?.request_total) ??
-    recordedNumber(totals?.total) ??
-    (success != null && failed != null && incomplete != null
-      ? success + failed + incomplete
-      : null);
+  const {
+    successful: success,
+    errored: failed,
+    unplannedIncomplete: incomplete,
+    total,
+    cancelledAtBoundary
+  } = requestAccounting(data);
   const duration = recordedNumber(benchmark?.duration);
   const target =
     recordedNumber(data?.rate) ??
@@ -164,6 +157,12 @@ const MetricsResult: React.FC<{ data?: any }> = (props) => {
               <span className="meta-status">
                 · {count(incomplete)}{' '}
                 {t('benchmark.detail.requests.incomplete')}
+              </span>
+            )}
+            {cancelledAtBoundary > 0 && (
+              <span className="meta-label">
+                · {count(cancelledAtBoundary)}{' '}
+                {t('benchmark.detail.requests.samplingCancelled')}
               </span>
             )}
           </Flex>

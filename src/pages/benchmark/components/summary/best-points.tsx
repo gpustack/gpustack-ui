@@ -304,7 +304,7 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
       : 'benchmark.table.best.unit.rate'
   );
   const bracket = detailData?.validity?.slo_bracket;
-  const okRate = best.total > 0 ? best.ok / best.total : null;
+  const okRate = best.successRate;
   const okPct = okRate == null ? null : round(okRate * 100, 1);
   const configured = configuredSloMetrics(
     best,
@@ -419,9 +419,9 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
   const failureText = (m: (typeof failed)[number]) =>
     `${m.label}: ${failureValue(m)}`;
   const successComparison =
-    boundary.successFailed && boundary.point && boundary.point.total > 0
+    boundary.successFailed && boundary.point?.successRate != null
       ? formatThresholdComparison(
-          (boundary.point.ok / boundary.point.total) * 100,
+          boundary.point.successRate * 100,
           SLO_SUCCESS_FLOOR * 100
         )
       : null;
@@ -566,7 +566,7 @@ const BestPoints: React.FC<BestPointsProps> = ({ points, onSelect }) => {
             <span>
               {t('benchmark.detail.reason.requestsSucceeded', {
                 ok: best.ok,
-                total: best.total
+                total: best.evaluatedTotal
               })}
             </span>
           </Flex>

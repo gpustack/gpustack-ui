@@ -24,6 +24,56 @@ const intl = {
   formatMessage: ({ id }: { id: string }) => translations[id] || id
 };
 
+test('planned cancellations do not create a failure chart', () => {
+  const points = buildStagePoints(
+    [
+      {
+        id: 1,
+        sequence: 0,
+        rate: 16,
+        request_total: 65,
+        request_successful: 54,
+        request_errored: 0,
+        request_incomplete: 11,
+        raw_metrics: {
+          termination: { reason: 'min_requests', cancelled_at_boundary: 11 }
+        }
+      }
+    ] as any,
+    {}
+  );
+  assert.equal(
+    buildChartSpecs(intl, { points, isConcurrency: true }).some(
+      (s) => s.key === 'success'
+    ),
+    false
+  );
+});
+
+test('success chart uses the same evaluated population when genuine errors exist', () => {
+  const points = buildStagePoints(
+    [
+      {
+        id: 1,
+        sequence: 0,
+        rate: 16,
+        request_total: 65,
+        request_successful: 50,
+        request_errored: 4,
+        request_incomplete: 11,
+        raw_metrics: {
+          termination: { reason: 'min_requests', cancelled_at_boundary: 11 }
+        }
+      }
+    ] as any,
+    {}
+  );
+  const spec = buildChartSpecs(intl, { points, isConcurrency: true }).find(
+    (s) => s.key === 'success'
+  )!;
+  assert.equal(spec.series[0].value(points[0]), (50 / 54) * 100);
+});
+
 for (const rate of [0.001, 0.0011, 0.01, 1.2345]) {
   test(`production request-rate comparison preserves ${rate} in its tooltip and axis`, () => {
     const achieved = rate / 2;

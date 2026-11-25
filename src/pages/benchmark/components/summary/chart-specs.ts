@@ -346,7 +346,7 @@ export const buildChartSpecs = (
 
   // The success-rate chart is earned, not scheduled: a flat 100% line spends a
   // whole panel saying nothing happened. It appears only once something failed.
-  if (points.some((p) => p.errored > 0 || p.incomplete > 0)) {
+  if (points.some((p) => p.errored > 0 || p.unplannedIncomplete > 0)) {
     specs.push({
       key: 'success',
       title: t('benchmark.detail.chart.success'),
@@ -357,7 +357,7 @@ export const buildChartSpecs = (
       series: [
         {
           name: t('benchmark.detail.chart.success'),
-          value: (p) => (p.total > 0 ? (p.ok / p.total) * 100 : null),
+          value: (p) => (p.successRate == null ? null : p.successRate * 100),
           color: C.blue
         }
       ]

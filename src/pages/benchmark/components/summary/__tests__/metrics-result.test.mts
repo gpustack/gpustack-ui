@@ -120,6 +120,31 @@ mock.module(
 );
 const { default: MetricsResult } = await import('../metrics-result');
 
+test('sampling cancellations remain visible without an error status', () => {
+  detail = {};
+  const dom = new JSDOM(
+    renderToStaticMarkup(
+      createElement(MetricsResult, {
+        data: {
+          rate: 16,
+          request_total: 65,
+          request_successful: 54,
+          request_errored: 0,
+          request_incomplete: 11,
+          raw_metrics: {
+            termination: { reason: 'min_requests', cancelled_at_boundary: 11 }
+          }
+        }
+      })
+    )
+  );
+  const content = dom.window.document.body.textContent || '';
+  assert.match(content, /54\s*\/\s*65/);
+  assert.match(content, /11\s*Sampling cancellations/);
+  assert.equal(dom.window.document.querySelectorAll('.meta-status').length, 0);
+  dom.window.close();
+});
+
 const allHeaders = [
   'Metric',
   'Avg',

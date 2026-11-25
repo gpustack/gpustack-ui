@@ -115,6 +115,116 @@ const { buildStagePoints, buildProbePoints } = await import('../metrics');
 const { stageLatencyValue } =
   await import('../../../utils/stage-detail-metrics');
 
+test('sample-target completion displays evaluated success without an early-stop warning', () => {
+  detail = { load_type: 'concurrency', slo_avg_ttft_ms: 500 };
+  const points = buildStagePoints(
+    [
+      {
+        id: 2,
+        sequence: 0,
+        rate: 8,
+        request_total: 100,
+        request_successful: 100,
+        request_errored: 0,
+        request_incomplete: 0,
+        time_to_first_token_mean: 100,
+        tokens_per_second_mean: 900
+      },
+      {
+        id: 1,
+        sequence: 0,
+        rate: 16,
+        request_total: 65,
+        request_successful: 54,
+        request_errored: 0,
+        request_incomplete: 11,
+        time_to_first_token_mean: 100,
+        tokens_per_second_mean: 1000,
+        raw_metrics: {
+          termination: {
+            reason: 'min_requests',
+            requested: 50,
+            processed: 50,
+            cancelled_at_boundary: 11
+          }
+        }
+      }
+    ] as any,
+    { recommendedRate: 16, peakRate: 16, sloTargets: detail }
+  );
+  tooltipProps = [];
+  const dom = new JSDOM(
+    renderToStaticMarkup(
+      createElement(Overview, { points, probes: [], onSelect: () => {} })
+    )
+  );
+  const success = dom.window.document.querySelector('[data-column="success"]');
+  const cell = dom.window.document.querySelector(
+    'tbody tr:last-child [data-column="success"]'
+  );
+  assert.equal(cell?.textContent, '54/54');
+  assert.doesNotMatch(
+    cell?.innerHTML || '',
+    /color:\s*var\(--color-status-error-text\)/
+  );
+  assert.match(
+    dom.window.document.querySelector('.pill')?.textContent || '',
+    /100%.*154\s*\/\s*154/
+  );
+  assert.equal(
+    tooltipProps.some((p) => String(p.title).startsWith('Stopped early')),
+    false
+  );
+  const samplingTooltip = tooltipProps.find((p) =>
+    renderToStaticMarkup(p.title).includes('11 requests were cancelled')
+  );
+  assert.ok(samplingTooltip);
+  const tooltip = JSDOM.fragment(renderToStaticMarkup(samplingTooltip.title));
+  const paragraphs = tooltip.firstElementChild?.children;
+  assert.equal(paragraphs?.length, 2);
+  assert.match(paragraphs?.[0].textContent || '', /Measured requests: 65/);
+  assert.match(paragraphs?.[1].textContent || '', /54 samples/);
+  assert.ok(success);
+  dom.window.close();
+});
+
+test('a nested legacy termination shows the early-stop reason and counts', () => {
+  detail = { load_type: 'concurrency' };
+  const points = buildStagePoints(
+    [
+      { id: 1, sequence: 0, rate: 8 },
+      {
+        id: 2,
+        sequence: 1,
+        rate: 16,
+        raw_metrics: {
+          benchmarks: [
+            {
+              termination: {
+                reason: 'max_duration',
+                requested: 100,
+                processed: 40
+              }
+            }
+          ]
+        }
+      }
+    ] as any,
+    {}
+  );
+  tooltipProps = [];
+  renderToStaticMarkup(
+    createElement(Overview, { points, probes: [], onSelect: () => {} })
+  );
+  assert.ok(
+    tooltipProps.some(
+      ({ title }) =>
+        title ===
+        'Stopped early: hit the per-stage time limit — 40/100 requests ran.'
+    )
+  );
+});
+
 test('load sweep follows the first higher failing target after an intermediate passing load', () => {
   detail = {
     load_type: 'concurrency',

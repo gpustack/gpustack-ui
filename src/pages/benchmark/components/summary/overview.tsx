@@ -13,6 +13,10 @@ import _ from 'lodash';
 import React, { useMemo, useState } from 'react';
 import { loadAxisLabelId, loadAxisTitleId } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
+import {
+  isEarlyTermination,
+  requestTermination
+} from '../../utils/request-accounting';
 import { RESIDENT_CHARTS, buildChartSpecs } from './chart-specs';
 import LoadSweep from './load-sweep';
 import {
@@ -342,8 +346,7 @@ const Overview: React.FC<OverviewProps> = ({
   // null on a run with no thresholds, which is what hides the column entirely.
   const hasSloTargets = points.some((p) => p.sloPass != null);
 
-  // Early-stop reason. A stage normally ends at max_requests; anything else means
-  // it under-ran, so the shortfall isn't mistaken for lost data.
+  // Explain early stops so a request shortfall isn't mistaken for lost data.
   const terminationTip = (term: any): string => {
     const map: Record<string, string> = {
       requests_exhausted: 'benchmark.detail.termination.requestsExhausted',
@@ -568,11 +571,29 @@ const Overview: React.FC<OverviewProps> = ({
       key: 'success',
       minWidth: 130,
       render: (_v: unknown, p: StagePoint) => {
-        const total = p.total;
+        const total = p.evaluatedTotal;
         const ok = p.ok;
-        const low = total > 0 && ok / total < SLO_SUCCESS_FLOOR;
-        const term = (p.raw.raw_metrics as any)?.termination;
-        const early = term?.reason && term.reason !== 'max_requests';
+        const low = p.successRate != null && p.successRate < SLO_SUCCESS_FLOOR;
+        const term = requestTermination(p.raw.raw_metrics);
+        const early = isEarlyTermination(term);
+        const hints = [
+          ...(p.cancelledAtBoundary > 0
+            ? [
+                t('benchmark.detail.requests.samplingCancelledTip', {
+                  count: p.cancelledAtBoundary,
+                  total: p.total
+                })
+              ]
+            : []),
+          ...(p.lowSample
+            ? [
+                t('benchmark.detail.lowSample', {
+                  count: p.sampleCount,
+                  tail: tailSamples(p.sampleCount)
+                })
+              ]
+            : [])
+        ];
         return (
           <span
             style={{
@@ -583,14 +604,18 @@ const Overview: React.FC<OverviewProps> = ({
             }}
           >
             {ok}/{total}
-            {p.lowSample && (
+            {hints.length > 0 && (
               <Tooltip
-                title={t('benchmark.detail.lowSample', {
-                  count: p.sampleCount,
-                  tail: tailSamples(p.sampleCount)
-                })}
+                title={
+                  <Flex vertical gap={4}>
+                    {hints.map((hint) => (
+                      <div key={hint}>{hint}</div>
+                    ))}
+                  </Flex>
+                }
+                trigger={['hover', 'focus']}
               >
-                <QuestionCircleOutlined className="hint" />
+                <QuestionCircleOutlined className="hint" tabIndex={0} />
               </Tooltip>
             )}
             {early && (
@@ -702,7 +727,7 @@ const Overview: React.FC<OverviewProps> = ({
                   {t('benchmark.detail.successPill', {
                     pct: successPct,
                     ok: totals.ok.toLocaleString(),
-                    total: totals.requests.toLocaleString()
+                    total: totals.evaluatedRequests.toLocaleString()
                   })}
                 </span>
               )}

@@ -129,6 +129,14 @@ export interface RoleSpec {
   // gang admission.
   gpu_type_selector?: GPUTypeSelector | null;
   extended_kv_cache?: Record<string, any> | null;
+  speculative_config?: {
+    enabled: boolean;
+    algorithm?: string | null;
+    draft_model?: string | null;
+    num_draft_tokens?: number | null;
+    ngram_min_match_length?: number | null;
+    ngram_max_match_length?: number | null;
+  } | null;
   dependencies?: string[] | null;
   // Router only, and role-own rather than an override: there is no
   // Model-level counterpart to inherit from, because prefill and decode get

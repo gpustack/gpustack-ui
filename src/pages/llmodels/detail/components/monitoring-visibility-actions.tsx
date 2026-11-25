@@ -5,34 +5,40 @@ import { Button, Space, Tooltip } from 'antd';
 export default function MonitoringVisibilityActions({
   keys,
   expanded,
-  onChange
+  onChange,
+  single = false
 }: {
   keys: string[];
   expanded: string[];
   onChange: (keys: string[]) => void;
+  single?: boolean;
 }) {
   const intl = useIntl();
+  const allExpanded = keys.every((key) => expanded.includes(key));
+  const expand = {
+    key: 'expandAll',
+    icon: <ArrowsAltOutlined />,
+    disabled: allExpanded,
+    next: keys
+  };
+  const collapse = {
+    key: 'collapseAll',
+    icon: <ShrinkOutlined />,
+    disabled: keys.every((key) => !expanded.includes(key)),
+    next: []
+  };
+  if (single && !keys.length) return null;
+  const actions = single
+    ? [allExpanded ? collapse : expand]
+    : [expand, collapse];
   return (
     <Space size={4}>
-      {[
-        {
-          key: 'expandAll',
-          icon: <ArrowsAltOutlined />,
-          disabled: keys.every((key) => expanded.includes(key)),
-          next: keys
-        },
-        {
-          key: 'collapseAll',
-          icon: <ShrinkOutlined />,
-          disabled: keys.every((key) => !expanded.includes(key)),
-          next: []
-        }
-      ].map((action) => {
+      {actions.map((action) => {
         const label = intl.formatMessage({
           id: `modelMonitoring.${action.key}`
         });
         return (
-          <Tooltip key={action.key} title={label}>
+          <Tooltip key={single ? 'visibility' : action.key} title={label}>
             <Button
               size="small"
               type="text"

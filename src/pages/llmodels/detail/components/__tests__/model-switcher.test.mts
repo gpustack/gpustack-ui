@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 
 let select: any;
 let tenant = 'tenant-a';
-const setSearchParams = mock.fn();
+const onSelect = mock.fn();
 const fetchData = mock.fn(async () => []);
 const dataList = [
   { id: 7, value: 7, label: 'Stale name' },
@@ -23,8 +23,7 @@ mock.module('@gpustack/core-ui', {
 });
 mock.module('@umijs/max', {
   namedExports: {
-    useIntl: () => ({ formatMessage: ({ id }: { id: string }) => id }),
-    useSearchParams: () => [new URLSearchParams(), setSearchParams]
+    useIntl: () => ({ formatMessage: ({ id }: { id: string }) => id })
   }
 });
 mock.module(
@@ -39,10 +38,18 @@ mock.module(
 );
 const { default: ModelSwitcher } = await import('../model-switcher');
 
-test('opens the scoped model list and replaces the detail URL for a different model', () => {
-  renderToStaticMarkup(
-    createElement(ModelSwitcher, { id: 7, name: 'Current model', tenant })
-  );
+test('the switcher stages a different model and waits for it with the current model selected', () => {
+  const render = (switching: boolean) =>
+    renderToStaticMarkup(
+      createElement(ModelSwitcher, {
+        id: 7,
+        name: 'Current model',
+        tenant: 'tenant-a',
+        switching,
+        onSelect
+      })
+    );
+  render(false);
   assert.deepEqual(
     select.options.map(({ label }: { label: string }) => label),
     ['Current model', 'Other model']
@@ -51,17 +58,19 @@ test('opens the scoped model list and replaces the detail URL for a different mo
   assert.equal(fetchData.mock.callCount(), 0);
   select.onOpenChange(true);
   assert.deepEqual(fetchData.mock.calls[0].arguments, [{ page: -1 }]);
-  select.onChange(7);
-  assert.equal(setSearchParams.mock.callCount(), 0);
-  select.onChange(8);
-  assert.deepEqual(setSearchParams.mock.calls[0].arguments, [
-    { id: '8' },
-    { replace: true }
-  ]);
+  select.onSelect(7);
+  assert.equal(onSelect.mock.callCount(), 0);
+  select.onSelect(8);
+  assert.deepEqual(onSelect.mock.calls[0].arguments, [8]);
+  render(true);
+  assert.equal(select.value, 7);
+  assert.equal(select.loading, true);
+  select.onSelect(7);
+  assert.deepEqual(onSelect.mock.calls[1].arguments, [7]);
 
   tenant = 'tenant-b';
   select.onOpenChange(true);
-  select.onChange(8);
+  select.onSelect(8);
   assert.equal(fetchData.mock.callCount(), 1);
-  assert.equal(setSearchParams.mock.callCount(), 1);
+  assert.equal(onSelect.mock.callCount(), 2);
 });

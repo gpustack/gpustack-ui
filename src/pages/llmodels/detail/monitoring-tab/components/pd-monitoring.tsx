@@ -123,6 +123,7 @@ const PDMonitoringTab = forwardRef<MonitoringTabHandle>((_props, ref) => {
       className={styles.root}
       vertical
       gap={24}
+      aria-busy={runtime.loading}
       data-model-monitor-layout
       data-pd-model-monitoring
     >
@@ -138,7 +139,7 @@ const PDMonitoringTab = forwardRef<MonitoringTabHandle>((_props, ref) => {
         onChange={setExpanded}
         contextNote={t('runtimeHistory') + ' ' + t('hardwareHistory')}
       />
-      <RequestNotice state={runtime} />
+      <RequestNotice state={runtime} showLoading={false} />
       <AvailabilityNotice
         available={runtime.data?.available}
         reason={runtime.data?.reason}

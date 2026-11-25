@@ -25,7 +25,7 @@ export default function ReadOnlyRevisions({ model }: { model: ListItem }) {
             key: 'revision',
             label: t('configurationRevision'),
             children: pending ? (
-              <Spin size="small" />
+              <span aria-busy="true">—</span>
             ) : latest ? (
               revisionLabel(latest.revision)
             ) : (

@@ -38,9 +38,11 @@ export const MetricState = ({
   );
 };
 export const RequestNotice = <T,>({
-  state
+  state,
+  showLoading = true
 }: {
   state: ResourceSnapshot<T>;
+  showLoading?: boolean;
 }) => {
   const intl = useIntl();
   if (state.stale)
@@ -64,7 +66,9 @@ export const RequestNotice = <T,>({
         })}
       />
     );
-  return state.loading && !state.data ? <Spin size="small" /> : null;
+  return showLoading && state.loading && !state.data ? (
+    <Spin size="small" />
+  ) : null;
 };
 
 export const AvailabilityNotice = ({

@@ -14,7 +14,6 @@ import {
   Flex,
   Row,
   Space,
-  Spin,
   Tooltip,
   Typography
 } from 'antd';
@@ -35,17 +34,21 @@ import PDRoleOverview from '../components/pd-role-overview';
 import PerformanceStats from '../components/performance-stats';
 import ResourceTable from '../components/resource-table';
 import { useDetail } from '../config/context';
-import useDeploymentMetadata from '../hooks/use-deployment-metadata';
+import type { DeploymentMetadata } from '../services/deployment-metadata';
+import type { ResourceSnapshot } from '../services/scoped-resource';
 import { hasMetricSamples, selectRoleMetric } from '../utils/metrics';
 import { pdIngressMetric, pdRoleMetric } from '../utils/pd-metrics';
 import { effectiveRequestRole } from '../utils/request-role';
 import { scopeTimeLabel } from '../utils/time-range';
 import { withTokenTotal } from '../utils/token-throughput';
-const OverviewTab = () => {
+const OverviewTab = ({
+  metadata
+}: {
+  metadata: ResourceSnapshot<DeploymentMetadata>;
+}) => {
   const intl = useIntl();
   const { model, instances, runtime, scope, setTab } = useDetail();
   const data = model.data;
-  const metadata = useDeploymentMetadata(data);
   const t = (key: string) =>
     intl.formatMessage({ id: `modelMonitoring.${key}` });
   if (!data) return null;
@@ -64,7 +67,7 @@ const OverviewTab = () => {
     : t('allInstances');
   const contextNote = `${t('currentScope')}: ${scopeTimeLabel(scope)} · ${pd || scope.role === 'all' ? t('allRoles') : scope.role} · ${pd ? t('allInstances') : scopeCount}. ${t(runtime.data?.history_scope === 'current_instances_with_observed_source_history' ? 'runtimeHistory' : 'historyScope')}`;
   return (
-    <Flex vertical gap={16}>
+    <Flex vertical gap={16} aria-busy={runtime.loading || metadata.loading}>
       <Flex align="center" justify="space-between" gap={8} wrap>
         <SectionTitle>{t('deploymentOverview')}</SectionTitle>
         {pd &&
@@ -150,12 +153,9 @@ const OverviewTab = () => {
                   {
                     key: 'route',
                     label: t('modelRoute'),
-                    children: metadata.loading ? (
-                      <Spin size="small" />
-                    ) : (
+                    children:
                       metadata.data?.target?.route_name ||
-                      t('metadataUnavailable')
-                    )
+                      (metadata.loading ? '—' : t('metadataUnavailable'))
                   },
                   {
                     key: 'cache',
@@ -186,10 +186,12 @@ const OverviewTab = () => {
         </CardWrapper>
       )}
       {pd && <PDRoleOverview />}
-      <RequestNotice state={runtime} />
+      <RequestNotice state={runtime} showLoading={false} />
       <Flex justify="space-between" align="center" gap={8} wrap>
         <Flex align="center" gap={4} wrap>
-          <SectionTitle>{t('performance')}</SectionTitle>
+          <SectionTitle style={{ marginBlockEnd: 0 }}>
+            {t('performance')}
+          </SectionTitle>
           <Tooltip title={scopeTimeLabel(scope)}>
             <TextAttribute variant="outlined">
               {scope.start != null ? t('customTimeRange') : scope.window}

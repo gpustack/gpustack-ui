@@ -81,7 +81,8 @@ export default function MonitoringSection({
               <Flex align="center" gap={4}>
                 <Typography.Text strong>{title}</Typography.Text>
                 {help && (
-                  <span
+                  <Flex
+                    align="center"
                     onClick={(event) => event.stopPropagation()}
                     onKeyDown={(event) => {
                       if (event.key === 'Enter' || event.key === ' ')
@@ -89,7 +90,7 @@ export default function MonitoringSection({
                     }}
                   >
                     <HelpTooltip label={title} content={help} />
-                  </span>
+                  </Flex>
                 )}
                 {annotation}
               </Flex>

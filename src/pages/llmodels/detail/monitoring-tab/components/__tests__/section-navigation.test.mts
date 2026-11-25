@@ -76,15 +76,19 @@ for (const pd of [false, true]) {
           element.getAttribute('aria-label') === id ||
           element.textContent === id
       )!;
-    await act(async () => button('modelMonitoring.expandAll').click());
+    assert.equal(button('modelMonitoring.collapseAll'), undefined);
+    const toggle = button('modelMonitoring.expandAll');
+    await act(async () => toggle.click());
     assert.deepEqual(
       current,
       sections.map((section) => section.key)
     );
-    assert.equal(button('modelMonitoring.expandAll').disabled, true);
+    assert.equal(button('modelMonitoring.expandAll'), undefined);
+    assert.equal(button('modelMonitoring.collapseAll'), toggle);
     await act(async () => button('modelMonitoring.collapseAll').click());
     assert.deepEqual(current, []);
-    assert.equal(button('modelMonitoring.collapseAll').disabled, true);
+    assert.equal(button('modelMonitoring.collapseAll'), undefined);
+    assert.equal(button('modelMonitoring.expandAll'), toggle);
     await act(async () => updateFilter());
     assert.deepEqual(current, []);
     await act(async () => button('gpu').click());
@@ -119,10 +123,10 @@ test('one monitoring section omits jump navigation while retaining visibility co
       (element) =>
         element.getAttribute('aria-label') === id || element.textContent === id
     )!;
-  assert.equal(button('modelMonitoring.expandAll').disabled, true);
+  assert.equal(button('modelMonitoring.expandAll'), undefined);
   await act(async () => button('modelMonitoring.collapseAll').click());
   assert.deepEqual(current, []);
-  assert.equal(button('modelMonitoring.collapseAll').disabled, true);
+  assert.equal(button('modelMonitoring.collapseAll'), undefined);
   await act(async () => button('modelMonitoring.expandAll').click());
   assert.deepEqual(current, ['gpu']);
   assert.equal(open.mock.calls.length, 0);

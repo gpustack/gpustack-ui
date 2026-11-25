@@ -166,7 +166,7 @@ test('compact device action forwards the exact visible device to the existing Dr
   );
 });
 
-test('an unavailable GPU inventory keeps its scoped state and boolean loading value', () => {
+test('an unavailable GPU inventory keeps its scoped state and clears its busy status', () => {
   prepare();
   context.resources.data = {
     available: false,
@@ -176,6 +176,6 @@ test('an unavailable GPU inventory keeps its scoped state and boolean loading va
   const html = renderToStaticMarkup(createElement(GPUResourcesTab));
   assert.equal(tables.length, 1);
   assert.equal(tables[0].dataSource.length, 0);
-  assert.equal(tables[0].loading, false);
+  assert.ok(html.includes('aria-busy="false"'));
   assert.ok(html.includes('modelMonitoring.state.resource_not_visible'));
 });

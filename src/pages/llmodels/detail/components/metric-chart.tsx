@@ -754,7 +754,7 @@ const MetricChart = ({
         gap={8}
         className={styles.header}
       >
-        <Space size={4} align="center">
+        <Flex gap={4} align="center">
           <Typography.Title level={5} className={styles.heading}>
             {title} {unit && `(${unit})`}
             {statisticLabel && ` · ${statisticLabel}`}
@@ -825,7 +825,7 @@ const MetricChart = ({
               }
             />
           )}
-        </Space>
+        </Flex>
         <Space size={8} className={styles.actions}>
           {extra}
           {hasValues && selected && (

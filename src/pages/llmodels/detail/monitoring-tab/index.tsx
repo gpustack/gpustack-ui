@@ -237,7 +237,12 @@ const OrdinaryMonitoringTab = forwardRef<MonitoringTabHandle>((_props, ref) => {
         ? `${t('sharedHardware')} ${t('hardwareHistory')}`
         : '';
   return (
-    <Flex vertical gap={16} data-model-monitor-layout>
+    <Flex
+      vertical
+      gap={16}
+      data-model-monitor-layout
+      aria-busy={runtime.loading}
+    >
       <ScopeToolbar
         extra={<ObservationNotes metrics={allMetrics} groups={groups} />}
       />
@@ -248,7 +253,7 @@ const OrdinaryMonitoringTab = forwardRef<MonitoringTabHandle>((_props, ref) => {
         onChange={changeExpanded}
         contextNote={contextNote}
       />
-      <RequestNotice state={runtime} />
+      <RequestNotice state={runtime} showLoading={false} />
       <AvailabilityNotice
         available={runtime.data?.available}
         reason={runtime.data?.reason}

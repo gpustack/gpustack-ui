@@ -89,7 +89,12 @@ const PDRoleOverview = ({
   const hasRouter = rows.some((row) => row.role === 'router');
   const title = t('pd.roleInstances');
   return variant === 'table' ? (
-    <Flex vertical gap={12} data-pd-role-table>
+    <Flex
+      vertical
+      gap={12}
+      data-pd-role-table
+      aria-busy={instances.loading || resources.loading}
+    >
       <Flex align="center" justify="space-between" wrap gap={8}>
         <SectionTitle>{title}</SectionTitle>
         <Button type="link" size="small" onClick={() => setTab('gpu')}>
@@ -99,7 +104,7 @@ const PDRoleOverview = ({
       <SealTable
         rowKey="role"
         dataSource={rows}
-        loading={!!instances.loading || !!resources.loading}
+        loading={false}
         columns={[
           {
             dataIndex: 'role',

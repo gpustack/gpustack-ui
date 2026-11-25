@@ -49,6 +49,7 @@ const ResourceTable = ({
     <Flex
       vertical
       gap={12}
+      aria-busy={resources.loading}
       style={
         compact
           ? ({ '--seal-table-row-min-height': '52px' } as CSSProperties)
@@ -58,7 +59,9 @@ const ResourceTable = ({
       {showTitle && (
         <Flex justify="space-between" align="center" gap={12}>
           <Flex align="center" gap={4}>
-            <SectionTitle>{t('resourceInventory')}</SectionTitle>
+            <SectionTitle style={{ marginBlockEnd: 0 }}>
+              {t('resourceInventory')}
+            </SectionTitle>
             <HelpTooltip
               label={t('resourceInventory')}
               content={
@@ -74,7 +77,7 @@ const ResourceTable = ({
       )}
       {showNotices && (
         <>
-          <RequestNotice state={resources} />
+          <RequestNotice state={resources} showLoading={false} />
           <AvailabilityNotice
             available={resources.data?.available}
             reason={resources.data?.reason}
@@ -85,7 +88,7 @@ const ResourceTable = ({
       <SealTable
         rowKey="id"
         dataSource={devices}
-        loading={resources.loading}
+        loading={false}
         onTableSort={(sort: TableOrder | TableOrder[]) =>
           setOrder((Array.isArray(sort) ? sort[0]?.order : sort.order) || null)
         }

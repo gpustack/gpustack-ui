@@ -122,10 +122,8 @@ const PDPerformanceStats = () => {
           key={item.key}
         >
           <div className={styles.card} data-pd-kpi={item.key}>
-            <Flex gap={4} align="flex-end">
-              <Flex vertical justify="flex-end" className={styles.label}>
-                <span>{t(`pd.${item.key}`)}</span>
-              </Flex>
+            <Flex gap={4} align="center" className={styles.labelRow}>
+              <span className={styles.label}>{t(`pd.${item.key}`)}</span>
               <HelpTooltip
                 label={t(`pd.${item.key}`)}
                 content={

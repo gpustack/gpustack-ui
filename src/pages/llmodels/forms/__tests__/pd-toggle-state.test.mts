@@ -246,6 +246,11 @@ mock.module(new URL('../schedule-type.tsx', import.meta.url).href, {
       )
     )
 });
+let changeDeploymentEnv: (env: Record<string, string>) => void;
+const EnvField = ({ onChange }: any) => {
+  changeDeploymentEnv = onChange;
+  return null;
+};
 mock.module(new URL('../advance-config.tsx', import.meta.url).href, {
   defaultExport: ({ pdActive }: any) =>
     [
@@ -257,7 +262,7 @@ mock.module(new URL('../advance-config.tsx', import.meta.url).href, {
       createElement(
         Form.Item,
         { key: name, name, hidden: true },
-        createElement(InputField)
+        createElement(name === 'env' ? EnvField : InputField)
       )
     )
 });
@@ -365,6 +370,8 @@ const renderForm = async (
     switchChecked,
     panelVisible,
     applyCatalogSpec,
+    editEnv: (env: Record<string, string>) =>
+      act(async () => changeDeploymentEnv(env)),
     submit,
     unmount
   };
@@ -649,19 +656,49 @@ test('a catalog spec carries its declared env through enabling PD', async () => 
   }
 });
 
-test('deleting a catalog opt-out in PD keeps it removed when PD is disabled', async () => {
+test('changing PD catalog specs drops an untouched opt-out from the old spec', async () => {
+  const form = await renderForm(false, true);
+  const specA = catalogSpec('A');
+  const specB = catalogSpec('B');
+  try {
+    await form.applyCatalogSpec({
+      ...specA,
+      env: { ...specA.env, ...skipEvaluationEnv }
+    });
+    await form.toggle();
+    await form.editEnv({ ...form.values().env, USER_VARIABLE: 'kept' });
+    await form.applyCatalogSpec(specB);
+    assert.deepEqual((await form.submit()).env, { USER_VARIABLE: 'kept' });
+
+    await form.toggle();
+    assert.deepEqual((await form.submit()).env, {
+      ...specB.env,
+      USER_VARIABLE: 'kept'
+    });
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('deleting a catalog opt-out in PD survives reloading the spec and disabling PD', async () => {
   const form = await renderForm(false, true);
   try {
     await form.applyCatalogSpec(catalogSpec('A'));
     await form.toggle();
     const spec = catalogSpec('B');
-    await form.applyCatalogSpec({
+    const specWithOptOut = {
       ...spec,
       env: { ...spec.env, ...skipEvaluationEnv }
-    });
+    };
+    await form.applyCatalogSpec(specWithOptOut);
     assert.deepEqual((await form.submit()).env, skipEvaluationEnv);
-    await act(async () => form.ref.current.form.setFieldValue('env', {}));
+    await form.editEnv({});
+    await form.applyCatalogSpec(specWithOptOut);
+    assert.deepEqual((await form.submit()).env, {});
+
     await form.toggle();
+    assert.deepEqual((await form.submit()).env, spec.env);
+    await form.applyCatalogSpec(specWithOptOut);
     assert.deepEqual((await form.submit()).env, spec.env);
   } finally {
     await form.unmount();
@@ -694,10 +731,11 @@ test('changing the catalog spec in PD retains the manually entered opt-out', asy
   try {
     await form.applyCatalogSpec(catalogSpec('A'));
     await form.toggle();
-    await act(async () =>
-      form.ref.current.form.setFieldValue('env', skipEvaluationEnv)
-    );
+    await form.editEnv(skipEvaluationEnv);
     const specB = catalogSpec('B');
+    await form.applyCatalogSpec(specB);
+    assert.deepEqual((await form.submit()).env, skipEvaluationEnv);
+
     await form.applyCatalogSpec({
       ...specB,
       env: { ...specB.env, GPUSTACK_SKIP_MODEL_EVALUATION: '0' }

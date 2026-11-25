@@ -234,15 +234,18 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
    * would be a render triggered by a field write.
    */
   const preservedModelFields = React.useRef<Record<string, any> | null>(null);
-  const catalogEvaluationOptOut = React.useRef<{
-    defaultValue?: string;
-    // Undefined follows the catalog. Null records an explicit deletion.
-    editedValue?: string | null;
-  }>({});
+  // Undefined follows the catalog. Null records an explicit deletion.
+  const catalogEvaluationOptOut = React.useRef<string | null | undefined>(
+    undefined
+  );
 
-  const getCatalogEvaluationOptOut = () => {
-    const { defaultValue, editedValue } = catalogEvaluationOptOut.current;
-    return editedValue === undefined ? defaultValue : editedValue;
+  const recordCatalogEnvEdit = (env: FormData['env']) => {
+    const previousEnv = form.getFieldValue('env');
+    const value = env?.[SKIP_MODEL_EVALUATION_ENV];
+    if (value !== previousEnv?.[SKIP_MODEL_EVALUATION_ENV]) {
+      catalogEvaluationOptOut.current = value ?? null;
+    }
+    return env;
   };
 
   const clearIncompatibleRoleCaches = (mode?: PDMode) => {
@@ -699,12 +702,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
    * @returns
    */
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
-    if (formKey === DeployFormKeyMap.CATALOG && _.has(changedValues, 'env')) {
-      const value = changedValues.env?.[SKIP_MODEL_EVALUATION_ENV] ?? null;
-      if (value !== (getCatalogEvaluationOptOut() ?? null)) {
-        catalogEvaluationOptOut.current.editedValue = value;
-      }
-    }
     if (pdEffects.enabled) {
       clearIncompatibleRoleCaches(pdEffects.modeData);
     }
@@ -820,9 +817,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         const modelFields = _.cloneDeep(getCatalogModelFields(values));
         const env = form.getFieldValue('env');
         const envBeforePD = preservedModelFields.current?.envBeforePD;
-        catalogEvaluationOptOut.current.defaultValue =
-          modelFields.env[SKIP_MODEL_EVALUATION_ENV];
-        const skipEvaluationValue = getCatalogEvaluationOptOut();
+        const editedOptOut = catalogEvaluationOptOut.current;
+        const skipEvaluationValue =
+          editedOptOut === undefined
+            ? modelFields.env[SKIP_MODEL_EVALUATION_ENV]
+            : editedOptOut;
         // A new spec replaces the configuration to restore when PD turns off.
         // Missing model fields use defaults instead of inheriting the old spec.
         preservedModelFields.current = pdActive
@@ -1131,7 +1130,16 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                   id: 'models.form.tabs.advanced'
                 }),
                 forceRender: true,
-                children: <AdvanceConfig pdActive={pdEffects.enabled} />
+                children: (
+                  <AdvanceConfig
+                    pdActive={pdEffects.enabled}
+                    getEnvValueFromEvent={
+                      formKey === DeployFormKeyMap.CATALOG
+                        ? recordCatalogEnvEdit
+                        : undefined
+                    }
+                  />
+                )
               }
             ]}
           ></CollapsePanel>

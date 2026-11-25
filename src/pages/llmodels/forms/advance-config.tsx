@@ -17,7 +17,13 @@ import { backendOptionsMap } from '../constants/backend-parameters';
 import BackendParametersList from './backend-parameters-list';
 import ModelLoraList from './model-lora-list';
 
-const AdvanceConfig = ({ pdActive }: { pdActive?: boolean } = {}) => {
+const AdvanceConfig = ({
+  pdActive,
+  getEnvValueFromEvent
+}: {
+  pdActive?: boolean;
+  getEnvValueFromEvent?: (env: FormData['env']) => FormData['env'];
+} = {}) => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const backend = Form.useWatch('backend', form);
@@ -90,7 +96,7 @@ const AdvanceConfig = ({ pdActive }: { pdActive?: boolean } = {}) => {
         ></SealSelect>
       </Form.Item>
       {!pdActive && <BackendParametersList />}
-      <Form.Item<FormData> name="env">
+      <Form.Item<FormData> name="env" getValueFromEvent={getEnvValueFromEvent}>
         <LabelSelector
           label={intl.formatMessage({ id: 'models.form.env' })}
           btnText={intl.formatMessage({ id: 'common.button.vars' })}

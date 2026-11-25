@@ -252,7 +252,7 @@ const EnvField = ({ onChange }: any) => {
   return null;
 };
 mock.module(new URL('../advance-config.tsx', import.meta.url).href, {
-  defaultExport: ({ pdActive }: any) =>
+  defaultExport: ({ pdActive, getEnvValueFromEvent }: any) =>
     [
       'image_name',
       'run_command',
@@ -261,7 +261,12 @@ mock.module(new URL('../advance-config.tsx', import.meta.url).href, {
     ].map((name) =>
       createElement(
         Form.Item,
-        { key: name, name, hidden: true },
+        {
+          key: name,
+          name,
+          hidden: true,
+          getValueFromEvent: name === 'env' ? getEnvValueFromEvent : undefined
+        },
         createElement(name === 'env' ? EnvField : InputField)
       )
     )
@@ -675,6 +680,35 @@ test('changing PD catalog specs drops an untouched opt-out from the old spec', a
       ...specB.env,
       USER_VARIABLE: 'kept'
     });
+  } finally {
+    await form.unmount();
+  }
+});
+
+test('editing the log level does not keep a backend version opt-out across specs', async () => {
+  const form = await renderForm(false, true);
+  const specB = catalogSpec('B');
+  const versionEnv = { ...skipEvaluationEnv, LOG_LEVEL: 'info' };
+  try {
+    await form.applyCatalogSpec(catalogSpec('A'));
+    // Backend version selection writes its default environment programmatically.
+    await act(async () =>
+      form.ref.current.form.setFieldValue('env', versionEnv)
+    );
+    await form.editEnv({ ...versionEnv, LOG_LEVEL: 'debug' });
+    assert.deepEqual(form.values().env, {
+      ...skipEvaluationEnv,
+      LOG_LEVEL: 'debug'
+    });
+
+    await form.applyCatalogSpec(specB);
+    assert.deepEqual(form.values().env, specB.env);
+    assert.deepEqual((await form.submit()).env, specB.env);
+
+    const specEnv = { ...specB.env, GPUSTACK_SKIP_MODEL_EVALUATION: '0' };
+    await form.applyCatalogSpec({ ...specB, env: specEnv });
+    assert.deepEqual(form.values().env, specEnv);
+    assert.deepEqual((await form.submit()).env, specEnv);
   } finally {
     await form.unmount();
   }

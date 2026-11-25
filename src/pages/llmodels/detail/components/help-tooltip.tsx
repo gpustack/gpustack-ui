@@ -30,6 +30,10 @@ const HelpTooltip = ({
         type="button"
         aria-label={label}
         style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
           border: 0,
           background: 'none',
           padding: 2,

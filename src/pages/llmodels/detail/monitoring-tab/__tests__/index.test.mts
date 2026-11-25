@@ -377,10 +377,12 @@ test('PD instance view keeps every associated GPU and Worker without a hidden in
   assert.equal(pdProps.metrics, context.runtime.data.metrics);
 });
 
-test('GPU resource inventory stops its Spin after the request completes', () => {
+test('GPU resource inventory marks loading without a Spin', () => {
   prepare();
+  context.resources.loading = true;
   const html = renderToStaticMarkup(createElement(GPUResourcesTab));
   assert.equal(tables[0].loading, false);
+  assert.ok(html.includes('aria-busy="true"'));
   assert.ok(!html.includes('ant-spin-spinning'));
 });
 
@@ -403,7 +405,8 @@ test('initial PD runtime loading never fabricates unsupported metric cards', () 
   context.runtime = { loading: true, data: null, stale: false, error: null };
   const html = renderToStaticMarkup(createElement(MonitoringTab));
   assert.equal(pdProps, undefined);
-  assert.ok(html.includes('ant-spin-spinning'));
+  assert.ok(html.includes('aria-busy="true"'));
+  assert.ok(!html.includes('ant-spin-spinning'));
   assert.ok(!html.includes('data-pd-content'));
 });
 

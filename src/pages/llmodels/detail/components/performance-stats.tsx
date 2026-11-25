@@ -130,10 +130,8 @@ const PerformanceStats = () => {
         return (
           <Col xs={12} md={8} xl={4} key={item.key}>
             <div className={styles.card}>
-              <Flex gap={4} align="flex-end">
-                <Flex
-                  vertical
-                  justify="flex-end"
+              <Flex gap={4} align="center" className={styles.labelRow}>
+                <span
                   className={styles.label}
                   title={
                     item.key === 'ttft'
@@ -148,7 +146,7 @@ const PerformanceStats = () => {
                     : intl.formatMessage({
                         id: `modelMonitoring.metric.${item.key}`
                       })}
-                </Flex>
+                </span>
                 {item.help && (
                   <HelpTooltip
                     label={`${item.key.toUpperCase()} · ${intl.formatMessage({ id: 'modelMonitoring.definition' })}`}

@@ -92,6 +92,7 @@ const SectionNavigation = ({
           keys={sections.map((section) => section.key)}
           expanded={expanded}
           onChange={onChange}
+          single
         />
       </Space>
     </Flex>

@@ -44,7 +44,11 @@ const subscribeTenant = (listener: () => void) => {
 export const useMonitoringTenant = () =>
   useSyncExternalStore(subscribeTenant, tenantKey, () => '');
 
-export const useMonitoringData = (id: number, tenant: string) => {
+export const useMonitoringData = (
+  id: number,
+  tenant: string,
+  initialTab: DetailTab = 'overview'
+) => {
   const [stores] = useState(() => ({
     model: new ScopedResource<ListItem>(),
     instances: new ScopedResource<ModelInstanceListItem[]>(),
@@ -75,7 +79,7 @@ export const useMonitoringData = (id: number, tenant: string) => {
   const [scope, setScope] = useState<MonitoringScope>(defaultScope);
   const scopeRef = useRef(scope);
   const activeRef = useRef(true);
-  const tabRef = useRef<DetailTab>('overview');
+  const tabRef = useRef(initialTab);
   const effectiveScope = (next: MonitoringScope, tab = tabRef.current) =>
     tab === 'monitoring' ||
     (tab === 'overview' && isPDModel(stores.model.snapshot.data || {}))

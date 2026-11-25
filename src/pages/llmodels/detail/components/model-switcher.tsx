@@ -1,5 +1,5 @@
 import { AutoTooltip, BaseSelect } from '@gpustack/core-ui';
-import { useIntl, useSearchParams } from '@umijs/max';
+import { useIntl } from '@umijs/max';
 import type { ReactNode } from 'react';
 import useQueryModelList from '../../services/use-query-model-list';
 import { tenantKey } from '../hooks/use-monitoring-data';
@@ -13,17 +13,23 @@ const renderModelLabel = ({ label }: { label?: ReactNode }) => (
 const ModelSwitcher = ({
   id,
   name,
-  tenant
+  tenant,
+  switching,
+  onSelect
 }: {
   id: number;
-  name: string;
+  name?: string;
   tenant: string;
+  switching: boolean;
+  onSelect: (id: number) => void;
 }) => {
   const intl = useIntl();
-  const [, setSearchParams] = useSearchParams();
   const { dataList, loading, fetchData } = useQueryModelList();
   const options = [
-    { value: id, label: name },
+    {
+      value: id,
+      label: name || dataList.find((item) => item.id === id)?.label || `#${id}`
+    },
     ...dataList.filter((item) => item.id !== id)
   ];
 
@@ -34,7 +40,7 @@ const ModelSwitcher = ({
       aria-label={intl.formatMessage({ id: 'modelMonitoring.deployment' })}
       value={id}
       options={options}
-      loading={loading}
+      loading={loading || switching}
       showSearch={{ optionFilterProp: 'label' }}
       popupMatchSelectWidth={false}
       labelRender={renderModelLabel}
@@ -43,9 +49,9 @@ const ModelSwitcher = ({
           void fetchData({ page: -1 }).catch(() => {});
         }
       }}
-      onChange={(value: number) => {
-        if (value !== id && tenantKey() === tenant) {
-          setSearchParams({ id: String(value) }, { replace: true });
+      onSelect={(value: number) => {
+        if ((value !== id || switching) && tenantKey() === tenant) {
+          onSelect(value);
         }
       }}
     />

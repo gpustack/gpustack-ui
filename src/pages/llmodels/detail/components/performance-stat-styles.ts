@@ -9,9 +9,11 @@ export default createStyles(({ css }) => ({
     border-radius: var(--ant-border-radius);
     background: var(--ant-color-fill-quaternary);
   `,
+  labelRow: css`
+    min-height: 32px;
+  `,
   label: css`
     min-width: 0;
-    min-height: 32px;
     color: var(--ant-color-text-secondary);
     font-size: var(--ant-font-size-sm);
     line-height: 16px;

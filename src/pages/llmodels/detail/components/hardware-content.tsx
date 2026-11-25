@@ -83,8 +83,8 @@ export const HardwareContent = ({
     ? ['host_cpu', 'host_memory_used']
     : ['gpu_utilization', 'gpu_memory_used', 'gpu_power', 'gpu_temperature'];
   return (
-    <Flex vertical gap={16}>
-      <RequestNotice state={resources} />
+    <Flex vertical gap={16} aria-busy={resources.loading}>
+      <RequestNotice state={resources} showLoading={false} />
       <AvailabilityNotice
         available={resources.data?.available}
         reason={resources.data?.reason}

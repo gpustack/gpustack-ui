@@ -1,9 +1,16 @@
 import { HeaderLeft, PageBreadcrumb } from '@gpustack/core-ui';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Flex, Result, Skeleton, Tabs } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { Button, Flex, Result, Tabs } from 'antd';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react';
 import breadcrumbStyles from '../../_components/page-breadcrumb/index.module.less';
 import DetailHeader from './components/detail-header';
+import DetailPending from './components/detail-pending';
 import { DeviceDrawer } from './components/hardware-content';
 import { RequestNotice } from './components/metric-state';
 import ModelSwitcher from './components/model-switcher';
@@ -15,6 +22,7 @@ import type {
 } from './config/types';
 import ConfigurationTab from './configuration-tab';
 import GPUResourcesTab from './gpu-resources-tab';
+import useDeploymentMetadata from './hooks/use-deployment-metadata';
 import {
   tenantKey,
   useMonitoringData,
@@ -24,13 +32,33 @@ import InstancesTab from './instances-tab';
 import MonitoringTab, { type MonitoringTabHandle } from './monitoring-tab';
 import OverviewTab from './overview-tab';
 
-const DetailPage = ({ id, tenant }: { id: number; tenant: string }) => {
+type ModelLabel = { id: number; name: string };
+
+const DetailPage = ({
+  id,
+  tenant,
+  tab,
+  onTabChange,
+  onModelLabel,
+  preparing,
+  switching,
+  onPrepared
+}: {
+  id: number;
+  tenant: string;
+  tab: DetailTab;
+  onTabChange: (tab: DetailTab) => void;
+  onModelLabel: (label: ModelLabel | null) => void;
+  preparing: boolean;
+  switching: boolean;
+  onPrepared: (id: number, name?: string) => void;
+}) => {
   const intl = useIntl();
-  const data = useMonitoringData(id, tenant);
-  const [tab, updateTab] = useState<DetailTab>('overview');
+  const data = useMonitoringData(id, tenant, tab);
   const setTab = (next: DetailTab) => {
+    if (switching) return;
     data.changeTabScope(next);
-    updateTab(next);
+    onTabChange(next);
   };
   const monitorRef = useRef<MonitoringTabHandle>(null);
   const openMonitoringSection = (section: string) => {
@@ -59,7 +87,45 @@ const DetailPage = ({ id, tenant }: { id: number; tenant: string }) => {
       setDeviceId(null);
   }, [deviceId, data.resources.data, data.resources.loading]);
   const model = data.model.data;
-  if (tenantKey() !== tenant) return <Skeleton active />;
+  const modelName = model?.name;
+  const metadata = useDeploymentMetadata(model);
+  const pending = !model && (data.model.loading || !data.model.key);
+  const initialDataPending =
+    (metadata.loading && !metadata.data) ||
+    [data.instances, data.runtime, data.resources].some(
+      ({ data, key, loading }) => !data && (!key || loading)
+    );
+  const ready = model ? !initialDataPending : !pending;
+  useLayoutEffect(() => {
+    if (preparing && ready) onPrepared(id, modelName);
+  }, [id, modelName, onPrepared, preparing, ready]);
+
+  useEffect(() => {
+    if (!preparing) onModelLabel(modelName ? { id, name: modelName } : null);
+  }, [id, modelName, onModelLabel, preparing]);
+
+  if (preparing) return null;
+  if (tenantKey() !== tenant) return <DetailPending />;
+  const items = [
+    {
+      key: 'overview',
+      label: t('overview'),
+      children: <OverviewTab metadata={metadata} />
+    },
+    {
+      key: 'monitoring',
+      label: t('monitoring'),
+      children: <MonitoringTab ref={monitorRef} />
+    },
+    { key: 'instances', label: t('instances'), children: <InstancesTab /> },
+    { key: 'gpu', label: t('gpuResources'), children: <GPUResourcesTab /> },
+    {
+      key: 'configuration',
+      label: t('configuration'),
+      children: <ConfigurationTab />
+    }
+  ];
+
   return (
     <DetailContext.Provider
       value={{
@@ -71,20 +137,107 @@ const DetailPage = ({ id, tenant }: { id: number; tenant: string }) => {
         openMonitoringSection
       }}
     >
+      <Flex vertical gap={16}>
+        {!pending && <RequestNotice state={data.model} />}
+        {pending || model ? (
+          <>
+            {model ? (
+              <DetailHeader
+                key={`${tenant}:${model.id}:${model.cluster_id}:${model.owner_principal_id ?? ''}`}
+                model={model}
+                tenant={tenant}
+                resources={data.resources.data}
+                onResources={() => setTab('gpu')}
+              />
+            ) : (
+              <div aria-hidden style={{ minBlockSize: 56 }} />
+            )}
+            <Tabs
+              activeKey={tab}
+              onChange={(value) => setTab(value as DetailTab)}
+              items={
+                model
+                  ? items
+                  : items.map((item) => ({
+                      ...item,
+                      children: <DetailPending />
+                    }))
+              }
+            />
+          </>
+        ) : (
+          <Result
+            status={
+              (data.model.error as any)?.response?.status === 403
+                ? '403'
+                : '404'
+            }
+            title={t('deploymentUnavailable')}
+            extra={<Button onClick={data.refresh}>{t('refresh')}</Button>}
+          />
+        )}
+        <DeviceDrawer
+          deviceId={model && !switching ? deviceId : null}
+          onClose={() => setDeviceId(null)}
+        />
+      </Flex>
+    </DetailContext.Provider>
+  );
+};
+
+const DetailShell = ({
+  id,
+  tenant,
+  replaceId
+}: {
+  id: number;
+  tenant: string;
+  replaceId: (id: number) => void;
+}) => {
+  const intl = useIntl();
+  const [tab, setTab] = useState<DetailTab>('overview');
+  const [modelLabel, setModelLabel] = useState<ModelLabel | null>(null);
+  const [selection, setSelection] = useState<{ from: number; to: number }>();
+  if (selection && selection.from !== id) setSelection(undefined);
+  const pendingId = selection?.from === id ? selection.to : undefined;
+  const switching = pendingId !== undefined;
+  const handlePrepared = useCallback(
+    (preparedId: number, name?: string) => {
+      if (preparedId !== pendingId || tenantKey() !== tenant) return;
+      setModelLabel(name ? { id: preparedId, name } : null);
+      replaceId(preparedId);
+    },
+    [pendingId, replaceId, tenant]
+  );
+  if (tenantKey() !== tenant) return <DetailPending />;
+  return (
+    <>
       <HeaderLeft>
         <Flex align="center">
           <div className={breadcrumbStyles.breadcrumb}>
             <PageBreadcrumb
               items={[
                 {
-                  title: <a href="#/models/deployments">{t('deployments')}</a>
+                  title: (
+                    <a href="#/models/deployments">
+                      {intl.formatMessage({
+                        id: 'modelMonitoring.deployments'
+                      })}
+                    </a>
+                  )
                 },
                 {
                   title: (
                     <ModelSwitcher
                       id={id}
-                      name={model?.name || `#${id}`}
+                      name={modelLabel?.id === id ? modelLabel.name : undefined}
                       tenant={tenant}
+                      switching={switching}
+                      onSelect={(nextId) =>
+                        setSelection(
+                          nextId === id ? undefined : { from: id, to: nextId }
+                        )
+                      }
                     />
                   )
                 }
@@ -93,79 +246,49 @@ const DetailPage = ({ id, tenant }: { id: number; tenant: string }) => {
           </div>
         </Flex>
       </HeaderLeft>
-      <Flex vertical gap={16}>
-        <RequestNotice state={data.model} />
-        {!model ? (
-          data.model.loading ? (
-            <Skeleton active />
-          ) : (
-            <Result
-              status={
-                (data.model.error as any)?.response?.status === 403
-                  ? '403'
-                  : '404'
-              }
-              title={t('deploymentUnavailable')}
-              extra={<Button onClick={data.refresh}>{t('refresh')}</Button>}
-            />
-          )
-        ) : (
-          <>
-            <DetailHeader
-              key={`${tenant}:${model.id}:${model.cluster_id}:${model.owner_principal_id ?? ''}`}
-              model={model}
+      {(pendingId === undefined ? [id] : [id, pendingId]).map((modelId) => {
+        const preparing = modelId !== id;
+        const retaining = !preparing && switching;
+        return (
+          <div
+            key={modelId}
+            hidden={preparing}
+            aria-busy={retaining || undefined}
+            ref={(element) => {
+              element?.toggleAttribute('inert', retaining);
+            }}
+          >
+            <DetailPage
+              id={modelId}
               tenant={tenant}
-              resources={data.resources.data}
-              onResources={() => setTab('gpu')}
+              tab={tab}
+              onTabChange={setTab}
+              onModelLabel={setModelLabel}
+              preparing={preparing}
+              switching={retaining}
+              onPrepared={handlePrepared}
             />
-            <Tabs
-              activeKey={tab}
-              onChange={(value) => setTab(value as DetailTab)}
-              items={[
-                {
-                  key: 'overview',
-                  label: t('overview'),
-                  children: <OverviewTab />
-                },
-                {
-                  key: 'monitoring',
-                  label: t('monitoring'),
-                  children: <MonitoringTab ref={monitorRef} />
-                },
-                {
-                  key: 'instances',
-                  label: t('instances'),
-                  children: <InstancesTab />
-                },
-                {
-                  key: 'gpu',
-                  label: t('gpuResources'),
-                  children: <GPUResourcesTab />
-                },
-                {
-                  key: 'configuration',
-                  label: t('configuration'),
-                  children: <ConfigurationTab />
-                }
-              ]}
-            />
-          </>
-        )}
-        <DeviceDrawer
-          deviceId={model ? deviceId : null}
-          onClose={() => setDeviceId(null)}
-        />
-      </Flex>
-    </DetailContext.Provider>
+          </div>
+        );
+      })}
+    </>
   );
 };
+
 const ModelDetail = () => {
-  const [params] = useSearchParams();
+  const [params, setSearchParams] = useSearchParams();
   const tenant = useMonitoringTenant();
   const id = Number(params.get('id'));
   const intl = useIntl();
   return Number.isSafeInteger(id) && id > 0 ? (
-    <DetailPage key={`${tenant}:${id}`} id={id} tenant={tenant} />
+    <DetailShell
+      key={tenant}
+      id={id}
+      tenant={tenant}
+      replaceId={(nextId) =>
+        setSearchParams({ id: String(nextId) }, { replace: true })
+      }
+    />
   ) : (
     <Result
       status="404"

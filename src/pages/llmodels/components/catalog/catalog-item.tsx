@@ -1,11 +1,6 @@
 import fallbackImg from '@/assets/images/img.png';
 import { categoryConfig } from '@/pages/_components/model-tag';
-import {
-  AutoTooltip,
-  IconFont,
-  TextAttribute,
-  ThemeTag
-} from '@gpustack/core-ui';
+import { AutoTooltip, IconFont, ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Typography } from 'antd';
 import classNames from 'classnames';
@@ -77,9 +72,14 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
               {data.name}
             </AutoTooltip>
             {data.experimental === true ? (
-              <TextAttribute variant="filled" className="experimental-tag">
+              <ThemeTag
+                color="blue"
+                variant="filled"
+                opacity={1}
+                className="experimental-tag"
+              >
                 {intl.formatMessage({ id: 'common.tag.experimental' })}
-              </TextAttribute>
+              </ThemeTag>
             ) : null}
           </Flex>
         </div>

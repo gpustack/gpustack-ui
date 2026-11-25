@@ -222,10 +222,15 @@ const InstancesTab = () => {
     }
   ];
   return (
-    <Flex vertical gap={16} style={{ minWidth: 0, maxWidth: '100%' }}>
+    <Flex
+      vertical
+      gap={16}
+      aria-busy={instances.loading || resources.loading}
+      style={{ minWidth: 0, maxWidth: '100%' }}
+    >
       <ScopeToolbar />
-      <RequestNotice state={instances} />
-      <RequestNotice state={resources} />
+      <RequestNotice state={instances} showLoading={false} />
+      <RequestNotice state={resources} showLoading={false} />
       <Flex justify="flex-end" align="center" gap={12} wrap>
         <Button type="link" onClick={() => setTab('gpu')}>
           {t('viewResources')} →
@@ -235,7 +240,7 @@ const InstancesTab = () => {
         rowKey="id"
         columns={columns}
         dataSource={visible}
-        loading={instances.loading}
+        loading={false}
         scroll={{ x: true }}
       />
       <ViewLogsModal

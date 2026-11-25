@@ -91,17 +91,21 @@ mock.module(new URL('../metric-chart.tsx', import.meta.url).href, {
 mock.module(new URL('../performance-stats.tsx', import.meta.url).href, {
   defaultExport: () => null
 });
+const metadata = {
+  key: 'overview-metadata',
+  loading: false,
+  stale: false,
+  error: null,
+  data: {
+    clusterName: 'Readable cluster',
+    target: { route_name: 'actual-route' },
+    cacheServices: {}
+  }
+};
 mock.module(
   new URL('../../hooks/use-deployment-metadata.ts', import.meta.url).href,
   {
-    defaultExport: () => ({
-      loading: false,
-      data: {
-        clusterName: 'Readable cluster',
-        target: { route_name: 'actual-route' },
-        cacheServices: {}
-      }
-    })
+    defaultExport: () => metadata
   }
 );
 mock.module(new URL('../deployment-cache-summary.tsx', import.meta.url).href, {
@@ -300,7 +304,7 @@ test('resource table retains authorized device rows and renders current zero uti
 
 test('PD overview keeps ingress unavailable and shows separate P input and D output evidence', () => {
   prepare();
-  const html = renderToStaticMarkup(createElement(OverviewTab));
+  const html = renderToStaticMarkup(createElement(OverviewTab, { metadata }));
   assert.deepEqual(
     charts.map((chart) => chart.metricKey),
     ['input_tokens', 'output_tokens']
@@ -332,7 +336,7 @@ test('PD overview keeps ingress unavailable and shows separate P input and D out
 
 test('PD overview relies on the page identity while preserving its distinct route', () => {
   prepare();
-  const html = renderToStaticMarkup(createElement(OverviewTab));
+  const html = renderToStaticMarkup(createElement(OverviewTab, { metadata }));
   assert.ok(html.includes('modelMonitoring.deploymentOverview'));
   assert.ok(!html.includes('PD model'));
   assert.ok(!html.includes('Readable cluster'));
@@ -343,7 +347,7 @@ test('a table instance filter does not erase the opposite PD role from overview 
   prepare();
   context.instances.data[0].role = 'prefill';
   context.scope.instanceIds = [7];
-  renderToStaticMarkup(createElement(OverviewTab));
+  renderToStaticMarkup(createElement(OverviewTab, { metadata }));
   assert.deepEqual(
     charts[0].metric.series.map((series: any) => series.dimensions.role),
     ['prefill']

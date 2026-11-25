@@ -6,7 +6,7 @@ export type TraceMessage = (
 ) => string;
 
 export const formatTraceId = (id: string) =>
-  id.replace(/^0{16}([\da-f]{16})$/i, '$1');
+  id.replace(/^0+(?=[0-9a-f]+$)/i, '');
 
 export const traceRecordKey = (
   row: Pick<

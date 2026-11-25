@@ -110,7 +110,7 @@ export const getTraceDetail = (
   request<TraceDetail>(`${tracePath(modelId)}/${row.trace_id}`, {
     ...options(signal),
     params: {
-      request_id: row.request_id ?? undefined,
-      entry_span_id: row.entry_span_id ?? undefined
+      entry_span_id: row.entry_span_id ?? undefined,
+      request_id: row.entry_span_id ? undefined : (row.request_id ?? undefined)
     }
   });

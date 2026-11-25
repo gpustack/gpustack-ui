@@ -13,18 +13,18 @@ import {
 } from '../presentation';
 import type { TraceSpan } from '../requests';
 
-test('only Trace IDs with a zero high half display in the short form', () => {
+test('Trace IDs display without leading zeroes', () => {
   assert.equal(
     formatTraceId('0000000000000000548c943a36f8d9ec'),
     '548c943a36f8d9ec'
   );
   assert.equal(
     formatTraceId('00000000000000000548c943a36f8d9e'),
-    '0548c943a36f8d9e'
+    '548c943a36f8d9e'
   );
   assert.equal(
     formatTraceId('0000000000000001548c943a36f8d9ec'),
-    '0000000000000001548c943a36f8d9ec'
+    '1548c943a36f8d9ec'
   );
 });
 

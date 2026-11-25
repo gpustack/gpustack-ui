@@ -75,7 +75,7 @@ export default function RequestTracesTab({
     trace.closeDetail();
   };
   const apply = (values: TraceFilters) => {
-    activeFilters.current = { ...values, q: values.q?.trim() || undefined };
+    activeFilters.current = { ...values, q: values.q || undefined };
     pageCursors.current = [];
     setPage(1);
     closeDetails();

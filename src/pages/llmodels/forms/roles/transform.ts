@@ -49,9 +49,8 @@ const UI_ONLY_KEYS = [
   'placement_strategy'
 ];
 
-// Every field the payload may carry, in `RoleSpec` order. Anything outside
-// this list is dropped rather than passed through, which is what keeps the
-// transform total: a field added to the form by mistake cannot reach the API.
+// Fields serialized through the override groups. Standalone role fields are
+// copied explicitly rather than spreading the form into the payload.
 const PAYLOAD_FIELDS = _.flatten(Object.values(OverrideGroupFields));
 
 /**
@@ -276,6 +275,10 @@ const roleFormToPayload = (role: RoleFormItem): RoleSpec => {
   if (role.dependencies) {
     payload.dependencies = role.dependencies;
   }
+  // An explicit disable overrides the model; an unset config inherits it.
+  if (!isRouter && role.speculative_config !== undefined) {
+    payload.speculative_config = role.speculative_config;
+  }
 
   return payload as RoleSpec;
 };
@@ -287,10 +290,8 @@ const roleFormToPayload = (role: RoleFormItem): RoleSpec => {
  * members, while `null` is the plain single-role deployment every model is
  * today — and that path has to stay exactly what it is.
  *
- * Total by construction: the output is assembled from `PAYLOAD_FIELDS`, never
- * spread from the form value, so no UI-only key can leak and no field can be
- * forgotten. Feeding the result back through `rolesSpecToForm` and out again
- * returns the same payload.
+ * The output is assembled from the override groups and standalone role fields,
+ * never spread from the form value. UI-only keys stay out of the request.
  */
 export const rolesFormToPayload = (
   roles?: RoleFormItem[] | null,
@@ -541,7 +542,7 @@ export const createDefaultRoles = (): RoleFormItem[] =>
 export const ROLE_UI_ONLY_KEYS = UI_ONLY_KEYS;
 
 /**
- * The fields a role may carry on the wire. Exported for the same reason.
+ * The fields a role carries through its override groups.
  */
 export const ROLE_PAYLOAD_FIELDS = PAYLOAD_FIELDS;
 

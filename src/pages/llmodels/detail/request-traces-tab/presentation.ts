@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import type { TraceRecord, TraceRequestMetrics, TraceSpan } from './requests';
 
 export type TraceMessage = (
@@ -46,11 +47,8 @@ export const formatTraceTokens = (metrics?: TraceRequestMetrics | null) =>
     ? '—'
     : `${formatTraceValue(metrics.input_tokens)} / ${formatTraceValue(metrics.output_tokens)}`;
 
-export const formatTraceDate = (timestamp: number, locale?: string) =>
-  new Intl.DateTimeFormat(locale, {
-    dateStyle: 'short',
-    timeStyle: 'medium'
-  }).format(timestamp);
+export const formatTraceDate = (timestamp: number) =>
+  dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss');
 
 export function spanTimelineLabel(
   span: Pick<

@@ -144,17 +144,6 @@ export default function RequestTracesTab({
       }
     },
     {
-      dataIndex: 'started_at_ms',
-      title: t('startedAt'),
-      minWidth: 166,
-      maxWidth: 184,
-      render: (_: unknown, row: TraceRecord) => (
-        <AutoTooltip ghost>
-          {formatTraceDate(row.started_at_ms, intl.locale)}
-        </AutoTooltip>
-      )
-    },
-    {
       dataIndex: 'path',
       title: t('endpoint'),
       minWidth: 152,
@@ -192,6 +181,15 @@ export default function RequestTracesTab({
       maxWidth: 166,
       render: (_: unknown, row: TraceRecord) =>
         formatTraceTokens(row.request_metrics)
+    },
+    {
+      dataIndex: 'started_at_ms',
+      title: t('startedAt'),
+      minWidth: 166,
+      maxWidth: 184,
+      render: (_: unknown, row: TraceRecord) => (
+        <AutoTooltip ghost>{formatTraceDate(row.started_at_ms)}</AutoTooltip>
+      )
     }
   ];
 
@@ -362,7 +360,6 @@ export default function RequestTracesTab({
             row={selected}
             state={trace.detail}
             instanceName={instanceName}
-            locale={intl.locale}
             t={t}
             onClose={closeDetails}
             onRetry={() => {

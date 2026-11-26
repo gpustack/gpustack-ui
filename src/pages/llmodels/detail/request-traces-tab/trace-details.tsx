@@ -65,12 +65,10 @@ export const RequestTraceStatus = ({
 const RequestSummary = ({
   observation,
   instanceName,
-  locale,
   t
 }: {
   observation: TraceRecord;
   instanceName: (id: number | null) => string;
-  locale: string;
   t: TraceMessage;
 }) => {
   const requestId = observation.request_id;
@@ -100,7 +98,7 @@ const RequestSummary = ({
     {
       key: 'time',
       label: t('startedAt'),
-      children: formatTraceDate(observation.started_at_ms, locale)
+      children: formatTraceDate(observation.started_at_ms)
     },
     {
       key: 'instance',
@@ -172,7 +170,6 @@ export default function TraceDetails({
   row,
   state,
   instanceName,
-  locale,
   t,
   onClose,
   onRetry
@@ -180,7 +177,6 @@ export default function TraceDetails({
   row: TraceRecord | null;
   state: ResourceSnapshot<TraceDetail>;
   instanceName: (id: number | null) => string;
-  locale: string;
   t: TraceMessage;
   onClose: () => void;
   onRetry: () => void;
@@ -217,7 +213,6 @@ export default function TraceDetails({
             <RequestSummary
               observation={observation}
               instanceName={instanceName}
-              locale={locale}
               t={t}
             />
             {state.loading && <Skeleton active />}

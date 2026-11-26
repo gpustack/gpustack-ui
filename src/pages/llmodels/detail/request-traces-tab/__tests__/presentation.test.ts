@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   defaultCollapsedSpanIds,
+  formatTraceDate,
   formatTraceId,
   formatTraceTokens,
   spanTimelineDuration,
@@ -12,6 +13,11 @@ import {
   visibleSpanTimelineRows
 } from '../presentation';
 import type { TraceSpan } from '../requests';
+
+test('request timestamps use the deployment creation time format', () => {
+  const timestamp = new Date(2026, 0, 2, 15, 4, 5).getTime();
+  assert.equal(formatTraceDate(timestamp), '2026-01-02 15:04:05');
+});
 
 test('Trace IDs display without leading zeroes', () => {
   assert.equal(

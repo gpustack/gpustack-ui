@@ -16,11 +16,20 @@ import type { TraceDetail, TraceSpan } from './requests';
 import styles from './trace-details.module.less';
 
 const timeTicks = [0, 25, 50, 75, 100];
+const spanDescriptionColumns = {
+  xs: 1,
+  sm: 2,
+  md: 2,
+  lg: 2,
+  xl: 2,
+  xxl: 2,
+  xxxl: 2
+};
 
 const SpanAttributes = ({ span, t }: { span: TraceSpan; t: TraceMessage }) => (
   <Flex vertical gap={12} className={styles.spanPopoverContent}>
     <Descriptions
-      column={1}
+      column={spanDescriptionColumns}
       size="small"
       items={[
         {
@@ -39,9 +48,6 @@ const SpanAttributes = ({ span, t }: { span: TraceSpan; t: TraceMessage }) => (
           label: 'parent.span.id',
           children: span.parent_id ?? '—'
         },
-        ...(span.status === 'error'
-          ? [{ key: 'status', label: 'status', children: t('spanError') }]
-          : []),
         {
           key: 'start',
           label: t('spanStart'),
@@ -59,13 +65,16 @@ const SpanAttributes = ({ span, t }: { span: TraceSpan; t: TraceMessage }) => (
           key: 'duration',
           label: t('duration'),
           children: formatTraceValue(span.duration_ms, 'ms')
-        }
+        },
+        ...(span.status === 'error'
+          ? [{ key: 'status', label: 'status', children: t('spanError') }]
+          : [])
       ]}
     />
     {span.engine && (
       <Descriptions
         title={t('engineMetrics')}
-        column={2}
+        column={spanDescriptionColumns}
         size="small"
         items={[
           {

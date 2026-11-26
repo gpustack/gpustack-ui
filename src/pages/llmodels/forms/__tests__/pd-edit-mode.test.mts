@@ -10,7 +10,17 @@ import type { PDModeResolution } from '../../config/types';
 const passChildren = ({ children }: any) =>
   createElement(Fragment, null, children);
 const empty = () => null;
-const ScrollSpyTabs = forwardRef((props: any, _ref) => passChildren(props));
+const ScrollSpyTabs = forwardRef(({ children, segmentOptions }: any, _ref) =>
+  createElement(
+    'div',
+    {
+      'data-pd-nav-target': segmentOptions?.find(
+        (option: { value: string }) => option.value === 'pd'
+      )?.field
+    },
+    children
+  )
+);
 const InputField = ({ value }: any) =>
   createElement('span', null, String(value ?? ''));
 const modes = [
@@ -491,6 +501,30 @@ const renderForm = async ({
     enablePD
   };
 };
+
+test('PD navigation targets one enable row with PD on or off', async () => {
+  for (const pd of [true, false]) {
+    const { root } = await renderForm({ pd, mode: 'vllm-mooncake' });
+    try {
+      const form = dom.window.document.querySelector<HTMLElement>(
+        '[data-pd-nav-target]'
+      );
+      assert.ok(form?.dataset.pdNavTarget);
+      const anchors = form.querySelectorAll(
+        `[data-field="${form.dataset.pdNavTarget}"]`
+      );
+      assert.equal(anchors.length, 1, `PD ${pd ? 'enabled' : 'disabled'}`);
+      assert.equal(
+        anchors[0]
+          .querySelector('[role="switch"]')
+          ?.getAttribute('aria-checked'),
+        String(pd)
+      );
+    } finally {
+      await act(async () => root.unmount());
+    }
+  }
+});
 
 for (const action of ['edit', 'create']) {
   test(`opening a saved Custom PD configuration preserves all roles and submit (${action === 'create' ? 'copy' : action})`, async () => {

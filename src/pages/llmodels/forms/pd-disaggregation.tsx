@@ -1245,7 +1245,7 @@ const PDDisaggregation: React.FC<PDDisaggregationProps> = (props) => {
         justify="space-between"
         gap={8}
         className={styles.toggleRow}
-        data-field="pdMode"
+        data-field="pd-disaggregation"
       >
         <LabelInfo
           label={intl.formatMessage({ id: 'models.form.pd.enable' })}

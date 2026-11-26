@@ -364,7 +364,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             value: TABKeysMap.PD,
             label: intl.formatMessage({ id: 'models.form.tabs.pd' }),
             icon: <IconFont type="icon-alt-route" />,
-            field: pdEffects.enabled ? 'roles' : 'pdMode'
+            field: 'pd-disaggregation'
           }
         ]
       : []),

@@ -150,15 +150,6 @@ const Roles: React.FC<RolesProps> = ({ enabled, mode, modeName, pdBody }) => {
           already says. The two fields are the group level; nothing else is up
           here for them to be distinguished from. */}
       {pdBody}
-      {/* 🔴 No wrapper, and no label of its own. It used to have both — a
-          `LabelInfo` reading «拓扑亲和性» above a nested box — which put two
-          labels on one field: the section's, and then the select's own
-          floating one inside the border. The result read as a field inside a
-          field, and sat beside «传输方案» looking like a different kind of
-          control when it is the same kind.
-
-          The select carries «拓扑亲和性» as its own floating label now, so the
-          two group-level fields are structurally identical. */}
       <GatherLocality></GatherLocality>
       <Segmented
         block

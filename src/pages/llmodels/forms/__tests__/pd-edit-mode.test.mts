@@ -14,7 +14,7 @@ const ScrollSpyTabs = forwardRef(({ children, segmentOptions }: any, _ref) =>
   createElement(
     'div',
     {
-      'data-pd-nav-target': segmentOptions.find(
+      'data-pd-nav-target': segmentOptions?.find(
         (option: { value: string }) => option.value === 'pd'
       )?.field
     },

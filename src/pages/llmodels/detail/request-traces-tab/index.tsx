@@ -11,6 +11,7 @@ import { useIntl } from '@umijs/max';
 import {
   Alert,
   Button,
+  ConfigProvider,
   Empty,
   Flex,
   Form,
@@ -108,7 +109,7 @@ export default function RequestTracesTab({
     {
       dataIndex: 'request_id',
       title: t('request'),
-      minWidth: 238,
+      minWidth: 342,
       maxWidth: 420,
       render: (_: unknown, row: TraceRecord) => {
         const identifier = row.request_id ?? formatTraceId(row.trace_id);
@@ -130,29 +131,33 @@ export default function RequestTracesTab({
                 btnStyle={{ flexShrink: 0 }}
               />
             </Flex>
-            <Flex
-              align="center"
-              gap={4}
-              style={{ color: 'var(--ant-color-text-description)' }}
-            >
-              <span style={{ flexShrink: 0, whiteSpace: 'nowrap' }}>
-                {formatTraceDate(row.started_at_ms, intl.locale)}
-                {instance !== '—' && ' ·'}
-              </span>
-              {instance !== '—' && (
-                <AutoTooltip ghost style={{ minWidth: 0 }}>
-                  {instance}
-                </AutoTooltip>
-              )}
-            </Flex>
+            {instance && instance !== '—' && (
+              <AutoTooltip
+                ghost
+                style={{ color: 'var(--ant-color-text-description)' }}
+              >
+                {t('instanceName', { name: instance })}
+              </AutoTooltip>
+            )}
           </Flex>
         );
       }
     },
     {
+      dataIndex: 'started_at_ms',
+      title: t('startedAt'),
+      minWidth: 166,
+      maxWidth: 184,
+      render: (_: unknown, row: TraceRecord) => (
+        <AutoTooltip ghost>
+          {formatTraceDate(row.started_at_ms, intl.locale)}
+        </AutoTooltip>
+      )
+    },
+    {
       dataIndex: 'path',
       title: t('endpoint'),
-      minWidth: 146,
+      minWidth: 152,
       span: 1.2,
       render: (_: unknown, row: TraceRecord) => (
         <AutoTooltip ghost>{row.path ?? '—'}</AutoTooltip>
@@ -161,7 +166,7 @@ export default function RequestTracesTab({
     {
       dataIndex: 'outcome',
       title: t('state'),
-      minWidth: 126,
+      minWidth: 118,
       span: 0.8,
       render: (_: unknown, row: TraceRecord) => (
         <RequestTraceStatus row={row} t={t} statusCodeInTooltip />
@@ -170,7 +175,7 @@ export default function RequestTracesTab({
     {
       dataIndex: 'duration_ms',
       title: t('elapsed'),
-      minWidth: 176,
+      minWidth: 174,
       render: (_: unknown, row: TraceRecord) => (
         <RequestDurationCell
           label={traceDurationLabel(row, t)}
@@ -183,7 +188,7 @@ export default function RequestTracesTab({
     {
       dataIndex: 'tokens',
       title: t('tokens'),
-      minWidth: 128,
+      minWidth: 113,
       maxWidth: 166,
       render: (_: unknown, row: TraceRecord) =>
         formatTraceTokens(row.request_metrics)
@@ -321,31 +326,35 @@ export default function RequestTracesTab({
             </Flex>
           </Flex>
           {loading || rows.length || page > 1 ? (
-            <SealTable
-              rowKey="key"
-              columns={columns}
-              loading={loading}
-              dataSource={rows.map((row) => ({
-                ...row,
-                key: traceRecordKey(row)
-              }))}
-              empty={<Empty description={t('noRecords')} />}
-              pagination={
-                page > 1 || nextCursor
-                  ? {
-                      current: page,
-                      pageSize: tracePageSize,
-                      // The next cursor makes one additional page reachable.
-                      total: page * tracePageSize + (nextCursor ? 1 : 0),
-                      disabled: loading,
-                      showLessItems: true,
-                      showSizeChanger: false,
-                      onChange: changePage
-                    }
-                  : undefined
-              }
-              scroll={{ x: true }}
-            />
+            <ConfigProvider
+              theme={{ components: { Table: { cellPaddingInline: 8 } } }}
+            >
+              <SealTable
+                rowKey="key"
+                columns={columns}
+                loading={loading}
+                dataSource={rows.map((row) => ({
+                  ...row,
+                  key: traceRecordKey(row)
+                }))}
+                empty={<Empty description={t('noRecords')} />}
+                pagination={
+                  page > 1 || nextCursor
+                    ? {
+                        current: page,
+                        pageSize: tracePageSize,
+                        // The next cursor makes one additional page reachable.
+                        total: page * tracePageSize + (nextCursor ? 1 : 0),
+                        disabled: loading,
+                        showLessItems: true,
+                        showSizeChanger: false,
+                        onChange: changePage
+                      }
+                    : undefined
+                }
+                scroll={{ x: true }}
+              />
+            </ConfigProvider>
           ) : error == null ? (
             <Empty description={t('noRecords')} />
           ) : null}

@@ -57,6 +57,7 @@ const reasonKeys = new Set([
   'partial_metric_data',
   'incompatible_histogram_buckets',
   'histogram_quantile_out_of_range',
+  'histogram_first_bucket_unresolved',
   'histogram_bounds_unavailable',
   'partial_source_observations'
 ]);

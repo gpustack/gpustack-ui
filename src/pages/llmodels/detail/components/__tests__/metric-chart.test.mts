@@ -217,6 +217,31 @@ test('unverified quantiles keep one precise diagnostic without a duplicate warni
   );
 });
 
+test('TPOT explains missing first-bucket percentiles without lower bounds', () => {
+  const html = renderToStaticMarkup(
+    createElement(MetricChart, {
+      metricKey: 'tpot',
+      title: 'Time per output token',
+      metric: {
+        ...metric,
+        reason: 'histogram_first_bucket_unresolved',
+        summaries: [
+          { statistic: 'avg', value: 0.0032, dimensions: {} },
+          { statistic: 'p95', value: null, dimensions: {} }
+        ],
+        series: [
+          { ...metric.series[0], statistic: 'avg', points: [[100, 0.0032]] },
+          { ...metric.series[0], points: [[100, null]] }
+        ]
+      }
+    })
+  );
+  assert.ok(
+    html.includes('modelMonitoring.state.histogram_first_bucket_unresolved')
+  );
+  assert.ok(html.includes('3.2 ms'));
+});
+
 test('a timed-out bounds check retains its partial mean and a visible query-failure warning', () => {
   const source = {
     ...metric,

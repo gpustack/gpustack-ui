@@ -33,6 +33,8 @@ export default {
     '“>” is a known lower bound beyond the source histogram range. Censored points are not plotted as exact quantiles.',
   'modelMonitoring.state.histogram_quantile_out_of_range':
     'Quantiles exceed the histogram range; an exact curve is unavailable.',
+  'modelMonitoring.state.histogram_first_bucket_unresolved':
+    'All samples in a time window fell in the first latency bucket, so the histogram cannot resolve those percentiles.',
   'modelMonitoring.state.histogram_bounds_unavailable':
     'Some quantile bounds could not be verified. Retry the query.',
 

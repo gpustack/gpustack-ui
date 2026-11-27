@@ -1,16 +1,12 @@
 import { PageAction } from '@/config';
+import CategorySelect from '@/pages/_components/category-select';
 import DocLink from '@/pages/_components/doc-link';
 import { genericReferLink } from '@/pages/model-routes/config';
-import {
-  CheckboxField,
-  LabelSelector,
-  Select as SealSelect
-} from '@gpustack/core-ui';
+import { CheckboxField, LabelSelector } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import { modelCategories } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import { backendOptionsMap } from '../constants/backend-parameters';
@@ -89,13 +85,13 @@ const AdvanceConfig = ({ pdActive }: { pdActive?: boolean } = {}) => {
           scrollMarginTop: 200
         }}
       >
-        <SealSelect
+        <CategorySelect
           allowNull
           label={intl.formatMessage({
             id: 'models.form.categories'
           })}
-          options={modelCategories}
-        ></SealSelect>
+          emptyOption="auto"
+        />
       </Form.Item>
       {!pdActive && (
         <>

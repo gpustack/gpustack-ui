@@ -319,51 +319,12 @@ export const placementStrategyOptions = [
   }
 ];
 
-export const modelCategoriesMap = {
-  image: 'image',
-  text_to_speech: 'text_to_speech',
-  speech_to_text: 'speech_to_text',
-  embedding: 'embedding',
-  reranker: 'reranker',
-  llm: 'llm',
-  decision: 'decision'
-};
-
-export const categoryOptions = [
-  {
-    label: 'LLM',
-    value: modelCategoriesMap.llm
-  },
-  {
-    label: 'Embedding',
-    value: modelCategoriesMap.embedding
-  },
-  {
-    label: 'Reranker',
-    value: modelCategoriesMap.reranker
-  },
-  {
-    label: 'Image',
-    value: modelCategoriesMap.image
-  },
-  {
-    label: 'Text-to-Speech',
-    value: modelCategoriesMap.text_to_speech
-  },
-  {
-    label: 'Speech-to-Text',
-    value: modelCategoriesMap.speech_to_text
-  },
-  {
-    label: 'Decision',
-    value: modelCategoriesMap.decision
-  }
-];
-
-export const modelCategories = [
-  { label: 'common.options.auto', value: null, locale: true },
-  ...categoryOptions
-];
+export {
+  categoryOptions,
+  categoryOptionsWithOther,
+  modelCategories,
+  modelCategoriesMap
+} from './categories';
 
 export const getbackendParameters = (data: any) => {
   const backendParameters = data.backend_parameters || {};

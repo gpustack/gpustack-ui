@@ -38,6 +38,7 @@ import TitleWrapper from '../title-wrapper';
 import { resolveRuntimeChoice } from './runtime-choice';
 
 const pickFieldsFromSpec = [
+  'meta',
   'backend',
   'backend_version',
   'image_name',
@@ -269,6 +270,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         categories: getCategory(item)
       });
       form.current?.applyRuntimeChoice?.(runtimeChoice);
+      form.current?.setFieldValue?.('meta', defaultSpec.meta);
     },
     100
   );
@@ -454,6 +456,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         _.omit(newFormValues, Object.keys(runtimeChoice))
       );
       form.current?.applyRuntimeChoice?.(runtimeChoice);
+      form.current?.setFieldValue?.('meta', defaultSpec.meta);
 
       onClickModel();
     }

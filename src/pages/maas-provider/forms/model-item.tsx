@@ -1,11 +1,12 @@
 import { PageAction } from '@/config';
-import { categoryOptions, modelCategoriesMap } from '@/pages/llmodels/config';
+import CategorySelect from '@/pages/_components/category-select';
+import { modelCategoriesMap } from '@/pages/llmodels/config';
 import {
   CheckCircleFilled,
   LoadingOutlined,
   WarningFilled
 } from '@ant-design/icons';
-import { AutoComplete, Select as SealSelect } from '@gpustack/core-ui';
+import { AutoComplete } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Form, Tooltip } from 'antd';
 import React, { useMemo } from 'react';
@@ -247,33 +248,19 @@ const ModelItem: React.FC<ModelItemProps> = ({
           />
         </span>
       </Tooltip>
-      <SealSelect
+      <CategorySelect
         // A decision service's models are all decision engines: the category
         // cell shows a fixed read-only "Decision" value (server contract,
         // never user-chosen) and takes no interaction.
         disabled={isSystemone}
         value={isSystemone ? 'decision' : item.category}
         onChange={isSystemone ? undefined : handleOnCategoryChange}
-        options={
-          isSystemone
-            ? [
-                {
-                  label: intl.formatMessage({ id: 'providers.form.decision' }),
-                  value: 'decision'
-                }
-              ]
-            : [
-                ...categoryOptions,
-                {
-                  label: intl.formatMessage({ id: 'common.option.other' }),
-                  value: null
-                }
-              ]
-        }
+        emptyOption={isSystemone ? undefined : 'other'}
+        categoryValues={isSystemone ? [modelCategoriesMap.decision] : undefined}
         placeholder={intl.formatMessage({
           id: 'models.form.categories'
         })}
-      ></SealSelect>
+      />
       <Tooltip
         title={intl.formatMessage({
           id: isSystemone

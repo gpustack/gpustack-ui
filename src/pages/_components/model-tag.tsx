@@ -1,49 +1,32 @@
 import {
   AudioOutlined,
   PictureOutlined,
+  VideoCameraOutlined,
   WechatWorkOutlined
 } from '@ant-design/icons';
-import { IconFont } from '@gpustack/core-ui';
-import { Tag } from 'antd';
-import { modelCategoriesMap } from '../llmodels/config';
+import { IconFont, ThemeTag } from '@gpustack/core-ui';
+import { categoryOptions } from '../llmodels/config/categories';
 
-export const categoryConfig = {
-  [modelCategoriesMap.reranker]: {
-    icon: <IconFont type="icon-rank1" />,
-    color: 'cyan',
-    label: 'Reranker'
-  },
-  [modelCategoriesMap.embedding]: {
-    icon: <IconFont type="icon-cube" />,
-    color: 'magenta',
-    label: 'Embedding'
-  },
-  [modelCategoriesMap.text_to_speech]: {
-    icon: <IconFont type="icon-sound-wave" />,
-    color: 'geekblue',
-    label: 'Text-To-Speech'
-  },
-  [modelCategoriesMap.speech_to_text]: {
-    icon: <AudioOutlined />,
-    color: 'processing',
-    label: 'Speech-To-Text'
-  },
-  [modelCategoriesMap.image]: {
-    icon: <PictureOutlined />,
-    color: 'orange',
-    label: 'Image'
-  },
-  [modelCategoriesMap.llm]: {
-    icon: <WechatWorkOutlined />,
-    color: 'green',
-    label: 'LLM'
-  },
-  [modelCategoriesMap.decision]: {
-    icon: <IconFont type="icon-alt-route" />,
-    color: 'purple',
-    label: 'Decision'
-  }
+const categoryIcons = {
+  rank: <IconFont type="icon-rank1" />,
+  cube: <IconFont type="icon-cube" />,
+  'sound-wave': <IconFont type="icon-sound-wave" />,
+  audio: <AudioOutlined />,
+  picture: <PictureOutlined />,
+  video: <VideoCameraOutlined />,
+  chat: <WechatWorkOutlined />,
+  'alt-route': <IconFont type="icon-alt-route" />
 };
+
+export const categoryConfig = Object.fromEntries(
+  categoryOptions.map((option) => [
+    option.value,
+    {
+      ...option,
+      icon: categoryIcons[option.icon as keyof typeof categoryIcons]
+    }
+  ])
+);
 
 interface ModelTagProps {
   categoryKey: keyof typeof categoryConfig;
@@ -56,13 +39,13 @@ const ModelTag: React.FC<ModelTagProps> = ({ categoryKey, size }) => {
   if (!config) return null;
 
   return (
-    <Tag
+    <ThemeTag
+      opacity={1}
       icon={config.icon}
       variant={'outlined'}
       style={{
         height: size,
         margin: 0,
-        opacity: 1,
         paddingInline: 8,
         borderRadius: 12,
         transform: 'scale(0.9)',
@@ -71,7 +54,7 @@ const ModelTag: React.FC<ModelTagProps> = ({ categoryKey, size }) => {
       color={config.color}
     >
       {config.label}
-    </Tag>
+    </ThemeTag>
   );
 };
 

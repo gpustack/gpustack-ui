@@ -136,7 +136,7 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
 
           {data.size > 0 && (
             <>
-              <span className="dot"></span>
+              <span className="dot-separator" aria-hidden />
               <AutoTooltip
                 style={{
                   borderRadius: 4

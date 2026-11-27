@@ -1,4 +1,34 @@
 export default {
+  'playground.video.extraParams': 'Пользовательские параметры (JSON)',
+  'playground.video.extraParams.tips':
+    'Укажите параметры модели в виде объекта JSON. Поле можно оставить пустым.',
+  'playground.video.extraParams.invalid':
+    'Введите корректный объект JSON или оставьте поле пустым.',
+  'playground.video.extraParams.conflict':
+    'Эти параметры задаются в форме: {keys}.',
+  'playground.video.cancelGeneration': 'Отменить генерацию',
+  'playground.video.clearRecord': 'Очистить локальную запись о видео',
+  'playground.video.clearTitle': 'Очистить локальную запись о видео?',
+  'playground.video.clearConfirm':
+    'Сохранённые идентификатор видео и параметры будут удалены из браузера. Текущая задача и предпросмотр останутся на этой странице.',
+  'playground.video.cacheUnavailable':
+    'Браузеру не удалось получить доступ к сохранённой записи о видео.',
+  'playground.video.task.t2va': 'Видео из текста',
+  'playground.video.task.fl2va': 'Видео по первому/последнему кадру',
+  'playground.video.task.ref2va': 'Видео по референсам',
+  'playground.video.tasks.preview': 'Предпросмотр видео',
+  'playground.video.tasks.playbackError':
+    'Браузеру не удалось воспроизвести это видео.',
+  'playground.video.loading': 'Загрузка видео…',
+  'playground.video.tasks.status.queued': 'В очереди',
+  'playground.video.tasks.status.in_progress': 'Генерация',
+  'playground.video.tasks.status.completed': 'Завершено',
+  'playground.video.tasks.status.failed': 'Ошибка',
+  'playground.video.tasks.status.cancelled': 'Отменено',
+  'playground.video.tasks.status.expired': 'Срок истёк',
+
+  'playground.params.aspectRatio': 'Соотношение сторон',
+  'playground.params.modelDefault': 'По умолчанию для модели',
   'playground.image.compare.invalidParameters':
     'Проверьте параметры: {fields}.',
   'playground.image.compare.applyFailed':
@@ -71,6 +101,30 @@ export default {
   'playground.params.custom': 'Дополнительно',
   'playground.params.empty.tips': 'Здесь появятся сгенерированные изображения',
   'playground.video.empty.tips': 'Здесь появятся сгенерированные видео.',
+  'playground.video.generating': 'Генерация…',
+  'playground.video.taskUnsupported':
+    'В этом развёртывании нет задач, поддерживаемых текущим Playground. Проверьте раздел модели или используйте API для генерации с референсами.',
+  'playground.video.firstFrame': 'Первый кадр',
+  'playground.video.lastFrame': 'Последний кадр',
+  'playground.video.media.uploadImage': 'Загрузить изображение',
+  'playground.video.keyframes.required':
+    'Укажите первый, последний или оба кадра.',
+  'playground.video.references': 'Референсы',
+  'playground.video.references.required':
+    'Укажите URL референса или загрузите файл.',
+  'playground.video.references.visualRequired':
+    'Добавьте хотя бы одно изображение или видео.',
+  'playground.video.media.image': 'Изображение',
+  'playground.video.media.video': 'Видео',
+  'playground.video.media.audio': 'Аудио',
+  'playground.video.media.url': 'Введите HTTP(S) URL',
+  'playground.video.media.invalid': 'Введите корректный HTTP или HTTPS URL.',
+  'playground.video.media.formats': '{formats}; до {size} MiB на файл.',
+  'playground.params.refImage': 'Исходное изображение',
+  'playground.params.refImage.tips':
+    'Укажите URL изображения или загрузите PNG или JPEG.',
+  'playground.params.refImage.invalid':
+    'Введите действительный URL изображения с HTTP или HTTPS.',
   'playground.params.standard': 'Стандарт',
   'playground.params.hd': 'HD',
   'playground.params.style.vivid': 'Яркий',

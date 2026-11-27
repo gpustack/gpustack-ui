@@ -7,7 +7,8 @@ const RightContainer: React.FC<{
   collapsed: boolean;
   children: React.ReactNode;
   footer?: React.ReactNode;
-}> = ({ children, footer, collapsed }) => {
+  className?: string;
+}> = ({ children, footer, collapsed, className }) => {
   const { initialize } = useOverlayScroller();
   const paramsRef = React.useRef<HTMLDivElement>(null);
 
@@ -18,7 +19,9 @@ const RightContainer: React.FC<{
   }, [initialize]);
 
   return (
-    <div className={classNames(s.wrapper, { [s.collapsed]: collapsed })}>
+    <div
+      className={classNames(s.wrapper, className, { [s.collapsed]: collapsed })}
+    >
       <div className={s.box} ref={paramsRef}>
         {children}
       </div>

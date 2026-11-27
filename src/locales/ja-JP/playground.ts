@@ -1,4 +1,34 @@
 export default {
+  'playground.video.extraParams': 'カスタムパラメーター（JSON）',
+  'playground.video.extraParams.tips':
+    'モデル固有のパラメーターを JSON オブジェクトで指定できます。空欄のままでも構いません。',
+  'playground.video.extraParams.invalid':
+    '有効な JSON オブジェクトを入力するか、空欄にしてください。',
+  'playground.video.extraParams.conflict':
+    '以下のパラメーターはフォームで設定します：{keys}。',
+  'playground.video.cancelGeneration': '生成をキャンセル',
+  'playground.video.clearRecord': 'ローカルの動画記録を消去',
+  'playground.video.clearTitle': 'ローカルの動画記録を消去しますか？',
+  'playground.video.clearConfirm':
+    'このブラウザーに保存した動画 ID とパラメーターを消去します。現在のタスクとプレビューはこのページに残ります。',
+  'playground.video.cacheUnavailable':
+    'ブラウザーで保存済みの動画記録にアクセスできませんでした。',
+  'playground.video.task.t2va': 'テキストから動画生成',
+  'playground.video.task.fl2va': '開始・終了フレームから動画生成',
+  'playground.video.task.ref2va': '参照メディアから動画生成',
+  'playground.video.tasks.preview': '動画プレビュー',
+  'playground.video.tasks.playbackError':
+    'ブラウザーでこの動画を再生できませんでした。',
+  'playground.video.loading': '動画を読み込み中…',
+  'playground.video.tasks.status.queued': '待機中',
+  'playground.video.tasks.status.in_progress': '生成中',
+  'playground.video.tasks.status.completed': '完了',
+  'playground.video.tasks.status.failed': '失敗',
+  'playground.video.tasks.status.cancelled': 'キャンセル済み',
+  'playground.video.tasks.status.expired': '期限切れ',
+
+  'playground.params.aspectRatio': 'アスペクト比',
+  'playground.params.modelDefault': 'モデルの既定値',
   'playground.image.compare.invalidParameters':
     '次のパラメーターを確認してください：{fields}。',
   'playground.image.compare.applyFailed':
@@ -71,6 +101,32 @@ export default {
   'playground.params.custom': 'カスタム',
   'playground.params.empty.tips': '生成された画像はここに表示されます。',
   'playground.video.empty.tips': '生成された動画はここに表示されます。',
+  'playground.video.generating': '生成中…',
+  'playground.video.taskUnsupported':
+    'このデプロイには、現在の Playground が対応するタスクがありません。モデルの分割を確認するか、参照入力による生成には API を使用してください。',
+  'playground.video.firstFrame': '最初のフレーム',
+  'playground.video.lastFrame': '最後のフレーム',
+  'playground.video.media.uploadImage': '画像をアップロード',
+  'playground.video.keyframes.required':
+    '最初、最後、または両方のフレームを指定してください。',
+  'playground.video.references': '参照メディア',
+  'playground.video.references.required':
+    '参照 URL またはファイルを指定してください。',
+  'playground.video.references.visualRequired':
+    '参照画像または参照動画を少なくとも 1 件指定してください。',
+  'playground.video.media.image': '画像',
+  'playground.video.media.video': '動画',
+  'playground.video.media.audio': '音声',
+  'playground.video.media.url': 'HTTP(S) URL を入力',
+  'playground.video.media.invalid':
+    '有効な HTTP または HTTPS URL を入力してください。',
+  'playground.video.media.formats':
+    '{formats}；1 ファイルあたり {size} MiB まで。',
+  'playground.params.refImage': '参照画像',
+  'playground.params.refImage.tips':
+    '画像の URL を入力するか、PNG または JPEG をアップロードしてください。',
+  'playground.params.refImage.invalid':
+    '有効な HTTP または HTTPS の画像 URL を入力してください。',
   'playground.params.standard': '標準',
   'playground.params.hd': 'HD',
   'playground.params.style.vivid': '鮮やか',

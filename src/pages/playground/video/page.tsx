@@ -1,16 +1,14 @@
-import VideoPoster from '@/assets/images/video-poster.png';
-import { setRouteCache } from '@/atoms/route-cache';
-import routeCachekey from '@/config/route-cachekey';
-import { VideoCameraOutlined } from '@ant-design/icons';
-import { AlertInfo, IconFont } from '@gpustack/core-ui';
+import { userAtom } from '@/atoms/user';
+import { HistoryOutlined } from '@ant-design/icons';
+import { AlertInfo, DeleteModal, IconFont } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Button, Spin, Tooltip } from 'antd';
-import _ from 'lodash';
-import React, {
+import { Button, Flex, Tooltip } from 'antd';
+import { useAtomValue } from 'jotai';
+import {
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
   useState
 } from 'react';
@@ -24,7 +22,11 @@ import useTextVideo from '../hooks/use-text-video';
 import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { generateCode } from '../view-code/video';
+import { parseVideoAdvancedParameters } from './advanced-parameters';
 import DataForm from './forms';
+import { buildVideoParameters } from './media-inputs';
+import VideoResult from './video-result';
+import styles from './video.module.less';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -32,255 +34,296 @@ interface MessageProps {
   ref?: any;
 }
 
-const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
-  const { modelList } = props;
+const VideoSession = forwardRef<any, MessageProps & { userId?: string }>(
+  (props, ref) => {
+    const { modelList } = props;
 
-  const intl = useIntl();
-  const [show, setShow] = useState(false);
-  const [collapse, setCollapse] = useState(false);
-  const scroller = useRef<any>(null);
-  const inputRef = useRef<any>(null);
-
-  const {
-    handleOnValuesChange,
-    handleToggleParamsStyle,
-    setParams,
-    form,
-    paramsConfig,
-    initialValues,
-    parameters,
-    isOpenaiCompatible
-  } = useInitVideoMeta(props, {
-    type: 'create'
-  });
-  const {
-    loading,
-    tokenResult,
-    videoList,
-    currentPrompt,
-    setCurrentPrompt,
-    handleClear,
-    handleStopConversation,
-    submitMessage
-  } = useTextVideo({
-    scroller,
-    API: CREATE_VIDEO_API
-  });
-
-  useImperativeHandle(ref, () => {
-    return {
-      viewCode() {
-        setShow(true);
-      },
-      setCollapse() {
-        setCollapse(!collapse);
-      },
-      collapse: collapse
-    };
-  });
-
-  const generateNumber = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  };
-
-  const handleRandomPrompt = useCallback(() => {
-    const randomIndex = generateNumber(0, videoPromptList.length - 1);
-    const randomPrompt = videoPromptList[randomIndex];
-    inputRef.current?.handleInputChange({
-      target: {
-        value: randomPrompt
-      }
+    const intl = useIntl();
+    const clearRecordLabel = intl.formatMessage({
+      id: 'playground.video.clearRecord'
     });
-  }, []);
+    const [show, setShow] = useState(false);
+    const [viewCodeContent, setViewCodeContent] =
+      useState<ReturnType<typeof generateCode>>();
+    const [collapse, setCollapse] = useState(false);
+    const scroller = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<any>(null);
+    const confirmRef = useRef<any>(null);
+    const previewedSeed = useRef<number>();
 
-  const finalParameters = useMemo(() => {
-    if (parameters.size === 'custom') {
+    const {
+      loading,
+      submitting,
+      restoring,
+      cancelling,
+      generating,
+      contentError,
+      cacheError,
+      hasCachedTask,
+      restoredParameters,
+      errorMessage,
+      videoUrl,
+      currentPrompt,
+      currentJob,
+      setCurrentPrompt,
+      handleClearCache,
+      handleRetryContent,
+      handleCancel,
+      handlePlaybackError,
+      submitMessage
+    } = useTextVideo(scroller, props.userId);
+    const {
+      handleOnValuesChange,
+      prepareParameters,
+      form,
+      paramsConfig,
+      initialValues,
+      parameters,
+      modelMeta
+    } = useInitVideoMeta(
+      { ...props, initialParameters: restoredParameters },
+      { type: 'create' }
+    );
+
+    useEffect(() => {
+      if (restoredParameters)
+        inputRef.current?.handleInputChange({
+          target: { value: restoredParameters.prompt || '' }
+        });
+    }, [restoredParameters]);
+    useImperativeHandle(ref, () => {
       return {
-        ..._.omit(parameters, ['width', 'height']),
-        size:
-          parameters.width && parameters.height
-            ? `${parameters.width}x${parameters.height}`
-            : ''
+        viewCode: handleViewCode,
+        setCollapse() {
+          setCollapse(!collapse);
+        },
+        collapse: collapse
       };
-    }
-    return {
-      ..._.omit(parameters, ['width', 'height'])
-    };
-  }, [parameters]);
-
-  const viewCodeContent = useMemo(() => {
-    return generateCode({
-      api: CREATE_VIDEO_API,
-      isFormdata: true,
-      parameters: {
-        ...finalParameters,
-        prompt: currentPrompt
-      }
     });
-  }, [finalParameters, isOpenaiCompatible, currentPrompt]);
 
-  const handleInputChange = (e: any) => {
-    setCurrentPrompt(e.target.value);
-  };
-
-  const generateParams = () => {
-    const params = {
-      ..._.omitBy(finalParameters, (value: string) => !value),
-      prompt: currentPrompt
-    };
-    return params;
-  };
-
-  const handleSendMessage = async () => {
-    try {
-      await form.current?.form?.validateFields();
-      if (!parameters.model) return;
-      const params = generateParams();
-      console.log('generateParams:', params);
-      setParams({
-        ...parameters
-      });
-
-      console.log('params:', params, parameters);
-      setRouteCache(routeCachekey['/playground/video'], true);
-      await submitMessage(params);
-    } catch (error) {
-      // console.log('error:', error);
-    } finally {
-      console.log('finally---------');
-      setRouteCache(routeCachekey['/playground/video'], false);
+    function handleViewCode() {
+      if (restoring) return;
+      const values = form.current?.getFieldsValue() ?? parameters;
+      const advanced = parseVideoAdvancedParameters(values.advancedParameters);
+      previewedSeed.current = values.random_seed ? values.seed : undefined;
+      const effectiveParameters = buildVideoParameters(
+        values,
+        currentPrompt,
+        modelMeta,
+        'values' in advanced ? advanced.values : undefined
+      );
+      setViewCodeContent(
+        generateCode({
+          api: CREATE_VIDEO_API,
+          parameters: effectiveParameters,
+          ...(modelMeta?.video ? { videoMeta: modelMeta.video } : {})
+        })
+      );
+      setShow(true);
     }
-  };
 
-  const handleCloseViewCode = useCallback(() => {
-    setShow(false);
-  }, []);
+    const handleInputChange = (e: any) => {
+      setCurrentPrompt(e.target.value);
+    };
 
-  return (
-    <div className="ground-left-wrapper">
-      <div className="ground-left">
-        <div
-          className="message-list-wrap"
-          ref={scroller}
-          style={{ paddingBottom: 16 }}
-        >
-          <>
-            <div className="content" style={{ height: '100%' }}>
-              {videoList.length > 0 && (
-                <div
-                  style={{
-                    width: '100%',
-                    maxWidth: 720,
-                    margin: '24px auto',
-                    aspectRatio: '16 / 9',
-                    background: '#000',
-                    borderRadius: 8,
-                    overflow: 'hidden',
-                    boxShadow: '0 4px 24px rgba(0,0,0,0.12)'
-                  }}
-                >
-                  <Spin
-                    spinning={loading}
-                    size="middle"
-                    styles={{
-                      root: {
-                        height: '100%'
-                      },
-                      container: {
-                        height: '100%'
-                      }
-                    }}
-                  >
-                    <video
-                      src={videoList[0]?.dataUrl}
-                      poster={VideoPoster}
-                      controls
-                      disablePictureInPicture
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain'
-                      }}
-                    />
-                  </Spin>
-                </div>
-              )}
-              {!videoList.length && (
-                <div className="flex-column font-size-14 flex-center gap-20 justify-center hold-wrapper">
-                  <VideoCameraOutlined className="font-size-32 text-secondary" />
-                  <span>
-                    {intl.formatMessage({
-                      id: 'playground.video.empty.tips'
-                    })}
-                  </span>
-                </div>
-              )}
-            </div>
-          </>
-        </div>
-        {tokenResult && (
-          <div style={{ height: 40 }}>
-            <AlertInfo
-              type="danger"
-              message={tokenResult?.errorMessage}
-            ></AlertInfo>
-          </div>
-        )}
-        <div className="ground-left-footer">
-          <MessageInput
-            ref={inputRef}
-            placeholer={intl.formatMessage({
-              id: 'playground.input.prompt.holder'
-            })}
-            actions={[]}
-            defaultSize={{
-              minRows: 5,
-              maxRows: 5
-            }}
-            title={intl.formatMessage({ id: 'playground.image.prompt' })}
-            loading={loading}
-            disabled={!parameters.model}
-            isEmpty={!videoList.length}
-            handleSubmit={handleSendMessage}
-            handleAbortFetch={handleStopConversation}
-            onInputChange={handleInputChange}
-            shouldResetMessage={false}
-            clearAll={handleClear}
-            tools={
-              <>
-                <Tooltip
-                  title={intl.formatMessage({
-                    id: 'playground.image.prompt.random'
+    const handleRandomPrompt = () => {
+      const prompt =
+        videoPromptList[Math.floor(Math.random() * videoPromptList.length)];
+      inputRef.current?.handleInputChange({ target: { value: prompt } });
+      inputRef.current?.focus?.();
+    };
+
+    const confirmClear = () => {
+      confirmRef.current?.show({
+        title: 'playground.video.clearTitle',
+        content: 'playground.video.clearRecord',
+        operation: 'playground.video.clearConfirm',
+        okText: 'playground.video.clearRecord',
+        cancelText: 'common.button.cancel',
+        showSuccess: false,
+        onOk: handleClearCache
+      });
+    };
+
+    const handleSendMessage = async () => {
+      if (
+        !form.current ||
+        !parameters.model ||
+        submitting ||
+        restoring ||
+        generating ||
+        !currentPrompt.trim()
+      )
+        return;
+      let values: Record<string, any>;
+      try {
+        values = await form.current.validateFields();
+      } catch {
+        setCollapse(false);
+        return;
+      }
+      const advanced = parseVideoAdvancedParameters(values.advancedParameters);
+      if (!('values' in advanced)) return;
+      if (previewedSeed.current !== values.seed)
+        values = prepareParameters(values);
+      previewedSeed.current = undefined;
+      const built = buildVideoParameters(
+        values,
+        currentPrompt,
+        modelMeta,
+        advanced.values
+      );
+      await (modelMeta?.video
+        ? submitMessage(built, modelMeta.video)
+        : submitMessage(built));
+    };
+
+    const handleCloseViewCode = useCallback(() => {
+      setShow(false);
+    }, []);
+
+    return (
+      <div className={`ground-left-wrapper ${styles.page}`}>
+        <div className="ground-left">
+          <div
+            className="message-list-wrap"
+            ref={scroller}
+            data-overlayscrollbars-initialize
+          >
+            <Flex vertical gap="small" className={styles.output}>
+              {cacheError && (
+                <AlertInfo
+                  type="warning"
+                  message={intl.formatMessage({
+                    id: 'playground.video.cacheUnavailable'
                   })}
-                >
-                  <Button
-                    onClick={handleRandomPrompt}
-                    size="middle"
-                    type="text"
-                    icon={<IconFont type="icon-random"></IconFont>}
-                  ></Button>
-                </Tooltip>
-              </>
-            }
-          />
+                />
+              )}
+              {!restoring && (
+                <VideoResult
+                  job={currentJob}
+                  generating={generating}
+                  loading={loading || submitting}
+                  url={videoUrl}
+                  contentError={contentError}
+                  onRetryContent={handleRetryContent}
+                  onPlaybackError={handlePlaybackError}
+                />
+              )}
+            </Flex>
+          </div>
+          {errorMessage && (
+            <div style={{ minHeight: 40 }}>
+              <AlertInfo type="danger" message={errorMessage} />
+            </div>
+          )}
+          <div className="ground-left-footer">
+            <MessageInput
+              ref={inputRef}
+              placeholer={intl.formatMessage({
+                id: 'playground.input.prompt.holder'
+              })}
+              actions={[]}
+              defaultSize={{
+                minRows: 5,
+                maxRows: 5
+              }}
+              title={intl.formatMessage({ id: 'playground.image.prompt' })}
+              loading={submitting || generating || cancelling}
+              disabled={
+                !props.userId ||
+                restoring ||
+                generating ||
+                cancelling ||
+                submitting ||
+                !parameters.model ||
+                Boolean(
+                  modelMeta.video && !modelMeta.video.playground_tasks?.length
+                )
+              }
+              isEmpty={true}
+              handleSubmit={handleSendMessage}
+              stopLabel={intl.formatMessage({
+                id: 'playground.video.cancelGeneration'
+              })}
+              handleAbortFetch={handleCancel}
+              onInputChange={handleInputChange}
+              shouldResetMessage={false}
+              clearAll={confirmClear}
+              tools={
+                <>
+                  <Tooltip
+                    title={intl.formatMessage({
+                      id: 'playground.image.prompt.random'
+                    })}
+                  >
+                    <Button
+                      type="text"
+                      size="middle"
+                      icon={<IconFont type="icon-random" />}
+                      aria-label={intl.formatMessage({
+                        id: 'playground.image.prompt.random'
+                      })}
+                      onClick={handleRandomPrompt}
+                    />
+                  </Tooltip>
+                  <Tooltip title={clearRecordLabel}>
+                    <Button
+                      type="text"
+                      size="middle"
+                      icon={<HistoryOutlined />}
+                      aria-label={clearRecordLabel}
+                      disabled={
+                        !hasCachedTask || submitting || restoring || cancelling
+                      }
+                      onClick={confirmClear}
+                    />
+                  </Tooltip>
+                </>
+              }
+            />
+          </div>
         </div>
+        <DeleteModal ref={confirmRef} />
+        <RightContainer
+          className={`${styles.controls} ${collapse ? styles.hidden : ''}`}
+          collapsed={collapse}
+        >
+          <DataForm
+            ref={form}
+            onValuesChange={(changed, values) => {
+              previewedSeed.current = undefined;
+              handleOnValuesChange(changed, values);
+            }}
+            paramsConfig={paramsConfig}
+            initialValues={initialValues}
+            modelList={modelList}
+            meta={modelMeta}
+          />
+        </RightContainer>
+        {viewCodeContent && (
+          <ViewCommonCode
+            open={show}
+            viewCodeContent={viewCodeContent}
+            onCancel={handleCloseViewCode}
+            title={intl.formatMessage({ id: 'playground.viewcode' })}
+          />
+        )}
       </div>
-      <RightContainer collapsed={collapse}>
-        <DataForm
-          ref={form}
-          onValuesChange={handleOnValuesChange}
-          paramsConfig={paramsConfig}
-          initialValues={initialValues}
-          modelList={modelList}
-        />
-      </RightContainer>
-      <ViewCommonCode
-        open={show}
-        viewCodeContent={viewCodeContent}
-        onCancel={handleCloseViewCode}
-        title={intl.formatMessage({ id: 'playground.viewcode' })}
-      ></ViewCommonCode>
-    </div>
+    );
+  }
+);
+
+const GroundVideo = forwardRef<any, MessageProps>((props, ref) => {
+  const user = useAtomValue(userAtom);
+  const userId = user?.id == null ? undefined : String(user.id);
+  return (
+    <VideoSession
+      key={userId || 'signed-out'}
+      {...props}
+      userId={userId}
+      ref={ref}
+    />
   );
 });
 

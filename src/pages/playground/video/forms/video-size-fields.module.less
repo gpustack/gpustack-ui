@@ -1,0 +1,24 @@
+.section {
+  padding-block: var(--ant-padding);
+  margin-bottom: var(--ant-margin);
+  border-block: 1px solid var(--ant-color-split);
+
+  > :global(.ant-form-item) {
+    margin-bottom: 0;
+  }
+}
+
+.field :global(.ant-form-item-label) {
+  padding: 0 0 var(--ant-padding-sm);
+}
+
+.section .field:global(.ant-form-item) :global(.ant-form-item-label > label) {
+  height: auto;
+}
+
+.ratioIcon {
+  display: inline-block;
+  flex-shrink: 0;
+  border: 1px solid var(--ant-color-border);
+  border-radius: 2px;
+}

@@ -543,6 +543,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   // generate the data is available for the backend including the gpu_ids
   const handleOk = async (formdata: FormData) => {
     const data = _.cloneDeep(formdata);
+    // Catalog metadata is stored without a visible Form.Item.
+    data.meta = form.getFieldValue('meta');
     data.categories = data.categories ? [data.categories] : [];
     if (data.lora_list && data.lora_list.length > 0) {
       data.lora_list = data.lora_list.map((item: LoraListItem) => ({

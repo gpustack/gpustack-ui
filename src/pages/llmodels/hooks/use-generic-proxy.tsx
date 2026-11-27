@@ -3,6 +3,7 @@ import {
   AUDIO_TEXT_TO_SPEECH_API,
   CHAT_API,
   CREAT_IMAGE_API,
+  CREATE_VIDEO_API,
   EMBEDDING_API,
   MODEL_PROXY,
   RERANKER_API,
@@ -17,6 +18,7 @@ import { generateEmbeddingCurlCode } from '@/pages/playground/view-code/embeddin
 import { generateImageCurlCode } from '@/pages/playground/view-code/image';
 import { generateLLmCurlCode } from '@/pages/playground/view-code/llm';
 import { generateRerankCurlCode } from '@/pages/playground/view-code/rerank';
+import { generateVideoCurlCode } from '@/pages/playground/view-code/video';
 import { CommandViewer } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -50,6 +52,15 @@ const API_MAP: Record<
       response_format: 'b64_json'
     },
     generateCurlCode: generateImageCurlCode
+  },
+  [modelCategoriesMap.video]: {
+    api: CREATE_VIDEO_API,
+    parameters: {
+      prompt: 'A cinematic view of a mountain lake',
+      seconds: 4,
+      size: '1280x720'
+    },
+    generateCurlCode: generateVideoCurlCode
   },
   [modelCategoriesMap.text_to_speech]: {
     api: AUDIO_TEXT_TO_SPEECH_API,

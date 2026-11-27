@@ -5,10 +5,17 @@ import { backendOptionsMap } from '../constants/backend-parameters';
 
 // generate the gpu_selector field for form initial values, when eidting a model
 export const generateGPUSelector = (data: any, gpuOptions: any[]) => {
-  const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
+  // `?? []`, not `_.get`'s default: a count-only selector comes back from the
+  // backend as `gpu_ids: null`, and `_.get` only replaces `undefined`.
+  const gpu_ids = data?.gpu_selector?.gpu_ids ?? [];
   if (gpu_ids.length === 0) {
+    // A count-only selector keeps its count: the model-level drawer writes
+    // this result into the form, and `null` would erase it on the next save.
+    const gpusPerReplica = data?.gpu_selector?.gpus_per_replica ?? null;
     return {
-      gpu_selector: null
+      gpu_selector: gpusPerReplica
+        ? { gpu_ids: [], gpus_per_replica: gpusPerReplica }
+        : null
     };
   }
 
@@ -86,11 +93,16 @@ export const generateGPUIds = (data: FormData) => {
     };
   }
 
-  const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
+  const gpu_ids = data.gpu_selector?.gpu_ids ?? [];
 
   if (!gpu_ids.length) {
+    // A count-only selector: the scheduler picks this many GPUs itself, so
+    // there are no ids to send, but the count must survive the save.
+    const gpusPerReplica = data.gpu_selector?.gpus_per_replica ?? null;
     return {
-      gpu_selector: null,
+      gpu_selector: gpusPerReplica
+        ? { gpu_ids: null, gpus_per_replica: gpusPerReplica }
+        : null,
       gpu_type_selector: null
     };
   }

@@ -5,11 +5,11 @@ import {
   TopologyLayerView,
   TopologyView
 } from '@/pages/cluster-management/config/types';
-import { Select as SealSelect } from '@gpustack/core-ui';
+import { BaseSelect } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Form, Segmented } from 'antd';
 import { createStyles } from 'antd-style';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { FormData } from '../config/types';
 
 const useStyles = createStyles(({ css }) => ({
@@ -17,20 +17,11 @@ const useStyles = createStyles(({ css }) => ({
     font-size: 12px;
     color: var(--ant-color-text-tertiary);
   `,
-  /* One frame around both rows.
-     ⚠️ The inner select's own outline is painted TRANSPARENT rather than
-     removed. `SealSelect` wraps antd and does not forward `variant`, so the
-     border cannot be turned off through props; and `border: none` would
-     collapse 2px of height and lift the value off the baseline «传输方案»
-     sits on. Keeping the box model and dropping only the paint leaves the
-     two fields the same height. */
   affinity: css`
     border: 1px solid var(--ant-color-border);
     border-radius: var(--ant-border-radius-lg, 8px);
-    .ant-select,
-    .ant-select .ant-select-selector {
-      border-color: transparent !important;
-      box-shadow: none !important;
+    &:focus-within {
+      border-color: var(--ant-color-primary);
     }
     .unmet-row {
       /* The divider, and the only border inside the frame. */
@@ -70,6 +61,11 @@ const useStyles = createStyles(({ css }) => ({
  */
 const GatherLocality: React.FC = () => {
   const intl = useIntl();
+  const selectId = useId();
+  const title = intl.formatMessage({ id: 'models.form.gather.title' });
+  const description = intl.formatMessage({
+    id: 'models.form.gather.target.tips'
+  });
   const { styles } = useStyles();
   const form = Form.useFormInstance<FormData>();
   const clusterId = Form.useWatch('cluster_id', form);
@@ -273,30 +269,29 @@ const GatherLocality: React.FC = () => {
         <input />
       </Form.Item>
 
-      {/* One box, two rows: the tier, then what to do when it is missed.
-          They are one decision with a qualifier, not two fields, and a
-          divider inside a single frame says that in a way two stacked
-          controls cannot.
-
-          The frame is drawn here rather than by the select, which paints its
-          own — see `affinity` for why that one is made transparent instead
-          of removed. No `name` on the item: the pair is written by hand into
-          the two hidden items above, because a layer without a strategy (and
-          a `MustGather` without a layer) are both payloads the backend
-          refuses. */}
-      <Form.Item style={{ marginBottom: 12 }}>
+      <Form.Item
+        htmlFor={selectId}
+        label={title}
+        layout="vertical"
+        tooltip={description}
+        style={{ marginBottom: 12 }}
+      >
         <div className={styles.affinity}>
-          <SealSelect
+          <span id={`${selectId}-description`} hidden>
+            {description}
+          </span>
+          <BaseSelect
+            id={selectId}
+            aria-label={title}
+            aria-describedby={`${selectId}-description`}
+            variant="borderless"
+            style={{ width: '100%' }}
             value={target}
             onChange={handleTargetChange}
             options={targetOptions}
             optionRender={optionRender}
             labelRender={labelRender}
-            label={intl.formatMessage({ id: 'models.form.gather.title' })}
-            description={intl.formatMessage({
-              id: 'models.form.gather.target.tips'
-            })}
-          ></SealSelect>
+          ></BaseSelect>
 
           {/* Attached to the field above rather than stacked as a second select,
           because it is not a second question of equal weight — it qualifies

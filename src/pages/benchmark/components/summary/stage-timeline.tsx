@@ -2,8 +2,9 @@ import HelpTooltip from '@/pages/llmodels/detail/components/help-tooltip';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Flex, Popover, Typography } from 'antd';
+import classNames from 'classnames';
 import dayjs from 'dayjs';
-import { useEffect, useState, type CSSProperties } from 'react';
+import { Fragment, useEffect, useState, type CSSProperties } from 'react';
 import { loadAxisLabelId } from '../../config';
 import { useDetailContext } from '../../config/detail-context';
 import type { BenchmarkMonitoringData } from '../../config/monitoring-types';
@@ -148,7 +149,7 @@ export default function StageTimeline({
       <Popover
         key={point.id}
         placement="topLeft"
-        align={{ overflow: { shiftX: true } }}
+        align={{ overflow: { shiftX: true, adjustY: true } }}
         styles={{ root: { paddingInline: 'var(--ant-padding-sm)' } }}
         trigger={['hover', 'focus']}
         open={inspected === point.id}
@@ -245,7 +246,15 @@ export default function StageTimeline({
           aria-label={t('pointView')}
         >
           {(['load', 'process'] as const).map((key) => (
-            <Flex align="center" gap={4} key={key}>
+            <Flex
+              align="center"
+              gap={4}
+              key={key}
+              className={classNames(
+                styles.tabItem,
+                view === key && styles.tabItemActive
+              )}
+            >
               <button
                 type="button"
                 aria-pressed={view === key}
@@ -278,7 +287,7 @@ export default function StageTimeline({
             </Flex>
           ))}
         </Flex>
-        <Flex align="center" gap={16} wrap>
+        <Flex align="center" gap={8} wrap>
           {multipleWorkloads && (
             <Typography.Text type="secondary">
               {selected.raw.input_tokens ?? '—'} tokens
@@ -311,7 +320,11 @@ export default function StageTimeline({
         </Flex>
       ) : (
         <div
-          className={`${styles.groups} ${processGroups.length === 1 ? styles.singleGroup : ''}`}
+          className={classNames(
+            styles.groups,
+            processGroups.length === 1 && styles.singleGroup,
+            processGroups.length === 2 && styles.pairGroups
+          )}
         >
           {processGroups.map((group, index) => {
             const title = t(
@@ -322,36 +335,44 @@ export default function StageTimeline({
                 : `search.${group.phase}`
             );
             return (
-              <section className={styles.group} key={group.key}>
-                <Flex align="center" gap={7} className={styles.groupHeader}>
-                  <strong>{title}</strong>
-                  <small>
-                    {group.points.length} {t('measurements')}
-                  </small>
-                  {multipleWorkloads && (
-                    <small>{group.inputTokens ?? '—'} tokens</small>
-                  )}
-                  <HelpTooltip
-                    label={title}
-                    content={t(
-                      group.phase === 'expand' || group.phase === 'refine'
-                        ? 'searchHistoryHelp'
-                        : 'executionHelp'
+              <Fragment key={group.key}>
+                <section className={styles.group}>
+                  <Flex align="center" gap={6} className={styles.groupHeader}>
+                    <strong>{title}</strong>
+                    <small>
+                      {group.points.length} {t('measurements')}
+                    </small>
+                    {multipleWorkloads && (
+                      <small>{group.inputTokens ?? '—'} tokens</small>
                     )}
-                  />
-                  {index < processGroups.length - 1 && (
-                    <ArrowRightOutlined className={styles.direction} />
-                  )}
-                </Flex>
-                <div
-                  className={styles.grid}
-                  style={gridStyle(group.points.length, 8)}
-                  role="group"
-                  aria-label={title}
-                >
-                  {group.points.map(card)}
-                </div>
-              </section>
+                    <HelpTooltip
+                      label={title}
+                      content={t(
+                        group.phase === 'expand' || group.phase === 'refine'
+                          ? 'searchHistoryHelp'
+                          : 'executionHelp'
+                      )}
+                    />
+                    {processGroups.length > 2 &&
+                      index < processGroups.length - 1 && (
+                        <ArrowRightOutlined className={styles.direction} />
+                      )}
+                  </Flex>
+                  <div
+                    className={styles.grid}
+                    style={gridStyle(group.points.length, 8)}
+                    role="group"
+                    aria-label={title}
+                  >
+                    {group.points.map(card)}
+                  </div>
+                </section>
+                {processGroups.length === 2 && index === 0 && (
+                  <span className={styles.connector} aria-hidden>
+                    <ArrowRightOutlined />
+                  </span>
+                )}
+              </Fragment>
             );
           })}
         </div>

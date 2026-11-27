@@ -1,11 +1,9 @@
-import navigationStyles from '@/pages/_components/monitoring/monitoring-navigation.module.less';
 import ChartInteractionHelp from '@/pages/llmodels/detail/components/chart-interaction-help';
 import { combineMetrics } from '@/pages/llmodels/detail/components/hardware-content';
 import { labelHardwareMetric } from '@/pages/llmodels/detail/components/hardware-metrics';
 import HelpTooltip from '@/pages/llmodels/detail/components/help-tooltip';
 import { LatencyStatisticsControl } from '@/pages/llmodels/detail/components/latency-statistics';
 import MetricChart from '@/pages/llmodels/detail/components/metric-chart';
-import MonitoringSection from '@/pages/llmodels/detail/components/monitoring-section';
 import MonitoringVisibilityActions from '@/pages/llmodels/detail/components/monitoring-visibility-actions';
 import ObservationNotes from '@/pages/llmodels/detail/components/observation-notes';
 import PDMonitoringContent, {
@@ -14,6 +12,8 @@ import PDMonitoringContent, {
 import { LatencyStatisticsProvider } from '@/pages/llmodels/detail/config/latency-statistics-context';
 import type { ModelMetric } from '@/pages/llmodels/detail/config/types';
 import { useMonitoringExpansion } from '@/pages/llmodels/detail/hooks/use-monitoring-expansion';
+import MonitoringSectionCard from '@/pages/llmodels/detail/monitoring-tab/components/monitoring-section-card';
+import navStyles from '@/pages/llmodels/detail/monitoring-tab/components/section-navigation.module.less';
 import { containsTimestamp } from '@/pages/llmodels/detail/utils/chart-context';
 import type { ChartTimeSegment } from '@/pages/llmodels/detail/utils/chart-segments';
 import type { LatencyStatistic } from '@/pages/llmodels/detail/utils/latency-statistics';
@@ -44,6 +44,7 @@ import {
   Typography
 } from 'antd';
 import { createStyles } from 'antd-style';
+import classNames from 'classnames';
 import {
   forwardRef,
   useEffect,
@@ -89,13 +90,25 @@ export interface MonitoringChartsHandle {
 }
 const useStyles = createStyles(({ css }) => ({
   root: css`
+    --metric-chart-card-border-color: var(--ant-color-border);
     [id^='benchmark-monitor-'] {
       scroll-margin-top: calc(
         var(--benchmark-navigation-height, 0px) + var(--ant-padding-lg)
       );
     }
   `,
+  toolbarRow: css`
+    padding: 10px var(--ant-padding);
+  `,
   navigation: css`
+    && {
+      border-color: var(
+        --benchmark-summary-section-border,
+        var(--ant-color-border)
+      );
+      border-top-color: var(--ant-color-border-secondary);
+      border-radius: 0 0 var(--ant-border-radius-lg) var(--ant-border-radius-lg);
+    }
     .ant-space,
     .ant-space-item {
       min-width: 0;
@@ -135,6 +148,9 @@ const MonitoringCharts = forwardRef<MonitoringChartsHandle, Props>(
     const cancelNavigation = useRef<(() => void) | null>(null);
     useEffect(() => () => cancelNavigation.current?.(), []);
     const [associationsOpen, setAssociationsOpen] = useState(false);
+    const [activeSectionKey, setActiveSectionKey] = useState<string | null>(
+      null
+    );
     const associationsTrigger = useRef<HTMLButtonElement>(null);
     const dismissAssociations = (event: React.KeyboardEvent) => {
       if (event.key !== 'Escape') return;
@@ -634,6 +650,7 @@ const MonitoringCharts = forwardRef<MonitoringChartsHandle, Props>(
     ];
     const pdContent = !waitingForRuntime && (
       <PDMonitoringContent
+        sectionComponent={MonitoringSectionCard}
         metrics={runtime}
         instances={instances}
         view={view}
@@ -681,45 +698,70 @@ const MonitoringCharts = forwardRef<MonitoringChartsHandle, Props>(
           ].filter((section) => visible(section.key))
         : sections
     );
-    const viewControls = (
-      <Space onClick={(event) => event.stopPropagation()} wrap>
-        <Popover
-          trigger="click"
-          placement="bottomRight"
-          open={associationsOpen}
-          onOpenChange={setAssociationsOpen}
-          content={
-            <div
-              role="region"
-              aria-label={t('associatedResources')}
-              onKeyDown={dismissAssociations}
-            >
-              {associations}
-            </div>
-          }
-        >
-          <Button
-            size="small"
-            type="text"
-            ref={associationsTrigger}
-            aria-expanded={associationsOpen}
+    const associationsControl = (
+      <Popover
+        trigger="click"
+        placement="bottomRight"
+        open={associationsOpen}
+        onOpenChange={setAssociationsOpen}
+        content={
+          <div
+            role="region"
+            aria-label={t('associatedResources')}
             onKeyDown={dismissAssociations}
           >
-            {t('associatedResources')}
-          </Button>
-        </Popover>
+            {associations}
+          </div>
+        }
+      >
+        <Button
+          size="middle"
+          ref={associationsTrigger}
+          aria-expanded={associationsOpen}
+          onKeyDown={dismissAssociations}
+        >
+          {t('associatedResources')}
+        </Button>
+      </Popover>
+    );
+    const viewModeControl = (
+      <Flex
+        gap={8}
+        align="center"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <Typography.Text
+          type="secondary"
+          style={{ fontSize: 'var(--font-size-small)', whiteSpace: 'nowrap' }}
+        >
+          {m('viewMode')}
+        </Typography.Text>
         <Segmented<'aggregate' | 'instances'>
           size="small"
           aria-label={m('viewMode')}
           value={view}
+          styles={{
+            label: {
+              fontSize: 'var(--font-size-small)',
+              minHeight: 24,
+              lineHeight: '24px'
+            }
+          }}
           options={[
             { value: 'aggregate', label: m('aggregate') },
             { value: 'instances', label: m('byInstance') }
           ]}
           onChange={onViewChange}
         />
-      </Space>
+      </Flex>
     );
+    const resolvedActiveKey =
+      activeSectionKey &&
+      navigation.some((section) => section.key === activeSectionKey)
+        ? activeSectionKey
+        : navigation.find((section) => expanded.includes(section.key))?.key ||
+          navigation[0]?.key ||
+          null;
     const jump = (key: string) => {
       const requestedDetail = pd && key === 'cache';
       const detail = requestedDetail && visible('roleDetails');
@@ -732,6 +774,7 @@ const MonitoringCharts = forwardRef<MonitoringChartsHandle, Props>(
             : key;
       if (!detail && !navigation.some((section) => section.key === target))
         return;
+      if (!detail) setActiveSectionKey(target);
       if (detail)
         setPDDetails((keys) => [...new Set([...keys, 'role-details'])]);
       if (detail) changeExpanded((keys) => [...new Set([...keys, 'pools'])]);
@@ -755,61 +798,100 @@ const MonitoringCharts = forwardRef<MonitoringChartsHandle, Props>(
         onChange={onLatencyStatisticsChange}
       >
         <Flex vertical gap={16} className={styles.root} ref={rootRef}>
-          <MonitoringNotice data={activeData} />
-          <Flex
-            align="center"
-            justify="space-between"
-            gap={12}
-            wrap
-            className={`${navigationStyles.navigation} ${styles.navigation}`}
+          <div
+            className={classNames(navStyles.panel, styles.navigation)}
             ref={navigationRef}
             data-benchmark-monitoring-navigation
           >
-            <Space wrap>
-              {navigation.map((section) => (
-                <Button
-                  type="text"
-                  size="small"
-                  key={section.key}
-                  onClick={() => jump(section.key)}
-                >
-                  {section.label}
-                </Button>
-              ))}
-            </Space>
-            <Space wrap>
+            <Flex
+              align="center"
+              justify="space-between"
+              gap={12}
+              wrap
+              className={styles.toolbarRow}
+            >
               {controls}
-              {viewControls}
-              <LatencyStatisticsControl />
-              <ObservationNotes
-                metrics={allMetrics}
-                groups={groups}
-                ingressContext={
-                  targetMode === 'model_instance'
-                    ? {
-                        notApplicable: true,
-                        reason: t(
-                          pd
-                            ? 'directRouterObservation'
-                            : 'directInstanceObservation'
-                        )
-                      }
-                    : undefined
-                }
-              />
-              <MonitoringVisibilityActions
-                keys={navigation.map((section) => section.key)}
-                expanded={expanded}
-                onChange={changeExpanded}
-              />
-              <ChartInteractionHelp
-                legendValuesNote={
-                  segmented ? t('segmentLegendHelp') : undefined
-                }
-                contextNote={pd ? m('pd.scopeHelp') : undefined}
-              />
-            </Space>
-          </Flex>
+              <Flex
+                align="center"
+                gap={10}
+                wrap
+                style={{ marginInlineStart: 'auto' }}
+              >
+                <LatencyStatisticsControl size="middle" />
+                {associationsControl}
+                <ObservationNotes
+                  size="middle"
+                  metrics={allMetrics}
+                  groups={groups}
+                  ingressContext={
+                    targetMode === 'model_instance'
+                      ? {
+                          notApplicable: true,
+                          reason: t(
+                            pd
+                              ? 'directRouterObservation'
+                              : 'directInstanceObservation'
+                          )
+                        }
+                      : undefined
+                  }
+                />
+              </Flex>
+            </Flex>
+            <Flex
+              className={navStyles.embeddedBar}
+              align="center"
+              gap={12}
+              wrap
+            >
+              {navigation.length > 1 && (
+                <Flex className={navStyles.links} align="center" gap={8}>
+                  <Typography.Text type="secondary" className={navStyles.prefix}>
+                    {m('jumpTo')}
+                  </Typography.Text>
+                  <Flex className={navStyles.sections} align="center" gap={6} wrap>
+                    {navigation.map((section) => {
+                      const active = resolvedActiveKey === section.key;
+                      return (
+                        <Button
+                          type="text"
+                          size="small"
+                          className={classNames(
+                            navStyles.sectionLink,
+                            active && navStyles.sectionLinkActive
+                          )}
+                          aria-current={active ? 'location' : undefined}
+                          key={section.key}
+                          onClick={() => jump(section.key)}
+                        >
+                          {section.label}
+                        </Button>
+                      );
+                    })}
+                  </Flex>
+                </Flex>
+              )}
+              <Flex className={navStyles.actions} align="center" gap={12} wrap>
+                {viewModeControl}
+                <span className={navStyles.actionDivider} aria-hidden />
+                <Space wrap align="center">
+                  <ChartInteractionHelp
+                    legendValuesNote={
+                      segmented ? t('segmentLegendHelp') : undefined
+                    }
+                    contextNote={pd ? m('pd.scopeHelp') : undefined}
+                  />
+                  <MonitoringVisibilityActions
+                    keys={navigation.map((section) => section.key)}
+                    expanded={expanded}
+                    onChange={changeExpanded}
+                    showLabel
+                  />
+                </Space>
+              </Flex>
+            </Flex>
+          </div>
+          <MonitoringNotice data={activeData} />
           {untimedCount > 0 && (
             <Typography.Text type="secondary">
               {intl.formatMessage(
@@ -820,7 +902,7 @@ const MonitoringCharts = forwardRef<MonitoringChartsHandle, Props>(
           )}
           {pd && pdContent}
           {sections.map((section) => (
-            <MonitoringSection
+            <MonitoringSectionCard
               key={section.key}
               sectionKey={section.key}
               id={`benchmark-monitor-${section.key}`}
@@ -845,7 +927,7 @@ const MonitoringCharts = forwardRef<MonitoringChartsHandle, Props>(
               }
             >
               {section.children}
-            </MonitoringSection>
+            </MonitoringSectionCard>
           ))}
         </Flex>
       </LatencyStatisticsProvider>

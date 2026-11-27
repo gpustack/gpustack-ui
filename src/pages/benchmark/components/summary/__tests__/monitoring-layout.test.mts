@@ -203,6 +203,42 @@ mock.module(
   new URL('../../../config/detail-context.ts', import.meta.url).href,
   { namedExports: { useDetailContext: () => ({ detailData: detail }) } }
 );
+mock.module(
+  new URL(
+    '../../../../llmodels/detail/monitoring-tab/components/section-navigation.module.less',
+    import.meta.url
+  ).href,
+  { defaultExport: {} }
+);
+mock.module(
+  new URL(
+    '../../../../llmodels/detail/monitoring-tab/components/monitoring-section-card.tsx',
+    import.meta.url
+  ).href,
+  {
+    defaultExport: (props: any) => {
+      collapseProps.push({
+        activeKey: props.expanded ? [props.sectionKey] : [],
+        onChange: (keys: string[]) => props.onToggle(keys.length > 0),
+        items: [
+          {
+            key: props.sectionKey,
+            label: props.title,
+            children: props.children
+          }
+        ]
+      });
+      return createElement(
+        'section',
+        { 'data-section': props.sectionKey, id: props.id },
+        props.title,
+        props.annotation,
+        props.extra,
+        props.children
+      );
+    }
+  }
+);
 const { default: MonitoringCharts } = await import('../monitoring-charts');
 mock.module(new URL('../point-navigation.module.less', import.meta.url).href, {
   defaultExport: {}

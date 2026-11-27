@@ -63,7 +63,7 @@ test('the device title is followed by its full details link in the drawer header
   const header = renderDrawer().match(/<header>(.*?)<\/header>/)?.[1];
   assert.match(
     header || '',
-    /visible-worker[^<]*<\/span>.*href="#\/resources\/gpus\/detail\?worker_id=1&amp;device_id=device-a&amp;window=1h"[^>]*>.*resourceDetail\.fullDetails/
+    /visible-worker[^<]*<\/span>.*href="#\/resources\/gpus\/detail\?worker_id=1&amp;device_id=device-a"[^>]*>.*resourceDetail\.fullDetails/
   );
 });
 

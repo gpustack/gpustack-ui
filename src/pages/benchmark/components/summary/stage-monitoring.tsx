@@ -60,34 +60,103 @@ import StageTimeline from './stage-timeline';
 const useStyles = createStyles(({ css }) => ({
   console: css`
     background: var(--ant-color-bg-container);
+    border: 1px solid
+      var(--benchmark-summary-section-border, var(--ant-color-border));
+    border-radius: var(--ant-border-radius-lg);
+    overflow: hidden;
+  `,
+  consoleHeader: css`
+    padding: 12px var(--ant-padding);
     border-bottom: 1px solid var(--ant-color-border-secondary);
-    padding-block: var(--ant-padding-sm) var(--ant-padding);
+  `,
+  consoleBody: css`
+    padding: var(--ant-padding-sm) var(--ant-padding) var(--ant-padding);
+  `,
+  headerDivider: css`
+    width: 1px;
+    height: 14px;
+    background: var(--ant-color-border);
+    flex-shrink: 0;
   `,
   controls: css`
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    height: var(--ant-control-height);
+    border-radius: var(--ant-border-radius);
+    background: var(--ant-color-bg-layout);
     .scope-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border: 0;
-      border-radius: 0;
-      padding-inline: 0;
-      height: 30px;
-      color: var(--ant-color-text-tertiary);
+      border-radius: var(--ant-border-radius-sm);
+      padding: 0 10px;
+      height: calc(var(--ant-control-height) - 4px);
+      line-height: 1;
+      color: var(--ant-color-text-secondary);
+      font-size: var(--font-size-small);
+      font-weight: 400;
+      font-family: inherit;
+      background: transparent;
+      box-shadow: none;
+      white-space: nowrap;
+      cursor: pointer;
+      transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
     }
-    .scope-button[aria-pressed='true'] {
-      color: var(--ant-color-primary);
-      border-bottom: 2px solid var(--ant-color-primary);
+    .scope-button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
+    .scope-button:focus-visible {
+      outline: 2px solid var(--ant-color-primary);
+      outline-offset: -2px;
+    }
+    .scope-button:not(:disabled):not([aria-pressed='true']):hover {
+      color: var(--ant-color-text);
+      background: var(--ant-color-fill-secondary);
+    }
+    .scope-button[aria-pressed='true'],
+    .scope-button[aria-pressed='true']:not(:disabled):hover {
+      color: var(--ant-color-text);
+      font-weight: var(--font-weight-medium);
+      background: var(--ant-color-bg-elevated);
+      box-shadow: var(--ant-box-shadow-tertiary);
+    }
+  `,
+  controlDivider: css`
+    width: 1px;
+    height: 16px;
+    background: var(--ant-color-border);
+    flex-shrink: 0;
+  `,
+  controlTime: css`
+    font-size: var(--font-size-caption);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   `,
   identity: css`
     min-width: 0;
-    font-size: 12px;
+    font-size: var(--font-size-small);
+    font-variant-numeric: tabular-nums;
   `,
   actions: css`
     .ant-btn {
-      font-size: 12px;
+      font-size: var(--font-size-caption);
     }
   `,
   container: css`
-    padding-block-start: var(--ant-padding-lg);
-    border-block-start: 1px solid var(--ant-color-border-secondary);
+    &&:has([data-benchmark-monitoring-navigation]) {
+      gap: 0 !important;
+      .stage-console {
+        border-bottom: 0;
+        border-radius: var(--ant-border-radius-lg) var(--ant-border-radius-lg) 0
+          0;
+      }
+    }
     .benchmark-selected-stage {
       background: var(--ant-color-primary-bg);
     }
@@ -412,17 +481,16 @@ const StageMonitoring = forwardRef<
       );
   };
   const curveControls = (
-    <Flex align="center" justify="space-between" gap={12} wrap>
-      <Space wrap>
+    <Flex align="center" justify="space-between" gap={10} wrap>
+      <Flex align="center" gap={10} wrap>
         {selected && (
           <Select
-            size="small"
-            variant="borderless"
+            size="middle"
             aria-label={t('selectedStage')}
             data-benchmark-measurement-switcher
             value={selected.id}
             popupMatchSelectWidth={false}
-            style={{ minWidth: 130, maxWidth: 190 }}
+            style={{ minWidth: 140, maxWidth: 204 }}
             options={[...ordered, ...probes]
               .filter((point) => sameWorkload(point, selected))
               .map((point) => ({
@@ -442,37 +510,14 @@ const StageMonitoring = forwardRef<
             }}
           />
         )}
-        <Button
-          size="small"
-          type="text"
-          icon={<ReloadOutlined />}
-          aria-label={t('refreshMonitoring')}
-          title={t('refreshMonitoring')}
-          onClick={() => {
-            observations.reset();
-            void data.refresh();
-          }}
-        />
-        <MonitoringArchiveStatus
-          key={`${id}:${data.context?.observation_storage?.run_id || ''}`}
-          id={id}
-          context={data.context}
-          errors={data.errors}
-          samplingData={data}
-          onRefresh={async () => {
-            observations.reset();
-            await data.refresh();
-          }}
-        />
-        <Space size={12} className={styles.controls}>
+        <div className={styles.controls}>
           {[
             ['run', t(pointView === 'load' ? 'allMeasurements' : 'fullRun')],
             ['stage', t(pointView === 'load' ? 'zoomMeasurement' : 'zoomStage')]
           ].map(([value, label]) => (
-            <Button
+            <button
               key={value}
-              type="text"
-              size="small"
+              type="button"
               className="scope-button"
               aria-pressed={zoom === (value === 'stage')}
               disabled={value === 'stage' && !range}
@@ -489,10 +534,10 @@ const StageMonitoring = forwardRef<
               }}
             >
               {label}
-            </Button>
+            </button>
           ))}
-        </Space>
-        <Typography.Text type="secondary">
+        </div>
+        <Typography.Text type="secondary" className={styles.controlTime}>
           {!segmented && <ClockCircleOutlined />}{' '}
           {segmented && !paged
             ? intl.formatMessage(
@@ -506,13 +551,39 @@ const StageMonitoring = forwardRef<
                   : '—';
               })()}
         </Typography.Text>
-      </Space>
+        <span className={styles.controlDivider} aria-hidden />
+        <Flex align="center" gap={6}>
+          <Button
+            size="middle"
+            type="text"
+            icon={<ReloadOutlined />}
+            aria-label={t('refreshMonitoring')}
+            title={t('refreshMonitoring')}
+            onClick={() => {
+              observations.reset();
+              void data.refresh();
+            }}
+          />
+          <MonitoringArchiveStatus
+            key={`${id}:${data.context?.observation_storage?.run_id || ''}`}
+            id={id}
+            context={data.context}
+            errors={data.errors}
+            samplingData={data}
+            onRefresh={async () => {
+              observations.reset();
+              await data.refresh();
+            }}
+          />
+        </Flex>
+      </Flex>
       {paged && window && run && (
         <Space>
           <Typography.Text type="secondary">
             {t('segmentedHistory')}
           </Typography.Text>
           <Button
+            size="small"
             disabled={window.start <= run.start}
             onClick={() => {
               setZoom(false);
@@ -528,6 +599,7 @@ const StageMonitoring = forwardRef<
             ←
           </Button>
           <Button
+            size="small"
             disabled={window.end >= run.end}
             onClick={() => {
               setZoom(false);
@@ -553,36 +625,40 @@ const StageMonitoring = forwardRef<
       data-benchmark-stage-monitoring
       aria-busy={data.loading}
     >
-      <Flex align="center" gap={8}>
-        <Typography.Title level={4} style={{ margin: 0 }}>
-          {t('title')}
-        </Typography.Title>
-        <HelpTooltip label={t('title')} content={t('recordedRuntime')} />
-      </Flex>
       <Flex
         vertical
-        gap={12}
-        className={styles.console}
+        className={`${styles.console} stage-console`}
         data-benchmark-stage-console
       >
-        <Flex align="center" justify="space-between" gap={12} wrap>
-          <Flex vertical gap={4} className={styles.identity}>
-            <Flex align="center" gap={12} wrap>
-              <Typography.Text strong>
-                {selected
-                  ? selectedIndex < 0
-                    ? intl.formatMessage({
-                        id: 'benchmark.detail.stage.saturationProbe'
-                      })
-                    : `${selected.load} ${unit === 'requests' ? t('concurrencyUnit') : unit} · ${t('measurement')} #${measurementNumber(selected, data.context?.stages || []) ?? '—'}`
-                  : t('awaitingStages')}
-              </Typography.Text>
-              <Typography.Text type="secondary">
-                {range
-                  ? `${dayjs(range.start * 1000).format('HH:mm:ss')} — ${dayjs(range.end * 1000).format('HH:mm:ss')}`
-                  : t('timingUnavailable')}
-              </Typography.Text>
+        <Flex
+          align="center"
+          justify="space-between"
+          gap={12}
+          wrap
+          className={styles.consoleHeader}
+        >
+          <Flex align="center" gap={10} wrap className={styles.identity}>
+            <Flex align="center" gap={6}>
+              <Typography.Title level={5} style={{ margin: 0, fontSize: 14 }}>
+                {t('title')}
+              </Typography.Title>
+              <HelpTooltip label={t('title')} content={t('recordedRuntime')} />
             </Flex>
+            <span className={styles.headerDivider} aria-hidden />
+            <Typography.Text strong>
+              {selected
+                ? selectedIndex < 0
+                  ? intl.formatMessage({
+                      id: 'benchmark.detail.stage.saturationProbe'
+                    })
+                  : `${selected.load} ${unit === 'requests' ? t('concurrencyUnit') : unit} · ${t('measurement')} #${measurementNumber(selected, data.context?.stages || []) ?? '—'}`
+                : t('awaitingStages')}
+            </Typography.Text>
+            <Typography.Text type="secondary">
+              {range
+                ? `${dayjs(range.start * 1000).format('HH:mm:ss')} — ${dayjs(range.end * 1000).format('HH:mm:ss')}`
+                : t('timingUnavailable')}
+            </Typography.Text>
             {selected && (
               <Typography.Text type="secondary">
                 {selected.ok.toLocaleString()} /{' '}
@@ -675,6 +751,7 @@ const StageMonitoring = forwardRef<
             <Button
               type="link"
               size="small"
+              style={{ paddingInline: 4 }}
               disabled={!selected}
               onClick={() =>
                 setDrawer({
@@ -689,38 +766,40 @@ const StageMonitoring = forwardRef<
             </Button>
           </Space>
         </Flex>
-        <StageTimeline
-          points={chronological}
-          view={pointView}
-          onViewChange={setPointView}
-          selectedId={selected?.id}
-          baselineId={comparing ? baselineId : null}
-          onSelect={onSelect}
-          data={data}
-          dataForPoint={dataForPoint}
-          onInspect={(point) => {
-            void observations.load(
-              phaseForPoint(point, data.context?.stages || [])
-            );
-          }}
-        />
-        {comparing && baseline && selected && (
-          <Space wrap>
-            <Typography.Text type="secondary">
-              {t('baseline')} #
-              {measurementNumber(baseline, data.context?.stages || []) ?? '—'} ·{' '}
-              {baseline.load}{' '}
-              {unit === 'requests' ? t('concurrencyUnit') : unit} →{' '}
-              {t('selectedStage')} #
-              {measurementNumber(selected, data.context?.stages || []) ?? '—'} ·{' '}
-              {selected.load}{' '}
-              {unit === 'requests' ? t('concurrencyUnit') : unit}
-            </Typography.Text>
-            <Button type="text" size="small" onClick={endComparison}>
-              {t('endComparison')}
-            </Button>
-          </Space>
-        )}
+        <Flex vertical gap={12} className={styles.consoleBody}>
+          <StageTimeline
+            points={chronological}
+            view={pointView}
+            onViewChange={setPointView}
+            selectedId={selected?.id}
+            baselineId={comparing ? baselineId : null}
+            onSelect={onSelect}
+            data={data}
+            dataForPoint={dataForPoint}
+            onInspect={(point) => {
+              void observations.load(
+                phaseForPoint(point, data.context?.stages || [])
+              );
+            }}
+          />
+          {comparing && baseline && selected && (
+            <Space wrap>
+              <Typography.Text type="secondary">
+                {t('baseline')} #
+                {measurementNumber(baseline, data.context?.stages || []) ?? '—'}{' '}
+                · {baseline.load}{' '}
+                {unit === 'requests' ? t('concurrencyUnit') : unit} →{' '}
+                {t('selectedStage')} #
+                {measurementNumber(selected, data.context?.stages || []) ?? '—'}{' '}
+                · {selected.load}{' '}
+                {unit === 'requests' ? t('concurrencyUnit') : unit}
+              </Typography.Text>
+              <Button type="text" size="small" onClick={endComparison}>
+                {t('endComparison')}
+              </Button>
+            </Space>
+          )}
+        </Flex>
       </Flex>
       <MonitoringCharts
         cacheFeatures={pdCacheFeaturesFromInstances(

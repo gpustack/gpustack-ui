@@ -33,6 +33,8 @@ export default {
     '“>”, kaynak histogram aralığının ötesindeki bilinen alt sınırı gösterir. Bu noktalar kesin yüzdelik değerleri olarak çizilmez.',
   'modelMonitoring.state.histogram_quantile_out_of_range':
     'Yüzdelikler histogram aralığını aşıyor; kesin eğri kullanılamıyor.',
+  'modelMonitoring.state.histogram_first_bucket_unresolved':
+    'Bir zaman aralığındaki tüm örnekler ilk gecikme kovasına düştüğü için histogram o aralıktaki yüzdelikleri belirleyemiyor.',
   'modelMonitoring.state.histogram_bounds_unavailable':
     'Bazı yüzdelik sınırları doğrulanamadı. Sorguyu yeniden deneyin.',
 

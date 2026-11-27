@@ -33,6 +33,8 @@ export default {
     '「>」は元のヒストグラム範囲を超える下限値です。超過した点を正確な分位値として描画しません。',
   'modelMonitoring.state.histogram_quantile_out_of_range':
     '分位値が計測範囲を超えているため、正確な曲線は表示できません。',
+  'modelMonitoring.state.histogram_first_bucket_unresolved':
+    'ある時間窓のサンプルがすべて最初のレイテンシバケットに入ったため、その時間窓の分位値を求められません。',
   'modelMonitoring.state.histogram_bounds_unavailable':
     '一部の分位値の範囲を検証できませんでした。再試行してください。',
 

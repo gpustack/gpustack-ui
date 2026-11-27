@@ -32,6 +32,8 @@ export default {
     '“>”表示分位数超出源端直方图量程，只能确认大于该值；超量程点不绘制为精确曲线。',
   'modelMonitoring.state.histogram_quantile_out_of_range':
     '分位数超出采样量程，精确曲线不可用。',
+  'modelMonitoring.state.histogram_first_bucket_unresolved':
+    '某个时间窗口内的样本全部落入第一个延迟桶，直方图无法确定该窗口的分位数。',
   'modelMonitoring.state.histogram_bounds_unavailable':
     '部分分位数暂时无法验证量程，请重试查询。',
 

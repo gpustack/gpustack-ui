@@ -1,4 +1,33 @@
 export default {
+  'playground.video.extraParams': 'Özel parametreler (JSON)',
+  'playground.video.extraParams.tips':
+    'Modele özgü parametreleri bir JSON nesnesi olarak girin. Bu alanı boş bırakabilirsiniz.',
+  'playground.video.extraParams.invalid':
+    'Geçerli bir JSON nesnesi girin veya bu alanı boş bırakın.',
+  'playground.video.extraParams.conflict':
+    'Bu parametreler formdan ayarlanır: {keys}.',
+  'playground.video.cancelGeneration': 'Oluşturmayı iptal et',
+  'playground.video.clearRecord': 'Yerel video kaydını temizle',
+  'playground.video.clearTitle': 'Yerel video kaydı temizlensin mi?',
+  'playground.video.clearConfirm':
+    'Kaydedilen video kimliği ve parametreler bu tarayıcıdan kaldırılır. Mevcut görev ve önizleme bu sayfada kalır.',
+  'playground.video.cacheUnavailable':
+    'Tarayıcı kaydedilen video kaydına erişemedi.',
+  'playground.video.task.t2va': 'Metinden video',
+  'playground.video.task.fl2va': 'İlk/son kareden video',
+  'playground.video.task.ref2va': 'Referanstan video',
+  'playground.video.tasks.preview': 'Video önizleme',
+  'playground.video.tasks.playbackError': 'Tarayıcınız bu videoyu oynatamadı.',
+  'playground.video.loading': 'Video yükleniyor…',
+  'playground.video.tasks.status.queued': 'Sırada',
+  'playground.video.tasks.status.in_progress': 'Oluşturuluyor',
+  'playground.video.tasks.status.completed': 'Tamamlandı',
+  'playground.video.tasks.status.failed': 'Başarısız',
+  'playground.video.tasks.status.cancelled': 'İptal edildi',
+  'playground.video.tasks.status.expired': 'Süresi doldu',
+
+  'playground.params.aspectRatio': 'En boy oranı',
+  'playground.params.modelDefault': 'Model varsayılanı',
   'playground.image.compare.invalidParameters':
     'Şu parametreleri kontrol edin: {fields}.',
   'playground.image.compare.applyFailed':
@@ -71,6 +100,31 @@ export default {
   'playground.params.custom': 'Özel',
   'playground.params.empty.tips': 'Üretilen görseller burada görünecektir.',
   'playground.video.empty.tips': 'Üretilen video burada görünecektir.',
+  'playground.video.generating': 'Üretiliyor…',
+  'playground.video.taskUnsupported':
+    'Bu dağıtımda mevcut Playground tarafından desteklenen bir görev yok. Model bölümünü kontrol edin veya referans girdileriyle üretim için API kullanın.',
+  'playground.video.firstFrame': 'İlk kare',
+  'playground.video.lastFrame': 'Son kare',
+  'playground.video.media.uploadImage': 'Görsel Yükle',
+  'playground.video.keyframes.required':
+    'İlk kareyi, son kareyi veya her ikisini sağlayın.',
+  'playground.video.references': 'Referans medyası',
+  'playground.video.references.required':
+    'Bir referans URL’si sağlayın veya dosya yükleyin.',
+  'playground.video.references.visualRequired':
+    'En az bir referans görsel veya video sağlayın.',
+  'playground.video.media.image': 'Görsel',
+  'playground.video.media.video': 'Video',
+  'playground.video.media.audio': 'Ses',
+  'playground.video.media.url': 'HTTP(S) URL girin',
+  'playground.video.media.invalid': 'Geçerli bir HTTP veya HTTPS URL girin.',
+  'playground.video.media.formats':
+    '{formats}; dosya başına en fazla {size} MiB.',
+  'playground.params.refImage': 'Referans görsel',
+  'playground.params.refImage.tips':
+    'Görsel URL’si girin veya bir PNG ya da JPEG yükleyin.',
+  'playground.params.refImage.invalid':
+    'Geçerli bir HTTP veya HTTPS görsel URL’si girin.',
   'playground.params.standard': 'Standart',
   'playground.params.hd': 'HD',
   'playground.params.style.vivid': 'Canlı',

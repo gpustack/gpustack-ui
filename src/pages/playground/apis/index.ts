@@ -166,16 +166,89 @@ export const createImage = async (params: {
   return response.json();
 };
 
-export const createVideo = async (params: { data?: any; token?: any }) => {
-  return request(CREATE_VIDEO_API, {
+export interface VideoJob {
+  id: string;
+  status:
+    | 'queued'
+    | 'in_progress'
+    | 'completed'
+    | 'failed'
+    | 'cancelled'
+    | 'expired';
+  progress?: number;
+  seconds?: number | string;
+  duration_s?: number;
+  size?: string;
+  seed?: number;
+  model?: string;
+  backend?: string | null;
+  prompt?: string;
+  created_at?: number;
+  error?: { message?: string } | string | null;
+}
+
+export const createVideo = (params: {
+  data: Record<string, unknown>;
+  signal: AbortSignal;
+}) => {
+  return request<VideoJob>(CREATE_VIDEO_API, {
     method: 'POST',
-    data: params.data,
-    cancelToken: params.token,
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+    data: createFormData(params.data),
+    signal: params.signal,
+    skipErrorHandler: true
   });
 };
+
+export const getVideo = async (
+  id: string,
+  signal: AbortSignal,
+  timeout?: number
+) => {
+  try {
+    return await request<VideoJob>(
+      `${CREATE_VIDEO_API}/${encodeURIComponent(id)}`,
+      {
+        method: 'GET',
+        signal,
+        timeout,
+        skipErrorHandler: true
+      }
+    );
+  } catch (error) {
+    // A terminal job may use an HTTP error status while still returning its
+    // authenticated job record. A missing job invalidates the local record.
+    const response = (
+      error as { response?: { status?: number; data?: VideoJob } }
+    )?.response;
+    const job = response?.data;
+    if (
+      response?.status !== 404 &&
+      job?.id === id &&
+      ['failed', 'cancelled', 'expired'].includes(job.status)
+    ) {
+      return job;
+    }
+    throw error;
+  }
+};
+
+export const getVideoContent = (id: string, signal: AbortSignal) =>
+  request<Blob>(`${CREATE_VIDEO_API}/${encodeURIComponent(id)}/content`, {
+    method: 'GET',
+    signal,
+    responseType: 'blob',
+    skipErrorHandler: true
+  });
+
+export const cancelVideo = (id: string, signal: AbortSignal) =>
+  request<{ id: string; deleted?: boolean; status?: string }>(
+    `${CREATE_VIDEO_API}/${encodeURIComponent(id)}`,
+    {
+      method: 'DELETE',
+      signal,
+      skipErrorHandler: true
+    }
+  );
 
 // ============ audio ============
 export const textToSpeech = async (params: any, options?: any) => {

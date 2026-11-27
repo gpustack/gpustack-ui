@@ -1,0 +1,34 @@
+.panel {
+  --editor-radius: 6px;
+  min-width: 0;
+  border: 1px solid var(--ant-color-border);
+  border-radius: var(--editor-radius);
+}
+
+.header {
+  min-height: 40px;
+  gap: var(--ant-margin-xs);
+  padding: 6px var(--ant-padding-sm);
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+  border-radius: calc(var(--editor-radius) - 1px)
+    calc(var(--editor-radius) - 1px) 0 0;
+  background-color: var(--ant-color-fill-quaternary);
+}
+
+.title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: 24px;
+}
+
+.body {
+  height: 180px;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 0 0 calc(var(--editor-radius) - 1px)
+    calc(var(--editor-radius) - 1px);
+}
+
+.loading {
+  height: 100%;
+}

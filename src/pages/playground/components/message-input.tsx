@@ -111,6 +111,7 @@ interface MessageInputProps {
   ) => void;
   onCheck?: (e: any) => void;
   submitIcon?: React.ReactNode;
+  stopLabel?: string;
   addMessage?: (message: CurrentMessage) => void;
   onInputChange?: (e: any) => void;
   title?: React.ReactNode;
@@ -142,6 +143,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       disabled,
       isEmpty,
       submitIcon,
+      stopLabel,
       placeholer,
       defaultChecked = true,
       tools,
@@ -365,7 +367,8 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
     });
 
     useImperativeHandle(ref, () => ({
-      handleInputChange: handleInputChange
+      handleInputChange: handleInputChange,
+      focus: () => inputRef.current?.focus?.()
     }));
 
     useHotkeys(
@@ -505,18 +508,24 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
                 </Button>
               </Tooltip>
             ) : (
-              <Button
-                style={{ width: 46 }}
-                type="primary"
-                onClick={onStop}
-                size="middle"
-                icon={
-                  <IconFont
-                    type="icon-stop1"
-                    className="font-size-14"
-                  ></IconFont>
-                }
-              ></Button>
+              <Tooltip title={stopLabel}>
+                <Button
+                  style={{ width: 46 }}
+                  type="primary"
+                  onClick={onStop}
+                  size="middle"
+                  aria-label={
+                    stopLabel ??
+                    intl.formatMessage({ id: 'common.button.stop' })
+                  }
+                  icon={
+                    <IconFont
+                      type="icon-stop1"
+                      className="font-size-14"
+                    ></IconFont>
+                  }
+                ></Button>
+              </Tooltip>
             )}
           </div>
         </div>

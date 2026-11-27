@@ -1,4 +1,34 @@
 export default {
+  'playground.video.extraParams': 'Custom parameters (JSON)',
+  'playground.video.extraParams.tips':
+    'Add model-specific parameters as a JSON object. You can leave this field empty.',
+  'playground.video.extraParams.invalid':
+    'Enter a valid JSON object or leave this field empty.',
+  'playground.video.extraParams.conflict':
+    'These parameters are controlled by the form: {keys}.',
+  'playground.video.cancelGeneration': 'Cancel generation',
+  'playground.video.clearRecord': 'Clear local video record',
+  'playground.video.clearTitle': 'Clear the local video record?',
+  'playground.video.clearConfirm':
+    'The saved video ID and parameters will be removed from this browser. The current task and preview will stay on this page.',
+  'playground.video.cacheUnavailable':
+    'The browser could not access the saved video record.',
+  'playground.video.task.t2va': 'Text to video',
+  'playground.video.task.fl2va': 'First/last frame to video',
+  'playground.video.task.ref2va': 'Reference to video',
+  'playground.video.tasks.preview': 'Video preview',
+  'playground.video.tasks.playbackError':
+    'Your browser could not play this video.',
+  'playground.video.loading': 'Loading video…',
+  'playground.video.tasks.status.queued': 'Queued',
+  'playground.video.tasks.status.in_progress': 'Generating',
+  'playground.video.tasks.status.completed': 'Completed',
+  'playground.video.tasks.status.failed': 'Failed',
+  'playground.video.tasks.status.cancelled': 'Cancelled',
+  'playground.video.tasks.status.expired': 'Expired',
+
+  'playground.params.aspectRatio': 'Aspect ratio',
+  'playground.params.modelDefault': 'Model default',
   'playground.image.compare.invalidParameters':
     'Check these parameters: {fields}.',
   'playground.image.compare.applyFailed':
@@ -71,6 +101,30 @@ export default {
   'playground.params.custom': 'Custom',
   'playground.params.empty.tips': 'Generated images will appear here.',
   'playground.video.empty.tips': 'Generated video will appear here.',
+  'playground.video.generating': 'Generating…',
+  'playground.video.taskUnsupported':
+    'This deployment has no task supported by this playground. Check the model partition or use the API for reference-based generation.',
+  'playground.video.firstFrame': 'First frame',
+  'playground.video.lastFrame': 'Last frame',
+  'playground.video.media.uploadImage': 'Upload an image',
+  'playground.video.keyframes.required':
+    'Provide a first frame, a last frame, or both.',
+  'playground.video.references': 'Reference media',
+  'playground.video.references.required':
+    'Provide a reference URL or upload a file.',
+  'playground.video.references.visualRequired':
+    'Provide at least one reference image or video.',
+  'playground.video.media.image': 'Image',
+  'playground.video.media.video': 'Video',
+  'playground.video.media.audio': 'Audio',
+  'playground.video.media.url': 'Enter an HTTP(S) URL',
+  'playground.video.media.invalid': 'Enter a valid HTTP or HTTPS URL.',
+  'playground.video.media.formats': '{formats}; up to {size} MiB per file.',
+  'playground.params.refImage': 'Reference image',
+  'playground.params.refImage.tips':
+    'Enter an image URL or upload a PNG or JPEG.',
+  'playground.params.refImage.invalid':
+    'Enter a valid HTTP or HTTPS image URL.',
   'playground.params.standard': 'Standard',
   'playground.params.hd': 'HD',
   'playground.params.style.vivid': 'Vivid',

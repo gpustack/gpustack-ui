@@ -53,6 +53,7 @@ export interface PDMonitoringContentProps {
   onViewChange: (view: 'aggregate' | 'instances') => void;
   showViewControl?: boolean;
   omitUnavailable?: boolean;
+  sectionComponent?: typeof MonitoringSection;
   sectionIds?: {
     service?: string;
     pools?: string;
@@ -86,6 +87,7 @@ export default function PDMonitoringContent({
   onViewChange,
   showViewControl = true,
   omitUnavailable = false,
+  sectionComponent: Section = MonitoringSection,
   sectionIds,
   expandedSections,
   onExpandedSectionsChange,
@@ -322,9 +324,9 @@ export default function PDMonitoringContent({
   );
 
   return (
-    <Flex vertical gap={24} data-pd-monitoring="true">
+    <Flex vertical gap={16} data-pd-monitoring="true">
       {visible('pools') && (
-        <MonitoringSection
+        <Section
           sectionKey="pools"
           id={sectionIds?.pools}
           title={t('rolePools')}
@@ -373,7 +375,7 @@ export default function PDMonitoringContent({
             omitUnavailable={omitUnavailable}
           />
           {visible('roleDetails') && (
-            <MonitoringSection
+            <Section
               sectionKey="role-details"
               level="detail"
               id={sectionIds?.details}
@@ -399,13 +401,13 @@ export default function PDMonitoringContent({
                   )
                 )}
               </Row>
-            </MonitoringSection>
+            </Section>
           )}
-        </MonitoringSection>
+        </Section>
       )}
 
       {visible('service') && (
-        <MonitoringSection
+        <Section
           sectionKey="service"
           id={sectionIds?.service}
           title={t('serviceExperience')}
@@ -439,11 +441,11 @@ export default function PDMonitoringContent({
               })}
             </Row>
           )}
-        </MonitoringSection>
+        </Section>
       )}
 
       {visible('pd') && (
-        <MonitoringSection
+        <Section
           sectionKey="pd"
           id={sectionIds?.handoff}
           title={t('handoff')}
@@ -504,7 +506,7 @@ export default function PDMonitoringContent({
                 });
               })}
           </Row>
-        </MonitoringSection>
+        </Section>
       )}
     </Flex>
   );

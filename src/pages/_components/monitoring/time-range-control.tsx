@@ -25,6 +25,7 @@ import {
 } from 'antd';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useId, useState } from 'react';
+import TimeRangePresets from './time-range-presets';
 
 export interface TimeRangeControlProps {
   scope: Pick<MonitoringScope, 'window' | 'start' | 'end'>;
@@ -33,12 +34,14 @@ export interface TimeRangeControlProps {
   ) => void;
   capabilities?: { data: MonitoringCapabilities | null; stale: boolean };
   historyNote?: string;
+  variant?: 'select' | 'presets';
 }
 const TimeRangeControl = ({
   scope,
   changeScope,
   capabilities,
-  historyNote
+  historyNote,
+  variant = 'select'
 }: TimeRangeControlProps) => {
   const intl = useIntl();
   const fieldId = useId();
@@ -56,6 +59,23 @@ const TimeRangeControl = ({
     ? validateTimeRange(draft?.[0]?.unix(), draft?.[1]?.unix(), limits)
     : null;
   const fixed = isFixedTimeRange(scope);
+  const value = fixed ? 'custom' : scope.window;
+  const customRangeHint = limits.supports_custom_range
+    ? undefined
+    : t('customRangeRequiresBackend');
+  const options = [
+    ...QUICK_TIME_RANGES.map(([window, seconds]) => ({
+      value: window,
+      label: window,
+      disabled:
+        seconds < limits.min_query_seconds || seconds > limits.max_query_seconds
+    })),
+    {
+      value: 'custom',
+      label: t('customTimeRange'),
+      disabled: !limits.supports_custom_range
+    }
+  ];
   const retention =
     limits.retention_seconds != null
       ? t('retentionConfiguredTime', {
@@ -83,6 +103,12 @@ const TimeRangeControl = ({
     if (validateTimeRange(start, end, limits)) return;
     changeScope({ start: start!, end: end! });
     setOpen(false);
+  };
+  const selectRange = (next: string) => {
+    const option = options.find((item) => item.value === next);
+    if (!option || option.disabled) return;
+    if (next === 'custom') openCustom();
+    else if (next !== value) changeScope({ window: next });
   };
   const changeEndpoint = (
     index: 0 | 1,
@@ -112,55 +138,47 @@ const TimeRangeControl = ({
     });
   };
   return (
-    <Flex vertical gap={4} style={{ minWidth: 240, maxWidth: 460 }}>
-      <Flex gap={8} align="center">
-        <label
-          htmlFor={fieldId}
-          style={{
-            color: 'var(--ant-color-text-secondary)',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          {t('window')}
-        </label>
-        <BaseSelect
-          id={fieldId}
-          aria-label={t('window')}
-          value={fixed ? 'custom' : scope.window}
-          style={{ minWidth: 140 }}
-          options={[
-            ...QUICK_TIME_RANGES.map(([value, seconds]) => ({
-              value,
-              label: value,
-              disabled:
-                seconds < limits.min_query_seconds ||
-                seconds > limits.max_query_seconds
-            })),
-            {
-              value: 'custom',
-              label: t('customTimeRange'),
-              disabled: !limits.supports_custom_range
-            }
-          ]}
-          onChange={(value: string) =>
-            value === 'custom' ? openCustom() : changeScope({ window: value })
-          }
+    <Flex
+      vertical
+      gap={4}
+      style={{ minWidth: variant === 'presets' ? 0 : 240, maxWidth: 460 }}
+    >
+      {variant === 'presets' ? (
+        <TimeRangePresets
+          value={value}
+          options={options}
+          customRangeHint={customRangeHint}
+          onChange={selectRange}
         />
-        <Tooltip
-          title={
-            !limits.supports_custom_range
-              ? t('customRangeRequiresBackend')
-              : t('customTimeRange')
-          }
-        >
-          <Button
-            icon={<CalendarOutlined />}
-            aria-label={t('customTimeRange')}
-            disabled={!limits.supports_custom_range}
-            onClick={openCustom}
+      ) : (
+        <Flex gap={8} align="center">
+          <label
+            htmlFor={fieldId}
+            style={{
+              color: 'var(--ant-color-text-secondary)',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {t('window')}
+          </label>
+          <BaseSelect
+            id={fieldId}
+            aria-label={t('window')}
+            value={value}
+            style={{ minWidth: 140 }}
+            options={options}
+            onChange={selectRange}
           />
-        </Tooltip>
-      </Flex>
+          <Tooltip title={customRangeHint || t('customTimeRange')}>
+            <Button
+              icon={<CalendarOutlined />}
+              aria-label={t('customTimeRange')}
+              disabled={!limits.supports_custom_range}
+              onClick={openCustom}
+            />
+          </Tooltip>
+        </Flex>
+      )}
       {fixed && (
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           {scopeTimeLabel(scope)}

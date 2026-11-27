@@ -6,8 +6,19 @@ let resources: any;
 mock.module('@gpustack/core-ui', {
   namedExports: {
     GSDrawer: ({ open, title, children }: any) =>
-      open ? createElement('section', null, title, children) : null,
-    SectionTitle: ({ children }: any) => createElement('h2', null, children)
+      open
+        ? createElement(
+            'section',
+            null,
+            createElement('header', null, title),
+            children
+          )
+        : null,
+    SectionTitle: ({ children }: any) => createElement('h2', null, children),
+    useBodyScroll: () => ({
+      saveScrollHeight() {},
+      restoreScrollHeight() {}
+    })
   }
 });
 mock.module('@umijs/max', {
@@ -46,6 +57,15 @@ const renderDrawer = () =>
   renderToStaticMarkup(
     createElement(DeviceDrawer, { deviceId: device.id, onClose() {} } as any)
   );
+
+test('the device title is followed by its full details link in the drawer header', () => {
+  resources = { loading: false, data: response };
+  const header = renderDrawer().match(/<header>(.*?)<\/header>/)?.[1];
+  assert.match(
+    header || '',
+    /visible-worker[^<]*<\/span>.*href="#\/resources\/gpus\/detail\?worker_id=1&amp;device_id=device-a&amp;window=1h"[^>]*>.*resourceDetail\.fullDetails/
+  );
+});
 
 test('resource 403 clears drawer readings and does not revive the clicked device snapshot', async () => {
   const store = new ScopedResource<any>();

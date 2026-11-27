@@ -1,4 +1,5 @@
-import { Table as SealTable } from '@gpustack/core-ui';
+import { StatusMaps } from '@/config';
+import { AutoTooltip, Table as SealTable, StatusDot } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex, Space, Typography } from 'antd';
 import type { ModelMetric } from '../config/types';
@@ -57,7 +58,10 @@ export default function PDRouterMembers({
             {
               dataIndex: 'instance',
               title: m('instance'),
-              minWidth: 180
+              minWidth: 180,
+              render: (value: string) => (
+                <AutoTooltip ghost>{value}</AutoTooltip>
+              )
             },
             {
               dataIndex: 'role',
@@ -68,22 +72,36 @@ export default function PDRouterMembers({
             {
               dataIndex: 'observer',
               title: m('observedBy'),
-              minWidth: 180
+              minWidth: 180,
+              render: (value: string) => (
+                <AutoTooltip ghost>{value}</AutoTooltip>
+              )
             },
             {
               dataIndex: 'value',
               title: m('routerHealth'),
               minWidth: 120,
-              render: (value: number | null) =>
-                m(
-                  value === 1
-                    ? 'healthy'
-                    : value === 0
-                      ? 'unhealthy'
-                      : value === -1
-                        ? 'removed'
-                        : 'unknown'
-                )
+              render: (value: number | null) => (
+                <StatusDot
+                  statusValue={{
+                    status:
+                      value === 1
+                        ? StatusMaps.success
+                        : value === 0
+                          ? StatusMaps.error
+                          : StatusMaps.inactive,
+                    text: m(
+                      value === 1
+                        ? 'healthy'
+                        : value === 0
+                          ? 'unhealthy'
+                          : value === -1
+                            ? 'removed'
+                            : 'unknown'
+                    )
+                  }}
+                />
+              )
             }
           ]}
           scroll={{ x: true }}

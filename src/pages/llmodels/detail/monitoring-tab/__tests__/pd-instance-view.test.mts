@@ -11,13 +11,13 @@ Object.defineProperties(globalThis, {
   IS_REACT_ACT_ENVIRONMENT: { configurable: true, value: true }
 });
 after(() => dom.window.close());
-let context: any, panel: any, toolbar: any;
+let context: any, panel: any, viewControl: any;
 const patches: any[] = [];
 const box = forwardRef<HTMLDivElement, any>(({ children }, ref) =>
   createElement('div', { ref }, children)
 );
 mock.module('antd', {
-  namedExports: { Flex: box, Button: box, Collapse: () => null }
+  namedExports: { Flex: box, Button: box }
 });
 mock.module('@umijs/max', {
   namedExports: { useIntl: () => ({ formatMessage: ({ id }: any) => id }) }
@@ -36,9 +36,13 @@ mock.module(
 );
 mock.module(
   new URL('../../components/scope-toolbar.tsx', import.meta.url).href,
+  { defaultExport: () => null }
+);
+mock.module(
+  new URL('../../components/monitoring-view-control.tsx', import.meta.url).href,
   {
     defaultExport: (props: any) => {
-      toolbar = props;
+      viewControl = props;
       return null;
     }
   }
@@ -79,10 +83,10 @@ for (const filename of [
 }
 mock.module(
   new URL('../components/section-navigation.tsx', import.meta.url).href,
-  { defaultExport: () => null }
+  { defaultExport: ({ extra }: any) => extra || null }
 );
 mock.module(
-  new URL('../../components/monitoring-section.tsx', import.meta.url).href,
+  new URL('../components/monitoring-section-card.tsx', import.meta.url).href,
   { defaultExport: () => null }
 );
 const { createRoot } = await import('react-dom/client');
@@ -133,7 +137,7 @@ test('PD monitoring does not inherit a single-instance focus from a table filter
 test('switching aggregate and instances changes only the view and keeps the whole role population', async (t) => {
   t.after(await mount());
   for (const view of ['instances', 'aggregate', 'instances']) {
-    await act(async () => toolbar.onViewChange(view));
+    await act(async () => viewControl.onChange(view));
     assert.equal(panel.view, view);
     assert.equal(panel.instances.length, 2);
     assert.equal(panel.onFocusChange, undefined);

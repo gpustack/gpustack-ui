@@ -3,19 +3,38 @@ import { mock, test } from 'node:test';
 import { createElement, Fragment } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 const antd = await import('antd');
+const { useMonitoringExpansion } =
+  await import('../../hooks/use-monitoring-expansion');
 let context: any;
 let pdProps: any;
+let openSections: string[] = [];
 const popovers: any[] = [];
 const tables: any[] = [],
   charts: any[] = [];
 const passthrough = ({ children }: any) =>
   createElement(Fragment, null, children);
+mock.module(
+  new URL(
+    '../../../../_components/monitoring/monitoring-navigation.module.less',
+    import.meta.url
+  ).href,
+  {
+    defaultExport: { navigation: 'monitoring-navigation' }
+  }
+);
 mock.module('@gpustack/core-ui', {
   namedExports: {
+    AutoTooltip: passthrough,
     SectionTitle: passthrough,
     CardWrapper: passthrough,
+    CollapseContainer: ({ title, right, children }: any) =>
+      createElement(Fragment, null, title, right, children),
     TextAttribute: passthrough,
     GSDrawer: () => null,
+    useBodyScroll: () => ({
+      saveScrollHeight() {},
+      restoreScrollHeight() {}
+    }),
     Table: (props: any) => {
       tables.push(props);
       return createElement(
@@ -44,15 +63,7 @@ mock.module('antd', {
     Space: antd.Space,
     Typography: antd.Typography,
     Empty: antd.Empty,
-    Spin: antd.Spin,
-    Collapse: ({ items }: any) =>
-      createElement(
-        Fragment,
-        null,
-        items.map((item: any) =>
-          createElement(Fragment, { key: item.key }, item.children)
-        )
-      )
+    Spin: antd.Spin
   }
 });
 mock.module('@umijs/max', {
@@ -72,6 +83,22 @@ mock.module(new URL('../../../config/index.ts', import.meta.url).href, {
 mock.module(new URL('../../config/context.ts', import.meta.url).href, {
   namedExports: { useDetail: () => context }
 });
+mock.module(
+  new URL('../../hooks/use-monitoring-expansion.ts', import.meta.url).href,
+  {
+    namedExports: {
+      useMonitoringExpansion: (
+        options: Parameters<typeof useMonitoringExpansion>[0]
+      ) => {
+        const expansion = useMonitoringExpansion(options);
+        return {
+          ...expansion,
+          expanded: [...expansion.expanded, ...openSections]
+        };
+      }
+    }
+  }
+);
 mock.module(
   new URL('../../components/metric-chart.tsx', import.meta.url).href,
   {
@@ -129,6 +156,7 @@ const prepare = (pd = false) => {
   tables.length = 0;
   charts.length = 0;
   pdProps = undefined;
+  openSections = [];
   context = {
     model: {
       data: {
@@ -212,7 +240,7 @@ test('ordinary monitoring comparisons retain input, output, total and both reque
   }
 });
 
-test('a shared resource request failure is shown once per GPU group and remains on the standalone inventory', async () => {
+test('a collapsed GPU group defers its content while the standalone inventory shows the request failure once', async () => {
   const { JSDOM } = await import('jsdom');
   prepare();
   context.resources.error = { response: { status: 500 } };
@@ -222,9 +250,13 @@ test('a shared resource request failure is shown once per GPU group and remains 
   );
   assert.ok(gpu);
   assert.equal(
-    (gpu.textContent?.match(/modelMonitoring.requestError/g) || []).length,
-    1
+    gpu
+      .querySelector('button[data-monitoring-section-toggle]')
+      ?.getAttribute('aria-expanded'),
+    'false'
   );
+  assert.ok(gpu.querySelector('[inert]'));
+  assert.ok(!gpu.textContent?.includes('modelMonitoring.requestError'));
   const inventory = renderToStaticMarkup(createElement(GPUResourcesTab));
   assert.equal(
     (inventory.match(/modelMonitoring.requestError/g) || []).length,
@@ -351,6 +383,7 @@ test('shared PD charts inherit source help, fixed card controls and rolling-wind
 
 test('PD instance view keeps every associated GPU and Worker without a hidden instance focus', () => {
   prepare(true);
+  openSections = ['gpu', 'host'];
   context.scope.instanceIds = [1];
   context.scope.view = 'instances';
   context.instances.data = [
@@ -388,6 +421,7 @@ test('GPU resource inventory marks loading without a Spin', () => {
 
 test('PD aggregate view cannot retain an invisible instance focus from another tab', () => {
   prepare(true);
+  openSections = ['gpu'];
   context.scope.instanceIds = [1];
   context.instances.data = [
     { id: 1, name: 'prefill-a', role: 'prefill', worker_id: 10 }
@@ -446,6 +480,7 @@ const absent = (
 
 test('ordinary deployment omits unavailable groups and cards, including hardware, but retains observed zeros and errors', () => {
   prepare();
+  openSections = ['stages'];
   Object.assign(context.runtime.data.metrics, {
     ttft: absent('no_data', 'no_samples'),
     tpot: absent(),
@@ -473,6 +508,7 @@ test('ordinary deployment omits unavailable groups and cards, including hardware
     )
   );
   const html = renderToStaticMarkup(createElement(MonitoringTab));
+  assert.ok(html.includes('aria-label="modelMonitoring.viewMode"'));
   assert.doesNotMatch(
     html,
     /aria-controls="model-monitor-cache"|aria-controls="model-monitor-gpu"/
@@ -505,6 +541,7 @@ test('PD deployment adopts the same omission policy and navigation as Benchmark 
     router_health: absent()
   });
   const html = renderToStaticMarkup(createElement(MonitoringTab));
+  assert.ok(html.includes('aria-label="modelMonitoring.viewMode"'));
   assert.equal(pdProps.omitUnavailable, true);
   assert.doesNotMatch(html, /aria-controls="model-monitor-service"/);
   const notes = popovers.find((props) => props['data-observation-notes']);

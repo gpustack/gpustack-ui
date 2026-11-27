@@ -1,5 +1,5 @@
 import { resourceHref } from '@/pages/resources/detail/utils/navigation';
-import { GSDrawer, SectionTitle } from '@gpustack/core-ui';
+import { GSDrawer, SectionTitle, useBodyScroll } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import {
   Alert,
@@ -12,6 +12,7 @@ import {
   Typography
 } from 'antd';
 import dayjs from 'dayjs';
+import { useEffect, useRef } from 'react';
 import { useDetail } from '../config/context';
 import type {
   MetricComponentWarning,
@@ -163,36 +164,67 @@ export const DeviceDrawer = ({
   const associated = (instances?.data || []).filter((instance) =>
     currentDevice?.model_instance_ids.includes(instance.id)
   );
+  const open = !!deviceId && (resources.loading || !!currentDevice);
+  const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
+  const scrollSavedRef = useRef(false);
+  useEffect(() => {
+    if (open && !scrollSavedRef.current) {
+      saveScrollHeight();
+      scrollSavedRef.current = true;
+    } else if (!open && scrollSavedRef.current) {
+      restoreScrollHeight();
+      scrollSavedRef.current = false;
+    }
+    return () => {
+      if (scrollSavedRef.current) {
+        restoreScrollHeight();
+        scrollSavedRef.current = false;
+      }
+    };
+  }, [open, restoreScrollHeight, saveScrollHeight]);
+  const drawerTitle = currentDevice
+    ? `${currentDevice.worker_name} / ${gpuDeviceLabel(currentDevice, t('chip'))}`
+    : t('device');
   return (
     <GSDrawer
-      extra={
-        currentDevice ? (
-          <Button
-            type="link"
-            href={resourceHref(
-              {
-                kind: 'gpu',
-                id: String(currentDevice.worker_id),
-                deviceId: currentDevice.id
-              },
-              scope
-            )}
-          >
-            {intl.formatMessage({ id: 'resourceDetail.fullDetails' })}
-          </Button>
-        ) : undefined
-      }
       title={
-        <Flex component="span" align="center" gap={4}>
-          <span>
-            {currentDevice
-              ? `${currentDevice.worker_name} / ${gpuDeviceLabel(currentDevice, t('chip'))}`
-              : t('device')}
+        <Flex
+          component="span"
+          align="center"
+          gap={4}
+          style={{ minWidth: 0, maxWidth: '100%' }}
+        >
+          <span
+            title={drawerTitle}
+            style={{
+              minWidth: 0,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {drawerTitle}
           </span>
           <HelpTooltip label={t('device')} content={t('sharedHardware')} />
+          {currentDevice && (
+            <Button
+              type="link"
+              style={{ flexShrink: 0 }}
+              href={resourceHref(
+                {
+                  kind: 'gpu',
+                  id: String(currentDevice.worker_id),
+                  deviceId: currentDevice.id
+                },
+                scope
+              )}
+            >
+              {intl.formatMessage({ id: 'resourceDetail.fullDetails' })}
+            </Button>
+          )}
         </Flex>
       }
-      open={!!deviceId && (resources.loading || !!currentDevice)}
+      open={open}
       onClose={onClose}
       destroyOnHidden
       styles={{
@@ -252,21 +284,29 @@ export const DeviceDrawer = ({
                   style={{
                     height: '100%',
                     padding: 'var(--ant-padding-sm)',
+                    border: '1px solid var(--ant-color-border)',
                     background: 'var(--ant-color-fill-quaternary)',
-                    borderRadius: 'var(--ant-border-radius)'
+                    borderRadius: 'var(--ant-border-radius-lg)'
                   }}
                 >
-                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                  <Typography.Text type="secondary">
                     {t(`metric.${item.key}`)}
                   </Typography.Text>
                   <Typography.Text
                     strong
-                    style={{ fontSize: 24, lineHeight: 1.2 }}
+                    style={{
+                      fontSize: 24,
+                      lineHeight: 1.2,
+                      fontVariantNumeric: 'tabular-nums'
+                    }}
                   >
                     {item.value}
                   </Typography.Text>
                   {item.detail && (
-                    <Typography.Text type="secondary">
+                    <Typography.Text
+                      type="secondary"
+                      style={{ fontVariantNumeric: 'tabular-nums' }}
+                    >
                       {item.detail}
                     </Typography.Text>
                   )}
@@ -329,15 +369,6 @@ export const DeviceDrawer = ({
                       'YYYY-MM-DD HH:mm:ss'
                     )
                   : '—'
-              },
-              {
-                key: 'history',
-                label: t('history'),
-                children: t(
-                  currentDevice.history_available
-                    ? 'historyAvailable'
-                    : 'historyUnavailable'
-                )
               }
             ]}
           />

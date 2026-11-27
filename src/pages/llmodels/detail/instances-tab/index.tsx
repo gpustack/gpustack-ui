@@ -5,7 +5,7 @@ import {
   GrafanaIcon,
   IconFont,
   Table as SealTable,
-  StatusDot
+  StatusTag
 } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Typography } from 'antd';
@@ -24,8 +24,7 @@ import { useDetail } from '../config/context';
 import { gpuDeviceLabel, instanceGPUState } from '../utils/resources';
 const InstancesTab = () => {
   const intl = useIntl();
-  const { model, instances, resources, scope, inspectDevice, setTab } =
-    useDetail();
+  const { model, instances, resources, scope, inspectDevice } = useDetail();
   const { openViewLogsModal, closeViewLogsModal, openViewLogsModalStatus } =
     useViewInstanceLogs();
   const { downloadLogs } = useDownloadInstanceLogs();
@@ -48,28 +47,50 @@ const InstancesTab = () => {
     {
       dataIndex: 'state',
       title: t('status'),
-      width: 136,
-      render: (value: string, instance: any) => (
-        <Flex vertical gap={4}>
-          <StatusDot
-            statusValue={{
-              status:
-                instanceStatus[
-                  value === InstanceStatusMap.Downloading &&
-                  instance.download_progress === 100
-                    ? InstanceStatusMap.Running
-                    : value
-                ] || instanceStatus[InstanceStatusMap.Unknown],
-              text:
-                InstanceStatusMapValue[value] ||
-                InstanceStatusMapValue[InstanceStatusMap.Unknown]
-            }}
-          />
-          {instance.draining_since && (
-            <Typography.Text type="secondary">{t('draining')}</Typography.Text>
-          )}
-        </Flex>
-      )
+      width: 148,
+      render: (value: string, instance: any) => {
+        const downloadCompleted =
+          value === InstanceStatusMap.Downloading &&
+          instance.download_progress === 100;
+        return (
+          <Flex vertical gap={4} align="flex-start">
+            <StatusTag
+              download={
+                value === InstanceStatusMap.Downloading
+                  ? { percent: instance.download_progress }
+                  : undefined
+              }
+              extra={
+                value === InstanceStatusMap.Error && instance.worker_id ? (
+                  <Button
+                    type="link"
+                    size="small"
+                    style={{ paddingInline: 0 }}
+                    onClick={() => openViewLogsModal(instance)}
+                  >
+                    {t('logs')}
+                  </Button>
+                ) : null
+              }
+              statusValue={{
+                status:
+                  instanceStatus[
+                    downloadCompleted ? InstanceStatusMap.Running : value
+                  ] || instanceStatus[InstanceStatusMap.Unknown],
+                text:
+                  InstanceStatusMapValue[value] ||
+                  InstanceStatusMapValue[InstanceStatusMap.Unknown],
+                message: downloadCompleted ? '' : instance.state_message
+              }}
+            />
+            {instance.draining_since && (
+              <Typography.Text type="secondary">
+                {t('draining')}
+              </Typography.Text>
+            )}
+          </Flex>
+        );
+      }
     },
     {
       dataIndex: 'role',
@@ -168,7 +189,11 @@ const InstancesTab = () => {
       dataIndex: 'restart_count',
       title: t('restartCount'),
       width: 116,
-      render: (value: number | null) => value ?? '—'
+      render: (value: number | null) => (
+        <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+          {value ?? '—'}
+        </span>
+      )
     },
     {
       dataIndex: 'id',
@@ -231,11 +256,6 @@ const InstancesTab = () => {
       <ScopeToolbar />
       <RequestNotice state={instances} showLoading={false} />
       <RequestNotice state={resources} showLoading={false} />
-      <Flex justify="flex-end" align="center" gap={12} wrap>
-        <Button type="link" onClick={() => setTab('gpu')}>
-          {t('viewResources')} →
-        </Button>
-      </Flex>
       <SealTable
         rowKey="id"
         columns={columns}

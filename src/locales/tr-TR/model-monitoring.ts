@@ -51,6 +51,9 @@ export default {
   'modelMonitoring.legendValuesHelp':
     'Gösterge değerleri her eğrinin son geçerli örneğidir. Performans özetleri, kendi yardımlarında açıklanan istatistiği ve kapsamı kullanır.',
   'modelMonitoring.jumpTo': 'Jump to',
+  'modelMonitoring.badge.avg': 'Ort.',
+  'modelMonitoring.badge.current': 'Anlık',
+  'modelMonitoring.badge.selectedEnd': 'Bitiş',
   'modelMonitoring.metric.total_tokens': 'Total tokens',
   'modelMonitoring.tokenTotalDefinition':
     'Total tokens = input tokens + output tokens; missing observations remain gaps',
@@ -161,6 +164,9 @@ export default {
   'modelMonitoring.source': 'Source',
   'modelMonitoring.backend': 'Backend',
   'modelMonitoring.cluster': 'Cluster',
+  'modelMonitoring.deploymentCluster': 'Dağıtım kümesi',
+  'modelMonitoring.readyInstances': 'Hazır örnekler',
+  'modelMonitoring.modelSource': 'Model kaynağı',
   'modelMonitoring.created': 'Created',
   'modelMonitoring.access': 'Access policy',
   'modelMonitoring.status': 'Status',

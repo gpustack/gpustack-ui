@@ -49,6 +49,9 @@ export default {
   'modelMonitoring.legendValuesHelp':
     '图例右侧是该曲线最后一个有效采样值；性能摘要按各自帮助中说明的统计口径和范围计算。',
   'modelMonitoring.jumpTo': '跳转至',
+  'modelMonitoring.badge.avg': '平均',
+  'modelMonitoring.badge.current': '当前',
+  'modelMonitoring.badge.selectedEnd': '结束',
   'modelMonitoring.metric.total_tokens': '总 Token',
   'modelMonitoring.tokenTotalDefinition':
     '总 Token = 输入 Token + 输出 Token；缺失数据保留空缺',
@@ -156,6 +159,9 @@ export default {
   'modelMonitoring.source': '来源',
   'modelMonitoring.backend': '推理后端',
   'modelMonitoring.cluster': '集群',
+  'modelMonitoring.deploymentCluster': '所属集群',
+  'modelMonitoring.readyInstances': '就绪实例',
+  'modelMonitoring.modelSource': '模型来源',
   'modelMonitoring.created': '创建时间',
   'modelMonitoring.access': '访问策略',
   'modelMonitoring.status': '状态',

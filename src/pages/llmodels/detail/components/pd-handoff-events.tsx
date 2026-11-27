@@ -69,6 +69,7 @@ export default function PDHandoffEvents({
                     <Typography.Text
                       strong={count != null && count > 0}
                       type={count != null && count > 0 ? 'warning' : undefined}
+                      style={{ fontVariantNumeric: 'tabular-nums' }}
                     >
                       {count == null
                         ? '—'

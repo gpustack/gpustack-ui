@@ -1,5 +1,9 @@
 import { ArrowRightOutlined } from '@ant-design/icons';
-import { Table as SealTable, SectionTitle } from '@gpustack/core-ui';
+import {
+  AutoTooltip,
+  Table as SealTable,
+  SectionTitle
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Col, Flex, Row, Typography } from 'antd';
 import { createStyles } from 'antd-style';
@@ -28,7 +32,7 @@ const useStyles = createStyles(({ css }) => ({
   transfer: css`
     height: 100%;
     text-align: center;
-    color: var(--ant-color-text-tertiary);
+    color: var(--ant-color-text-secondary);
     font-size: var(--ant-font-size-sm);
   `
 }));
@@ -39,7 +43,8 @@ const PDRoleOverview = ({
   variant?: 'overview' | 'monitoring' | 'table';
 }) => {
   const { styles } = useStyles();
-  const { model, instances, runtime, resources, setTab } = useDetail();
+  const { model, instances, runtime, resources, changeScope, setTab } =
+    useDetail();
   const intl = useIntl();
   const t = (key: string) =>
     intl.formatMessage({ id: `modelMonitoring.${key}` });
@@ -95,12 +100,7 @@ const PDRoleOverview = ({
       data-pd-role-table
       aria-busy={instances.loading || resources.loading}
     >
-      <Flex align="center" justify="space-between" wrap gap={8}>
-        <SectionTitle>{title}</SectionTitle>
-        <Button type="link" size="small" onClick={() => setTab('gpu')}>
-          {t('viewResources')} →
-        </Button>
-      </Flex>
+      <SectionTitle>{title}</SectionTitle>
       <SealTable
         rowKey="role"
         dataSource={rows}
@@ -122,23 +122,40 @@ const PDRoleOverview = ({
                     whiteSpace: 'normal',
                     textAlign: 'start'
                   }}
-                  onClick={() => setTab('instances')}
+                  onClick={() => {
+                    changeScope({
+                      role: row.role as 'router' | 'prefill' | 'decode',
+                      instanceIds: []
+                    });
+                    setTab('instances');
+                  }}
                 >
                   {row.members.map((member) => member.name).join(', ') || '—'}
                 </Button>
               </Flex>
             )
           },
-          { dataIndex: 'ready', title: t('ready'), minWidth: 110 },
+          {
+            dataIndex: 'ready',
+            title: t('ready'),
+            minWidth: 110,
+            render: (value: string) => (
+              <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+                {value}
+              </span>
+            )
+          },
           {
             dataIndex: 'resources',
             title: t('pd.roleResources'),
-            minWidth: 180
+            minWidth: 180,
+            render: (value: string) => <AutoTooltip ghost>{value}</AutoTooltip>
           },
           {
             dataIndex: 'responsibility',
             title: t('pd.roleResponsibilities'),
-            minWidth: 180
+            minWidth: 180,
+            render: (value: string) => <AutoTooltip ghost>{value}</AutoTooltip>
           }
         ]}
         scroll={{ x: true }}

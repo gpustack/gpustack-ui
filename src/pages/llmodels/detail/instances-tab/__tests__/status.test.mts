@@ -10,6 +10,7 @@ const dropdowns: any[] = [];
 const downloads: any[] = [];
 const grafana: any[] = [];
 const statuses: any[] = [];
+const statusTagProps: any[] = [];
 const calls: string[] = [];
 const passthrough = ({ children }: any) =>
   createElement(Fragment, null, children);
@@ -39,8 +40,9 @@ mock.module('@gpustack/core-ui', {
         )
       );
     },
-    StatusDot: ({ statusValue }: any) => {
-      statuses.push(statusValue);
+    StatusTag: (props: any) => {
+      statusTagProps.push(props);
+      statuses.push(props.statusValue);
       return null;
     }
   }
@@ -155,18 +157,38 @@ test('detail instances reuse shared status names and colors without inventing lo
 
 test('completed model download uses the existing instance-list success color', () => {
   rows = [
-    { id: 1, state: 'downloading', download_progress: 80 },
-    { id: 2, state: 'downloading', download_progress: 100 }
+    {
+      id: 1,
+      state: 'downloading',
+      download_progress: 80,
+      state_message: 'pulling weights'
+    },
+    {
+      id: 2,
+      state: 'downloading',
+      download_progress: 100,
+      state_message: 'stale message'
+    },
+    {
+      id: 3,
+      state: 'error',
+      worker_id: 9,
+      state_message: 'CUDA OOM'
+    }
   ];
   statuses.length = 0;
+  statusTagProps.length = 0;
   renderToStaticMarkup(createElement(InstancesTab));
   assert.deepEqual(
-    statuses.map((status) => [status.text, status.status]),
+    statuses.map((status) => [status.text, status.status, status.message]),
     [
-      ['Downloading', 'transitioning'],
-      ['Downloading', 'success']
+      ['Downloading', 'transitioning', 'pulling weights'],
+      ['Downloading', 'success', ''],
+      ['Error', 'error', 'CUDA OOM']
     ]
   );
+  assert.deepEqual(statusTagProps[0].download, { percent: 80 });
+  assert.ok(statusTagProps[2].extra);
 });
 
 test('detail instance actions preserve the actual row for log downloads and Grafana', () => {

@@ -7,6 +7,12 @@ import { renderToStaticMarkup } from 'react-dom/server';
 let context: any;
 const passthrough = ({ children }: any) =>
   createElement(Fragment, null, children);
+mock.module('@gpustack/core-ui', {
+  namedExports: {
+    TextAttribute: ({ children, className }: any) =>
+      createElement('span', { className }, children)
+  }
+});
 mock.module('@umijs/max', {
   namedExports: { useIntl: () => ({ formatMessage: ({ id }: any) => id }) }
 });
@@ -24,7 +30,13 @@ mock.module('antd', {
 mock.module('antd-style', {
   namedExports: {
     createStyles: () => () => ({
-      styles: { card: 'card', label: 'label', value: 'value', note: 'note' }
+      styles: {
+        card: 'card',
+        label: 'label',
+        badge: 'badge',
+        value: 'value',
+        note: 'note'
+      }
     })
   }
 });
@@ -235,7 +247,8 @@ test('latency summary selects actual P99 values and matching scope labels', () =
   assert.equal(elements[0].querySelector('.value')?.textContent, '20ms');
   assert.equal(elements[1].querySelector('.value')?.textContent, '50ms/token');
   for (const card of elements.slice(0, 2)) {
-    assert.match(card.querySelector('.note')?.textContent || '', /windowP99/);
+    assert.equal(card.querySelector('.badge')?.textContent, 'P99');
+    assert.match(card.textContent || '', /windowP99/);
     assert.doesNotMatch(card.textContent || '', /windowP95/);
   }
 });

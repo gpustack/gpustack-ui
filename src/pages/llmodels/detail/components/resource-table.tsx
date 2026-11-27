@@ -1,5 +1,6 @@
 import { EyeOutlined } from '@ant-design/icons';
 import {
+  AutoTooltip,
   DropdownButtons,
   Table as SealTable,
   SectionTitle,
@@ -18,13 +19,11 @@ import { AvailabilityNotice, RequestNotice } from './metric-state';
 const ResourceTable = ({
   showTitle = true,
   compact = false,
-  showNotices = true,
-  showHistory = true
+  showNotices = true
 }: {
   showTitle?: boolean;
   compact?: boolean;
   showNotices?: boolean;
-  showHistory?: boolean;
 }) => {
   const intl = useIntl();
   const { resources, instances, inspectDevice } = useDetail();
@@ -52,8 +51,11 @@ const ResourceTable = ({
       aria-busy={resources.loading}
       style={
         compact
-          ? ({ '--seal-table-row-min-height': '52px' } as CSSProperties)
-          : undefined
+          ? ({
+              '--seal-table-row-min-height': '52px',
+              fontVariantNumeric: 'tabular-nums'
+            } as CSSProperties)
+          : { fontVariantNumeric: 'tabular-nums' }
       }
     >
       {showTitle && (
@@ -126,7 +128,12 @@ const ResourceTable = ({
             dataIndex: 'worker_name',
             title: 'Worker',
             minWidth: 150,
-            render: (name: string) => (compact ? compactText(name) : name)
+            render: (name: string) =>
+              compact ? (
+                compactText(name)
+              ) : (
+                <AutoTooltip ghost>{name}</AutoTooltip>
+              )
           },
           {
             dataIndex: 'name',
@@ -139,10 +146,10 @@ const ResourceTable = ({
                   `${gpuDeviceLabel(device, t('chip'))} · ${device.name} · ${t(device.scope === 'partition' ? 'partition' : 'physicalGPU')}`
                 )
               ) : (
-                <Flex vertical gap={4}>
-                  <span>
+                <Flex vertical gap={4} style={{ minWidth: 0, width: '100%' }}>
+                  <AutoTooltip ghost>
                     {device.name} · {gpuDeviceLabel(device, t('chip'))}
-                  </span>
+                  </AutoTooltip>
                   <Typography.Text type="secondary">
                     {t(
                       device.scope === 'partition' ? 'partition' : 'physicalGPU'
@@ -188,21 +195,6 @@ const ResourceTable = ({
                       device.current?.gpu_temperature,
                       'celsius'
                     )
-                }
-              ]
-            : []),
-          ...(showHistory
-            ? [
-                {
-                  dataIndex: 'history_available',
-                  title: t('history'),
-                  minWidth: 150,
-                  render: (available: boolean) => {
-                    const label = t(
-                      available ? 'historyAvailable' : 'historyUnavailable'
-                    );
-                    return compact ? compactText(label) : label;
-                  }
                 }
               ]
             : []),

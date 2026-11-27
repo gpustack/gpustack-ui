@@ -1,3 +1,4 @@
+import { ThemeTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Flex } from 'antd';
 import type { ListItem } from '../../config/types';
@@ -8,14 +9,21 @@ import {
 
 export default function DeploymentCacheSummary({
   model,
-  metadata
+  metadata,
+  tagged = false
 }: {
   model: ListItem;
   metadata: DeploymentMetadata | null;
+  tagged?: boolean;
 }) {
   const intl = useIntl();
   return (
-    <Flex vertical gap={4}>
+    <Flex
+      vertical
+      gap={4}
+      align={tagged ? 'flex-end' : undefined}
+      style={tagged ? { minWidth: 0 } : undefined}
+    >
       {deploymentCacheBindings(model).map((binding) => {
         const service =
           binding.serviceId == null
@@ -29,21 +37,34 @@ export default function DeploymentCacheSummary({
                   ? 'common.button.enabled'
                   : 'common.button.disabled'
               });
-        return (
-          <span key={binding.role || 'deployment'}>
-            {[
-              binding.role,
-              status,
-              binding.enabled ? binding.mode : null,
-              binding.serviceId == null
-                ? null
-                : service
-                  ? [service.name, service.provider].filter(Boolean).join(' · ')
-                  : `#${binding.serviceId}`
-            ]
-              .filter(Boolean)
-              .join(' · ')}
-          </span>
+        const text = [
+          binding.role,
+          status,
+          binding.enabled ? binding.mode : null,
+          binding.serviceId == null
+            ? null
+            : service
+              ? [service.name, service.provider].filter(Boolean).join(' · ')
+              : `#${binding.serviceId}`
+        ]
+          .filter(Boolean)
+          .join(' · ');
+        const key = binding.role || 'deployment';
+        return tagged && binding.enabled != null ? (
+          <ThemeTag
+            key={key}
+            style={{
+              height: 'auto',
+              maxWidth: '100%',
+              whiteSpace: 'normal',
+              overflowWrap: 'anywhere',
+              textAlign: 'end'
+            }}
+          >
+            {text}
+          </ThemeTag>
+        ) : (
+          <span key={key}>{text}</span>
         );
       })}
     </Flex>

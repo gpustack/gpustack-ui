@@ -8,11 +8,13 @@ import { canOmitMetric, metricStateMessageId } from '../utils/metric-state';
 export default function ObservationNotes({
   metrics,
   groups,
-  ingressContext
+  ingressContext,
+  size = 'small'
 }: {
   metrics: Record<string, ModelMetric>;
   groups: Record<string, string[]>;
   ingressContext?: { notApplicable: boolean; reason: string };
+  size?: 'small' | 'middle' | 'large';
 }) {
   const intl = useIntl();
   const [open, setOpen] = useState(false);
@@ -121,7 +123,7 @@ export default function ObservationNotes({
       }
     >
       <Button
-        size="small"
+        size={size}
         type="text"
         icon={<InfoCircleOutlined />}
         data-observation-notes-trigger

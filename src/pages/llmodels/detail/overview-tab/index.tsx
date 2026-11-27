@@ -1,31 +1,8 @@
-import type { StatusType } from '@/config/types';
-import { DeploymentUnitOutlined } from '@ant-design/icons';
-import {
-  CardWrapper,
-  SectionTitle,
-  StatusDot,
-  TextAttribute
-} from '@gpustack/core-ui';
+import { TextAttribute } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import {
-  Button,
-  Col,
-  Descriptions,
-  Flex,
-  Row,
-  Space,
-  Tooltip,
-  Typography
-} from 'antd';
-import dayjs from 'dayjs';
-import {
-  isPDModel,
-  modelReplicaCounts,
-  ModelStateLabelMap,
-  ModelStateMap
-} from '../../config';
+import { Button, Col, Flex, Row, Tooltip, Typography } from 'antd';
+import { isPDModel } from '../../config';
 import ChartInteractionHelp from '../components/chart-interaction-help';
-import DeploymentCacheSummary from '../components/deployment-cache-summary';
 import { combineMetrics } from '../components/hardware-content';
 import MetricChart from '../components/metric-chart';
 import { RequestNotice } from '../components/metric-state';
@@ -34,25 +11,18 @@ import PDRoleOverview from '../components/pd-role-overview';
 import PerformanceStats from '../components/performance-stats';
 import ResourceTable from '../components/resource-table';
 import { useDetail } from '../config/context';
-import type { DeploymentMetadata } from '../services/deployment-metadata';
-import type { ResourceSnapshot } from '../services/scoped-resource';
 import { hasMetricSamples, selectRoleMetric } from '../utils/metrics';
 import { pdIngressMetric, pdRoleMetric } from '../utils/pd-metrics';
 import { effectiveRequestRole } from '../utils/request-role';
 import { scopeTimeLabel } from '../utils/time-range';
 import { withTokenTotal } from '../utils/token-throughput';
-const OverviewTab = ({
-  metadata
-}: {
-  metadata: ResourceSnapshot<DeploymentMetadata>;
-}) => {
+const OverviewTab = () => {
   const intl = useIntl();
-  const { model, instances, runtime, scope, setTab } = useDetail();
+  const { model, instances, runtime, scope, changeScope, setTab } = useDetail();
   const data = model.data;
   const t = (key: string) =>
     intl.formatMessage({ id: `modelMonitoring.${key}` });
   if (!data) return null;
-  const replicas = modelReplicaCounts(data);
   const pd = isPDModel(data);
   const metrics = runtime.data?.metrics || {};
   const requestRole = effectiveRequestRole(scope, instances.data || []);
@@ -67,144 +37,39 @@ const OverviewTab = ({
     : t('allInstances');
   const contextNote = `${t('currentScope')}: ${scopeTimeLabel(scope)} · ${pd || scope.role === 'all' ? t('allRoles') : scope.role} · ${pd ? t('allInstances') : scopeCount}. ${t(runtime.data?.history_scope === 'current_instances_with_observed_source_history' ? 'runtimeHistory' : 'historyScope')}`;
   return (
-    <Flex vertical gap={16} aria-busy={runtime.loading || metadata.loading}>
-      <Flex align="center" justify="space-between" gap={8} wrap>
-        <SectionTitle>{t('deploymentOverview')}</SectionTitle>
-        {pd &&
-          metadata.data?.target?.route_name &&
-          metadata.data.target.route_name !== data.name && (
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {t('modelRoute')}: {metadata.data.target.route_name}
-            </Typography.Text>
-          )}
-      </Flex>
-      {!pd && (
-        <CardWrapper>
-          <Flex align="flex-start" gap={24} wrap>
-            <Flex vertical align="center" gap={12} style={{ minWidth: 80 }}>
-              <DeploymentUnitOutlined
-                style={{
-                  fontSize: 42,
-                  color: 'var(--ant-color-primary)',
-                  padding: 12
-                }}
-              />
-              <StatusDot
-                statusValue={{
-                  status:
-                    (ModelStateMap as Record<string, StatusType>)[
-                      data.state || ''
-                    ] || 'inactive',
-                  text: intl.formatMessage({
-                    id:
-                      (ModelStateLabelMap as Record<string, string>)[
-                        data.state || ''
-                      ] || 'modelMonitoring.unknown'
-                  })
-                }}
-              />
-            </Flex>
-            <Flex vertical gap={16} style={{ flex: '1 1 480px', minWidth: 0 }}>
-              <Typography.Title level={4} style={{ margin: 0 }}>
-                {data.name}
-              </Typography.Title>
-              <Descriptions
-                column={{ xs: 1, sm: 2, xl: 3 }}
-                items={[
-                  {
-                    key: 'backend',
-                    label: t('backend'),
-                    children: [data.backend, data.backend_version]
-                      .filter(Boolean)
-                      .join(' ')
-                  },
-                  {
-                    key: 'source',
-                    label: t('source'),
-                    children:
-                      data.huggingface_repo_id ||
-                      data.model_scope_model_id ||
-                      data.local_path ||
-                      data.ollama_library_model_name ||
-                      data.source
-                  },
-                  {
-                    key: 'replicas',
-                    label: t('instances'),
-                    children: data.role_status
-                      ? Object.entries(data.role_status)
-                          .map(
-                            ([name, status]) =>
-                              `${name}: ${status.ready} / ${status.desired}`
-                          )
-                          .join(' · ')
-                      : `${replicas.ready} / ${replicas.total}`
-                  },
-                  {
-                    key: 'cluster',
-                    label: t('cluster'),
-                    children:
-                      metadata.data?.clusterName ||
-                      intl.formatMessage(
-                        { id: 'modelMonitoring.clusterFallback' },
-                        { id: data.cluster_id }
-                      )
-                  },
-                  {
-                    key: 'route',
-                    label: t('modelRoute'),
-                    children:
-                      metadata.data?.target?.route_name ||
-                      (metadata.loading ? '—' : t('metadataUnavailable'))
-                  },
-                  {
-                    key: 'cache',
-                    label: t('cacheConfiguration'),
-                    children: (
-                      <DeploymentCacheSummary
-                        model={data}
-                        metadata={metadata.data}
-                      />
-                    )
-                  },
-                  {
-                    key: 'created',
-                    label: t('created'),
-                    children: data.created_at
-                      ? dayjs(data.created_at).format('YYYY-MM-DD HH:mm:ss')
-                      : '—'
-                  },
-                  {
-                    key: 'access',
-                    label: t('access'),
-                    children: data.access_policy
-                  }
-                ]}
-              />
-            </Flex>
-          </Flex>
-        </CardWrapper>
-      )}
+    <Flex vertical gap={16} aria-busy={runtime.loading}>
       {pd && <PDRoleOverview />}
       <RequestNotice state={runtime} showLoading={false} />
       <Flex justify="space-between" align="center" gap={8} wrap>
-        <Flex align="center" gap={4} wrap>
-          <SectionTitle style={{ marginBlockEnd: 0 }}>
-            {t('performance')}
-          </SectionTitle>
-          <Tooltip title={scopeTimeLabel(scope)}>
-            <TextAttribute variant="outlined">
-              {scope.start != null ? t('customTimeRange') : scope.window}
-            </TextAttribute>
-          </Tooltip>
+        <Flex align="center" gap={6} wrap>
+          <Typography.Text type="secondary">
+            {t('currentScope')} ·{' '}
+            <Tooltip title={scopeTimeLabel(scope)}>
+              <span>
+                {scope.start != null ? t('customTimeRange') : scope.window}
+              </span>
+            </Tooltip>
+            {pd || (!scope.instanceIds.length && scope.role === 'all')
+              ? ` · ${t('allInstances')}`
+              : ''}
+          </Typography.Text>
           {!pd && scope.role !== 'all' && (
             <TextAttribute variant="outlined">{scope.role}</TextAttribute>
           )}
           {!pd && !!scope.instanceIds.length && (
             <TextAttribute variant="outlined">{scopeCount}</TextAttribute>
           )}
-        </Flex>
-        <Space>
+          {!pd && (scope.role !== 'all' || !!scope.instanceIds.length) && (
+            <Button
+              type="link"
+              size="small"
+              aria-label={t('clearInstances')}
+              onClick={() => changeScope({ role: 'all', instanceIds: [] })}
+              style={{ paddingInline: 4 }}
+            >
+              {t('allInstances')}
+            </Button>
+          )}
           <ChartInteractionHelp
             contextNote={contextNote}
             additionalContent={
@@ -215,10 +80,15 @@ const OverviewTab = ({
               ) : undefined
             }
           />
-          <Button type="link" onClick={() => setTab('monitoring')}>
-            {t('viewMonitoring')} →
-          </Button>
-        </Space>
+        </Flex>
+        <Button
+          type="link"
+          size="small"
+          style={{ paddingInline: 0 }}
+          onClick={() => setTab('monitoring')}
+        >
+          {t('viewMonitoring')} →
+        </Button>
       </Flex>
       {pd ? <PDPerformanceStats /> : <PerformanceStats />}
       {pd ? (

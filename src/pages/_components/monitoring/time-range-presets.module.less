@@ -1,0 +1,58 @@
+.control {
+  width: max-content;
+  padding-inline-end: var(--ant-line-width-bold);
+  border-radius: var(--time-range-track-radius, var(--ant-border-radius));
+  background: var(--ant-color-bg-layout);
+}
+
+.control:has(> :global(.ant-segmented-lg)) {
+  --time-range-track-radius: var(--ant-border-radius-lg);
+  --time-range-item-radius: var(--ant-border-radius);
+}
+
+.control:has(> :global(.ant-segmented-sm)) {
+  --time-range-track-radius: var(--ant-border-radius-sm);
+  --time-range-item-radius: var(--ant-border-radius-xs);
+}
+
+.segments {
+  flex-shrink: 0;
+  width: max-content;
+}
+
+.control .segments :global(.ant-segmented-item-label) {
+  align-content: center;
+  padding-inline: var(--ant-padding-xs);
+  overflow: visible;
+  font-size: var(--ant-font-size);
+  line-height: var(--ant-line-height);
+  white-space: nowrap;
+  text-overflow: clip;
+}
+
+.control .calendar {
+  height: auto;
+  margin-block: var(--ant-line-width-bold);
+  padding-inline: calc(
+    var(--ant-control-padding-horizontal) - var(--ant-line-width)
+  );
+  border-radius: var(--time-range-item-radius, var(--ant-border-radius-sm));
+  color: var(--ant-color-text-label);
+  font-size: var(--ant-font-size);
+}
+
+.control .calendar:not([data-selected='true']):hover {
+  color: var(--ant-color-text);
+  background: var(--ant-color-fill-secondary);
+}
+
+.control .calendar:not([data-selected='true']):active {
+  color: var(--ant-color-text);
+  background: var(--ant-color-fill);
+}
+
+.control .calendar[data-selected='true'] {
+  color: var(--ant-color-text);
+  background: var(--ant-color-bg-elevated);
+  box-shadow: var(--ant-box-shadow-tertiary);
+}

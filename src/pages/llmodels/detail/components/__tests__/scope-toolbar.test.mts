@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
 import { after, mock, test } from 'node:test';
-import { act, createElement, useState } from 'react';
+import { act, createElement, useState, type ComponentProps } from 'react';
 
 const dom = new JSDOM('<!doctype html><div id="root"></div>', {
   url: 'http://localhost/',
@@ -50,11 +50,29 @@ dom.window.matchMedia = (media) => ({
   dispatchEvent: () => false
 });
 after(() => dom.window.close());
-mock.module('antd-style', { namedExports: { createStyles: () => () => ({ styles: {} }) } });
+mock.module(
+  new URL(
+    '../../../../_components/monitoring/time-range-presets.module.less',
+    import.meta.url
+  ).href,
+  { defaultExport: {} }
+);
+mock.module('antd-style', {
+  namedExports: { createStyles: () => () => ({ styles: {} }) }
+});
 
 const { Select } = await import('antd');
 mock.module('@gpustack/core-ui', {
-  namedExports: { BaseSelect: Select, GrafanaIcon: () => null }
+  namedExports: {
+    BaseSelect: Select,
+    GrafanaIcon: () => null,
+    SimpleSelect: (props: ComponentProps<typeof Select>) =>
+      createElement(Select, {
+        ...props,
+        className: 'test-simple-select',
+        showSearch: props.showSearch ? { optionFilterProp: 'label' } : false
+      })
+  }
 });
 let monitoringEnabled = false;
 const openMonitoringDashboard = mock.fn();
@@ -100,7 +118,7 @@ mock.module(new URL('../../config/context.ts', import.meta.url).href, {
 const { createRoot } = await import('react-dom/client');
 const { default: ScopeToolbar } = await import('../scope-toolbar');
 
-const mount = async (patch: any = {}) => {
+const mount = async (patch: any = {}, toolbarProps: any = {}) => {
   const container = document.getElementById('root')!;
   const root = createRoot(container);
   const changeScope = mock.fn();
@@ -135,7 +153,7 @@ const mount = async (patch: any = {}) => {
         setScope((previous: any) => ({ ...previous, ...next }));
       }
     };
-    return createElement(ScopeToolbar);
+    return createElement(ScopeToolbar, toolbarProps);
   };
   await act(async () => root.render(createElement(Harness)));
   return {
@@ -175,21 +193,35 @@ test('instance search finds a named deployment instance with numeric IDs', async
   ]);
 });
 
-test('a visible all-instances action clears the current instance selection', async (t) => {
-  const toolbar = await mount({
-    tab: 'instances',
-    scope: { instanceIds: [202] }
+for (const tab of ['instances', 'gpu'] as const) {
+  test(`the ${tab} toolbar clears instances through the filter itself`, async (t) => {
+    const toolbar = await mount({ tab, scope: { instanceIds: [202] } });
+    t.after(toolbar.unmount);
+    assert.equal(
+      toolbar.container.querySelector(
+        'button[aria-label="清空实例筛选，查看全部"]'
+      ),
+      null
+    );
+    const input = toolbar.container.querySelector<HTMLInputElement>(
+      '.test-simple-select input[aria-label="实例"]'
+    );
+    assert.ok(input);
+    assert.equal(input.labels?.length, 0);
+    const clear = input
+      .closest('.ant-select')
+      ?.querySelector<HTMLElement>('.ant-select-clear');
+    assert.ok(clear);
+    await act(async () =>
+      clear.dispatchEvent(
+        new dom.window.MouseEvent('mousedown', { bubbles: true })
+      )
+    );
+    assert.deepEqual(toolbar.changeScope.mock.calls.at(-1)?.arguments, [
+      { instanceIds: [] }
+    ]);
   });
-  t.after(toolbar.unmount);
-  const reset = toolbar.container.querySelector<HTMLButtonElement>(
-    'button[aria-label="清空实例筛选，查看全部"]'
-  );
-  assert.ok(reset, 'the return-to-all action should not rely on a hover icon');
-  await act(async () => reset.click());
-  assert.deepEqual(toolbar.changeScope.mock.calls.at(-1)?.arguments, [
-    { instanceIds: [] }
-  ]);
-});
+}
 
 test('GPU refresh stays busy without repeating the automatic-refresh sentence', async (t) => {
   const toolbar = await mount({
@@ -205,7 +237,11 @@ test('GPU refresh stays busy without repeating the automatic-refresh sentence', 
     toolbar.container.querySelector('[aria-label="展示方式"]'),
     null
   );
-  assert.ok(toolbar.container.querySelector('input[aria-label="实例"]'));
+  assert.ok(
+    toolbar.container.querySelector(
+      '.test-simple-select input[aria-label="实例"]'
+    )
+  );
   assert.equal(toolbar.changeScope.mock.calls.length, 0);
 });
 
@@ -234,16 +270,11 @@ test('labeled time and comparison controls apply their explicit scope changes', 
     toolbar.container.querySelector('input[aria-label="角色"]'),
     null
   );
-  const time = toolbar.container.querySelector<HTMLInputElement>(
-    'input[aria-label="时间范围"]'
+  const time = toolbar.container.querySelector(
+    '[role="radiogroup"][aria-label="时间范围"]'
   )!;
-  await act(async () =>
-    time.dispatchEvent(
-      new dom.window.MouseEvent('mousedown', { bubbles: true })
-    )
-  );
   const day = [
-    ...document.querySelectorAll<HTMLElement>('.ant-select-item-option-content')
+    ...time.querySelectorAll<HTMLElement>('.ant-segmented-item')
   ].find((item) => item.textContent === '24h')!;
   assert.ok(day);
   await act(async () => day.click());
@@ -265,6 +296,34 @@ test('labeled time and comparison controls apply their explicit scope changes', 
   assert.ok(
     document.getElementById(comparison.getAttribute('aria-labelledby')!)
   );
+});
+
+test('time-range keyboard selection respects the backend query limit', async (t) => {
+  const toolbar = await mount({
+    scope: { window: '24h' },
+    capabilities: { data: { max_query_seconds: 86400 }, stale: false }
+  });
+  t.after(toolbar.unmount);
+  const group = toolbar.container.querySelector(
+    '[role="radiogroup"][aria-label="时间范围"]'
+  )!;
+  const radio = (text: string) =>
+    [...group.querySelectorAll('label')]
+      .find((label) => label.textContent === text)
+      ?.querySelector('input');
+  assert.ok(radio('7d')?.disabled);
+  const press = (key: string) =>
+    act(async () =>
+      radio('24h')!.dispatchEvent(
+        new dom.window.KeyboardEvent('keydown', { key, bubbles: true })
+      )
+    );
+  await press('ArrowRight');
+  assert.equal(toolbar.changeScope.mock.callCount(), 0);
+  await press('ArrowLeft');
+  assert.deepEqual(toolbar.changeScope.mock.calls.at(-1)?.arguments, [
+    { window: '1h' }
+  ]);
 });
 
 test('PD paired-view Grafana action carries the fixed interval and the displayed whole-role population', async (t) => {
@@ -334,7 +393,11 @@ test('PD paired views keep time and comparison controls without hidden role filt
     toolbar.container.querySelector('input[aria-label="角色"]'),
     null
   );
-  assert.ok(toolbar.container.querySelector('input[aria-label="时间范围"]'));
+  assert.ok(
+    toolbar.container.querySelector(
+      '[role="radiogroup"][aria-label="时间范围"]'
+    )
+  );
   assert.ok(toolbar.container.querySelector('[aria-label="展示方式"]'));
 });
 
@@ -351,6 +414,7 @@ test('PD instance inventory retains an explicit, labelled role filter', async (t
     'input[aria-label="角色"]'
   )!;
   assert.ok(role);
+  assert.equal(role.labels?.length, 0);
   await act(async () =>
     role.dispatchEvent(
       new dom.window.MouseEvent('mousedown', { bubbles: true })
@@ -363,4 +427,18 @@ test('PD instance inventory retains an explicit, labelled role filter', async (t
   assert.deepEqual(toolbar.changeScope.mock.calls.at(-1)?.arguments, [
     { role: 'prefill' }
   ]);
+});
+
+test('embedded monitoring toolbar defers view mode to the section navigation bar', async (t) => {
+  const toolbar = await mount({}, { embedded: true });
+  t.after(toolbar.unmount);
+  assert.equal(
+    toolbar.container.querySelector('[aria-label="展示方式"]'),
+    null
+  );
+  assert.ok(
+    toolbar.container.querySelector(
+      '[role="radiogroup"][aria-label="时间范围"]'
+    )
+  );
 });

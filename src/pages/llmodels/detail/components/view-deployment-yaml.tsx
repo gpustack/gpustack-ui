@@ -1,7 +1,13 @@
 import useUserSettings from '@/hooks/use-user-settings';
-import { GSDrawer, HighlightCode, icons } from '@gpustack/core-ui';
+import {
+  GSDrawer,
+  HighlightCode,
+  icons,
+  useBodyScroll
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Flex, Spin, Typography } from 'antd';
+import { useEffect, useRef } from 'react';
 import type { ListItem } from '../../config/types';
 import useDeploymentYaml from '../hooks/use-deployment-yaml';
 
@@ -9,6 +15,23 @@ export default function ViewDeploymentYaml({ model }: { model: ListItem }) {
   const intl = useIntl();
   const { isDarkTheme } = useUserSettings();
   const yaml = useDeploymentYaml(model);
+  const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
+  const scrollSavedRef = useRef(false);
+  useEffect(() => {
+    if (yaml.open && !scrollSavedRef.current) {
+      saveScrollHeight();
+      scrollSavedRef.current = true;
+    } else if (!yaml.open && scrollSavedRef.current) {
+      restoreScrollHeight();
+      scrollSavedRef.current = false;
+    }
+    return () => {
+      if (scrollSavedRef.current) {
+        restoreScrollHeight();
+        scrollSavedRef.current = false;
+      }
+    };
+  }, [restoreScrollHeight, saveScrollHeight, yaml.open]);
   const t = (key: string) =>
     intl.formatMessage({ id: `modelMonitoring.${key}` });
   return (

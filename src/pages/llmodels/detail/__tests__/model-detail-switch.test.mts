@@ -106,13 +106,13 @@ mock.module('antd', {
       resultRenders.push(status);
       return createElement('div', { 'data-status': status }, extra);
     },
-    Tabs: ({ activeKey, items, onChange }: any) =>
+    Tabs: ({ activeKey, items, onChange, type, size }: any) =>
       createElement(
         'section',
         {},
         createElement(
           'div',
-          { role: 'tablist' },
+          { role: 'tablist', 'data-type': type, 'data-size': size },
           items.map(({ key, label }: any) =>
             createElement(
               'button',
@@ -234,7 +234,10 @@ test('model switching keeps the current detail visible until the latest target i
     );
     assert.equal(selectedName(), 'API model A');
     assert.equal(heading(), 'API model A');
-    assert.equal(activeTab(), 'modelMonitoring.overview');
+    assert.equal(activeTab(), 'modelMonitoring.performance');
+    const tabs = document.querySelector('[role="tablist"]');
+    assert.equal(tabs?.getAttribute('data-type'), 'card');
+    assert.equal(tabs?.getAttribute('data-size'), 'middle');
     await act(async () => tabButton('monitoring').click());
     assert.equal(activeTab(), 'modelMonitoring.monitoring');
     await select(8);
@@ -290,7 +293,7 @@ test('model switching keeps the current detail visible until the latest target i
     assert.notEqual(switcher(), element);
     assert.equal(heading(), undefined);
     assert.equal(selectedName(), '#9');
-    assert.equal(activeTab(), 'modelMonitoring.overview');
+    assert.equal(activeTab(), 'modelMonitoring.performance');
   } finally {
     await act(async () => root.unmount());
   }

@@ -4,6 +4,7 @@ const TimeRangeFilter = () => {
   const { scope, changeScope, capabilities } = useDetail();
   return (
     <TimeRangeControl
+      variant="presets"
       scope={scope}
       changeScope={changeScope}
       capabilities={capabilities}

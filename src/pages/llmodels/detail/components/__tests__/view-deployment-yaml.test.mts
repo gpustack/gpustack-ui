@@ -29,7 +29,11 @@ mock.module('@gpustack/core-ui', {
     HighlightCode: (props: any) => {
       highlighted = props;
       return createElement('pre', null, props.code);
-    }
+    },
+    useBodyScroll: () => ({
+      saveScrollHeight() {},
+      restoreScrollHeight() {}
+    })
   }
 });
 mock.module('@umijs/max', {

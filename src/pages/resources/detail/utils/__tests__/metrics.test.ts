@@ -107,6 +107,14 @@ test('resource navigation keeps fixed endpoints and avoids Model role or instanc
   assert.deepEqual(timeScopeFromParams(new URLSearchParams('window=2d')), {
     window: '2d'
   });
+  assert.equal(
+    resourceHref({ kind: 'worker', id: '7' }, { window: '1h' }),
+    '#/resources/workers/detail?id=7'
+  );
+  assert.equal(
+    resourceHref({ kind: 'worker', id: '7' }, { window: '24h' }),
+    '#/resources/workers/detail?id=7&window=24h'
+  );
 });
 
 test('resource deep links preserve short fractional measurement bounds through parsing and subsequent GPU/Worker links', () => {

@@ -6,6 +6,9 @@ import { renderToStaticMarkup } from 'react-dom/server';
 let data: any;
 let scope: any = { window: '1h' };
 let chart: any;
+mock.module('@gpustack/core-ui', {
+  namedExports: { GrafanaIcon: () => null }
+});
 mock.module('@umijs/max', {
   namedExports: {
     useIntl: () => ({
@@ -27,11 +30,15 @@ mock.module(new URL('../../config/context.ts', import.meta.url).href, {
     })
   }
 });
+let timeRangeProps: any;
 mock.module(
   new URL('../../../../_components/monitoring/index.ts', import.meta.url).href,
   {
     namedExports: {
-      TimeRangeControl: () => null,
+      TimeRangeControl: (props: any) => {
+        timeRangeProps = props;
+        return null;
+      },
       HelpTooltip: (props: any) => createElement('span', null, props.content),
       MetricChart: (props: any) => {
         chart = props;
@@ -86,4 +93,16 @@ test('relative inventory monitoring retains its existing sampled domain', () => 
     })
   );
   assert.equal(chart.timeRange, undefined);
+});
+
+test('embedded resource toolbar uses preset time ranges and renders optional extra controls', () => {
+  data = { step: 5, last_refreshed_at: 100, metrics: {} };
+  const html = renderToStaticMarkup(
+    createElement(ScopeToolbar, {
+      embedded: true,
+      extra: createElement('span', { 'data-extra': true }, 'help')
+    })
+  );
+  assert.equal(timeRangeProps.variant, 'presets');
+  assert.ok(html.includes('data-extra="true"'));
 });

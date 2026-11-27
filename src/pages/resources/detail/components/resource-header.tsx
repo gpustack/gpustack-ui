@@ -1,8 +1,17 @@
+import { HelpTooltip } from '@/pages/_components/monitoring';
 import { displayMetricValue } from '@/pages/llmodels/detail/utils/metrics';
 import { gpuDeviceLabel } from '@/pages/llmodels/detail/utils/resources';
-import { BaseSelect, StatusTag } from '@gpustack/core-ui';
-import { history } from '@umijs/max';
-import { Button, Flex, message, Typography } from 'antd';
+import { CardWrapper, StatusTag } from '@gpustack/core-ui';
+import { useIntl } from '@umijs/max';
+import {
+  Button,
+  Col,
+  Descriptions,
+  Flex,
+  message,
+  Row,
+  Typography
+} from 'antd';
 import { useState } from 'react';
 import { updateWorker } from '../../apis';
 import UpdateLabels from '../../components/update-labels';
@@ -11,26 +20,101 @@ import { status, WorkerStatusMapValue } from '../../config';
 import type { WorkerLabelsFormPayload } from '../../config/types';
 import { useResource } from '../config/context';
 import { useResourceIntl } from '../hooks/use-resource-intl';
+import { deviceHardware } from '../utils/device-hardware';
 import { reportedGPUCount } from '../utils/metrics';
 import { resourceHref } from '../utils/navigation';
 import styles from './detail.module.less';
 
 const ResourceHeader = () => {
-  const { detail, target, scope, refresh, tab } = useResource();
+  const { detail, target, scope, refresh, setTab } = useResource();
   const [editing, setEditing] = useState(false),
     [ssh, setSSH] = useState(false);
+  const intl = useIntl();
   const t = useResourceIntl();
   const data = detail.data!;
   const worker = data.worker;
   const device = data.devices.find((d) => d.id === data.selected_device_id);
+  const raw = deviceHardware(device, worker.status?.gpu_devices);
   const save = async (values: WorkerLabelsFormPayload) => {
     await updateWorker(worker.id, values);
     setEditing(false);
     message.success(t('saved'));
     void refresh();
   };
+  const gpuSummaryGroups = device
+    ? [
+        [
+          {
+            key: 'worker',
+            label: intl.formatMessage({ id: 'resources.worker' }),
+            children: (
+              <Typography.Link
+                href={resourceHref(
+                  { kind: 'worker', id: String(worker.id) },
+                  scope
+                )}
+              >
+                {worker.name}
+              </Typography.Link>
+            )
+          },
+          {
+            key: 'cluster',
+            label: t('cluster'),
+            children: data.cluster_name || '—'
+          },
+          {
+            key: 'uuid',
+            label: t('gpuUuid'),
+            children: raw?.uuid || '—'
+          }
+        ],
+        [
+          {
+            key: 'memory',
+            label: t('physicalTotal'),
+            children: displayMetricValue(
+              device.current?.gpu_memory_total,
+              'bytes'
+            )
+          },
+          {
+            key: 'allocated',
+            label: (
+              <Flex align="center" gap={4}>
+                <span>{t('allocatedMemory')}</span>
+                <HelpTooltip
+                  label={t('allocatedMemory')}
+                  content={t('memoryHelp')}
+                />
+              </Flex>
+            ),
+            children: displayMetricValue(raw?.memory?.allocated, 'bytes')
+          },
+          {
+            key: 'instances',
+            label: t('relatedInstances'),
+            children: (
+              <Button
+                type="link"
+                size="small"
+                onClick={() => setTab('instances')}
+                style={{
+                  paddingInline: 0,
+                  height: 'auto',
+                  whiteSpace: 'normal',
+                  textAlign: 'end'
+                }}
+              >
+                {t('instanceCount', { count: data.instances.length })}
+              </Button>
+            )
+          }
+        ]
+      ]
+    : [];
   return (
-    <>
+    <Flex vertical gap={16}>
       <Flex gap={16} justify="space-between" align="start" wrap>
         <Flex vertical gap={6} className={styles.identity}>
           <Flex gap={12} align="center" wrap>
@@ -47,44 +131,27 @@ const ResourceHeader = () => {
               }}
             />
           </Flex>
-          <Flex gap={8} align="center" wrap className={styles.meta}>
-            {device && (
-              <>
-                <Typography.Link
-                  href={resourceHref(
-                    { kind: 'worker', id: String(worker.id) },
-                    scope
-                  )}
-                >
-                  {worker.name}
-                </Typography.Link>
-                <span>·</span>
-              </>
-            )}
-            <span>{data.cluster_name || '—'}</span>
-            <span>·</span>
-            {device ? (
+          {!device && (
+            <Flex gap={8} align="center" wrap className={styles.meta}>
+              <span>{data.cluster_name || '—'}</span>
+              <span>·</span>
+              <span>{worker.ip || worker.advertise_address || '—'}</span>
+              <span>·</span>
               <span>
-                {displayMetricValue(device.current?.gpu_memory_total, 'bytes')}
+                {t('gpuCount', {
+                  count:
+                    reportedGPUCount(
+                      worker.status?.gpu_devices,
+                      data.devices.length
+                    ) ?? '—'
+                })}
               </span>
-            ) : (
-              <>
-                <span>{worker.ip || worker.advertise_address || '—'}</span>
-                <span>·</span>
-                <span>
-                  {t('gpuCount', {
-                    count:
-                      reportedGPUCount(
-                        worker.status?.gpu_devices,
-                        data.devices.length
-                      ) ?? '—'
-                  })}
-                </span>
-              </>
-            )}
-            <span>·</span>
-            <span>{t('instanceCount', { count: data.instances.length })}</span>
-          </Flex>
+              <span>·</span>
+              <span>
+                {t('instanceCount', { count: data.instances.length })}
+              </span>
+            </Flex>
+          )}
         </Flex>
         <Flex gap={8} className={styles.actions}>
           {target.kind === 'worker' ? (
@@ -97,39 +164,49 @@ const ResourceHeader = () => {
               )}
             </>
           ) : (
-            <Flex gap={8} wrap>
-              {data.devices.length > 1 && (
-                <BaseSelect
-                  aria-label={t('switchGPU')}
-                  value={device?.id}
-                  options={data.devices.map((d) => ({
-                    value: d.id,
-                    label: `${gpuDeviceLabel(d, t('chip'))} · ${d.name}`
-                  }))}
-                  style={{ width: 220, maxWidth: '100%' }}
-                  onChange={(id: string) =>
-                    history.push(
-                      resourceHref(
-                        { kind: 'gpu', id: String(worker.id), deviceId: id },
-                        scope,
-                        tab
-                      ).slice(1)
-                    )
-                  }
-                />
+            <Button
+              href={resourceHref(
+                { kind: 'worker', id: String(worker.id) },
+                scope
               )}
-              <Button
-                href={resourceHref(
-                  { kind: 'worker', id: String(worker.id) },
-                  scope
-                )}
-              >
-                {t('viewWorker')}
-              </Button>
-            </Flex>
+            >
+              {t('viewWorker')}
+            </Button>
           )}
         </Flex>
       </Flex>
+      {device && (
+        <Row gutter={[16, 16]}>
+          {gpuSummaryGroups.map((items) => (
+            <Col key={items[0].key} xs={24} lg={12}>
+              <CardWrapper style={{ paddingBlock: 16, height: '100%' }}>
+                <Descriptions
+                  size="small"
+                  column={1}
+                  colon={false}
+                  styles={{
+                    label: {
+                      alignItems: 'center',
+                      minHeight: 28,
+                      maxWidth: '45%',
+                      overflowWrap: 'anywhere'
+                    },
+                    content: {
+                      alignItems: 'center',
+                      justifyContent: 'flex-end',
+                      minWidth: 0,
+                      overflowWrap: 'anywhere',
+                      textAlign: 'end',
+                      fontVariantNumeric: 'tabular-nums'
+                    }
+                  }}
+                  items={items}
+                />
+              </CardWrapper>
+            </Col>
+          ))}
+        </Row>
+      )}
       {target.kind === 'worker' && data.can_edit && (
         <UpdateLabels
           open={editing}
@@ -150,7 +227,7 @@ const ResourceHeader = () => {
           onClose={() => setSSH(false)}
         />
       )}
-    </>
+    </Flex>
   );
 };
 export default ResourceHeader;

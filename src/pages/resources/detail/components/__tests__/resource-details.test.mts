@@ -36,6 +36,7 @@ let messages = localeMessages['en-US'];
 const messageIDs: string[] = [];
 mock.module('@umijs/max', {
   namedExports: {
+    history: { push() {} },
     useIntl: () => ({
       formatMessage: (
         { id }: { id: string },
@@ -52,8 +53,32 @@ mock.module('@umijs/max', {
 });
 const wrap = ({ children }: any) => createElement('div', {}, children);
 mock.module('@gpustack/core-ui', {
-  namedExports: { SectionTitle: wrap, ThemeTag: wrap, TextAttribute: wrap }
+  namedExports: {
+    BaseSelect: () => null,
+    CardWrapper: wrap,
+    SectionTitle: wrap,
+    StatusTag: () => null,
+    ThemeTag: wrap,
+    TextAttribute: wrap
+  }
 });
+mock.module(new URL('../../../apis/index.ts', import.meta.url).href, {
+  namedExports: { updateWorker: async () => {} }
+});
+mock.module(new URL('../../../config/index.ts', import.meta.url).href, {
+  namedExports: {
+    status: { ready: 'success', not_ready: 'inactive' },
+    WorkerStatusMapValue: { ready: 'Ready', not_ready: 'Not Ready' }
+  }
+});
+for (const module of [
+  '../../../components/update-labels.tsx',
+  '../../../components/worker-ssh-modal.tsx'
+]) {
+  mock.module(new URL(module, import.meta.url).href, {
+    defaultExport: () => null
+  });
+}
 mock.module(
   new URL('../../../../_components/monitoring/index.ts', import.meta.url).href,
   {
@@ -83,6 +108,7 @@ for (const module of [
 
 const { createRoot } = await import('react-dom/client');
 const { ResourceContext } = await import('../../config/context');
+const { default: ResourceHeader } = await import('../resource-header');
 const { default: ConfigurationTab } = await import('../../configuration-tab');
 const { default: OverviewTab } = await import('../../overview-tab');
 
@@ -128,7 +154,7 @@ function resolvedDetail() {
 }
 
 async function render(
-  Component: typeof ConfigurationTab | typeof OverviewTab,
+  Component: typeof ConfigurationTab | typeof OverviewTab | typeof ResourceHeader,
   data = structuredClone(unresolvedDetail),
   kind: 'gpu' | 'worker' = 'gpu'
 ) {
@@ -182,11 +208,11 @@ test('configuration does not borrow UUID or driver/runtime from an unresolved ra
   }
 });
 
-test('overview leaves the unresolved device UUID unavailable', async () => {
-  const view = await render(OverviewTab);
+test('gpu header summary leaves the unresolved device UUID unavailable', async () => {
+  const view = await render(ResourceHeader);
   try {
-    const uuid = [...document.querySelectorAll('dt')].find(
-      (label) => label.textContent === 'GPU UUID:'
+    const uuid = [...document.querySelectorAll('.ant-descriptions-item-label')].find(
+      (label) => label.textContent === 'GPU UUID'
     )!;
     assert.equal(uuid.nextElementSibling?.textContent, '—');
   } finally {
@@ -208,17 +234,17 @@ test('configuration preserves metadata for a uniquely indexed chip on a multi-ch
   }
 });
 
-test('overview preserves the matching UUID and scheduling allocation for a resolved chip', async () => {
-  const view = await render(OverviewTab, resolvedDetail());
+test('gpu header summary preserves the matching UUID and scheduling allocation for a resolved chip', async () => {
+  const view = await render(ResourceHeader, resolvedDetail());
   try {
-    const labels = [...document.querySelectorAll('dt')];
+    const labels = [...document.querySelectorAll('.ant-descriptions-item-label')];
     assert.equal(
-      labels.find((label) => label.textContent === 'GPU UUID:')!
+      labels.find((label) => label.textContent === 'GPU UUID')!
         .nextElementSibling?.textContent,
       'GPU-1'
     );
     assert.equal(
-      labels.find((label) => label.textContent === 'Allocated GPU memory:')!
+      labels.find((label) => label.textContent === 'Allocated GPU memory')!
         .nextElementSibling?.textContent,
       '0 GiB'
     );
@@ -232,7 +258,11 @@ for (const kind of ['worker', 'gpu'] as const) {
     const data = resolvedDetail();
     data.instances = [{ id: 1 }, { id: 2 }, { id: 3 }];
     if (kind === 'worker') data.selected_device_id = null;
-    const view = await render(OverviewTab, data, kind);
+    const view = await render(
+      kind === 'worker' ? OverviewTab : ResourceHeader,
+      data,
+      kind
+    );
     try {
       const action = [...document.querySelectorAll('button, a')].find(
         (element) =>
@@ -254,7 +284,7 @@ for (const kind of ['worker', 'gpu'] as const) {
   });
 }
 
-test('configuration and overview reuse existing resource label translations in all five locales', async () => {
+test('configuration and header summary reuse existing resource label translations in all five locales', async () => {
   for (const [locale, dictionary] of Object.entries(localeMessages)) {
     messages = dictionary;
     try {
@@ -262,7 +292,7 @@ test('configuration and overview reuse existing resource label translations in a
       for (const [Component, kind] of [
         [ConfigurationTab, 'worker'],
         [ConfigurationTab, 'gpu'],
-        [OverviewTab, 'gpu']
+        [ResourceHeader, 'gpu']
       ] as const) {
         const data = resolvedDetail();
         if (kind === 'worker') data.selected_device_id = null;

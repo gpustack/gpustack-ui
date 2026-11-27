@@ -51,6 +51,9 @@ export default {
   'modelMonitoring.legendValuesHelp':
     '凡例は各曲線の最後の有効サンプルです。性能サマリーは各ヘルプに記載された統計と範囲を使用します。',
   'modelMonitoring.jumpTo': 'Jump to',
+  'modelMonitoring.badge.avg': '平均',
+  'modelMonitoring.badge.current': '現在',
+  'modelMonitoring.badge.selectedEnd': '終了',
   'modelMonitoring.metric.total_tokens': 'Total tokens',
   'modelMonitoring.tokenTotalDefinition':
     'Total tokens = input tokens + output tokens; missing observations remain gaps',
@@ -162,6 +165,9 @@ export default {
   'modelMonitoring.source': 'Source',
   'modelMonitoring.backend': 'Backend',
   'modelMonitoring.cluster': 'Cluster',
+  'modelMonitoring.deploymentCluster': '所属クラスター',
+  'modelMonitoring.readyInstances': '準備完了インスタンス',
+  'modelMonitoring.modelSource': 'モデルの取得元',
   'modelMonitoring.created': 'Created',
   'modelMonitoring.access': 'Access policy',
   'modelMonitoring.status': 'Status',

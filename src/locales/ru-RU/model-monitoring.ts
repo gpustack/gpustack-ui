@@ -51,6 +51,9 @@ export default {
   'modelMonitoring.legendValuesHelp':
     'Легенда показывает последний действительный отсчёт каждой кривой. Сводки производительности используют статистику и диапазон, указанные в их справке.',
   'modelMonitoring.jumpTo': 'Jump to',
+  'modelMonitoring.badge.avg': 'Сред.',
+  'modelMonitoring.badge.current': 'Текущ.',
+  'modelMonitoring.badge.selectedEnd': 'Конец',
   'modelMonitoring.metric.total_tokens': 'Total tokens',
   'modelMonitoring.tokenTotalDefinition':
     'Total tokens = input tokens + output tokens; missing observations remain gaps',
@@ -162,6 +165,9 @@ export default {
   'modelMonitoring.source': 'Source',
   'modelMonitoring.backend': 'Backend',
   'modelMonitoring.cluster': 'Cluster',
+  'modelMonitoring.deploymentCluster': 'Кластер развёртывания',
+  'modelMonitoring.readyInstances': 'Готовые экземпляры',
+  'modelMonitoring.modelSource': 'Источник модели',
   'modelMonitoring.created': 'Created',
   'modelMonitoring.access': 'Access policy',
   'modelMonitoring.status': 'Status',

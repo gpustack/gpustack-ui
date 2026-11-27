@@ -43,6 +43,15 @@ const ModelSwitcher = ({
       loading={loading || switching}
       showSearch={{ optionFilterProp: 'label' }}
       popupMatchSelectWidth={false}
+      popupAlign={{ overflow: { shiftX: true, adjustY: true } }}
+      style={{ width: 'fit-content', maxWidth: '100%' }}
+      styles={{
+        popup: {
+          root: {
+            maxWidth: 'calc(100vw - 2 * var(--ant-padding))'
+          }
+        }
+      }}
       labelRender={renderModelLabel}
       onOpenChange={(open) => {
         if (open && !loading && tenantKey() === tenant) {

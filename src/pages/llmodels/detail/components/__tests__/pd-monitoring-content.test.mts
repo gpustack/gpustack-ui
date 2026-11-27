@@ -48,7 +48,10 @@ mock.module('@umijs/max', {
 let tableRows: any[] = [];
 mock.module('@gpustack/core-ui', {
   namedExports: {
+    AutoTooltip: ({ children }: any) => createElement('span', {}, children),
     SectionTitle: ({ children }: any) => createElement('h3', {}, children),
+    StatusDot: ({ statusValue }: any) =>
+      createElement('span', {}, statusValue?.text),
     TextAttribute: ({ children }: any) => createElement('span', {}, children),
     Table: ({ dataSource }: any) => {
       tableRows = dataSource;

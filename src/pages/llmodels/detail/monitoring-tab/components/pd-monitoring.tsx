@@ -13,7 +13,7 @@ import {
   AvailabilityNotice,
   RequestNotice
 } from '../../components/metric-state';
-import MonitoringSection from '../../components/monitoring-section';
+import MonitoringViewControl from '../../components/monitoring-view-control';
 import ObservationNotes from '../../components/observation-notes';
 import PDMonitoringContent from '../../components/pd-monitoring-content';
 import PDRoleOverview from '../../components/pd-role-overview';
@@ -31,8 +31,10 @@ import { monitoringObservationGroups } from '../../utils/observation-visibility'
 import { pdCacheFeaturesFromModel } from '../../utils/pd-cache-features';
 import { scrollWhenSectionSettles } from '../../utils/section-navigation';
 import type { MonitoringTabHandle } from '../index';
+import MonitoringSectionCard from './monitoring-section-card';
 import styles from './pd-monitoring.module.less';
 import SectionNavigation from './section-navigation';
+import navStyles from './section-navigation.module.less';
 
 const PDMonitoringTab = forwardRef<MonitoringTabHandle>((_props, ref) => {
   const { id, model, instances, runtime, resources, scope, changeScope } =
@@ -122,23 +124,33 @@ const PDMonitoringTab = forwardRef<MonitoringTabHandle>((_props, ref) => {
       ref={rootRef}
       className={styles.root}
       vertical
-      gap={24}
+      gap={16}
       aria-busy={runtime.loading}
       data-model-monitor-layout
       data-pd-model-monitoring
     >
-      <ScopeToolbar
-        onViewChange={changeView}
-        extra={<ObservationNotes metrics={allMetrics} groups={groups} />}
-      />
+      <div className={navStyles.panel} data-model-monitor-panel>
+        <ScopeToolbar
+          embedded
+          extra={
+            <ObservationNotes
+              metrics={allMetrics}
+              groups={groups}
+              size="middle"
+            />
+          }
+        />
+        <SectionNavigation
+          embedded
+          sections={sections}
+          expanded={expanded}
+          onOpen={openSection}
+          onChange={setExpanded}
+          contextNote={t('runtimeHistory') + ' ' + t('hardwareHistory')}
+          extra={<MonitoringViewControl compact onChange={changeView} />}
+        />
+      </div>
       <PDRoleOverview variant="monitoring" />
-      <SectionNavigation
-        sections={sections}
-        expanded={expanded}
-        onOpen={openSection}
-        onChange={setExpanded}
-        contextNote={t('runtimeHistory') + ' ' + t('hardwareHistory')}
-      />
       <RequestNotice state={runtime} showLoading={false} />
       <AvailabilityNotice
         available={runtime.data?.available}
@@ -146,6 +158,7 @@ const PDMonitoringTab = forwardRef<MonitoringTabHandle>((_props, ref) => {
       />
       {runtime.data && (
         <PDMonitoringContent
+          sectionComponent={MonitoringSectionCard}
           expandedSections={expanded}
           onExpandedSectionsChange={setExpanded}
           expandedDetails={details}
@@ -184,7 +197,7 @@ const PDMonitoringTab = forwardRef<MonitoringTabHandle>((_props, ref) => {
         />
       )}
       {['gpu', 'host'].filter(visible).map((key) => (
-        <MonitoringSection
+        <MonitoringSectionCard
           key={key}
           sectionKey={key}
           id={`model-monitor-${key}`}
@@ -203,7 +216,7 @@ const PDMonitoringTab = forwardRef<MonitoringTabHandle>((_props, ref) => {
             <HardwareContent host={key === 'host'} interaction={interaction} />
             {key === 'gpu' && <ResourceTable showNotices={false} />}
           </Flex>
-        </MonitoringSection>
+        </MonitoringSectionCard>
       ))}
     </Flex>
   );

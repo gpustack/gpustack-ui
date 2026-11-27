@@ -1,5 +1,6 @@
+import { TextAttribute } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Col, Flex, Row, Typography } from 'antd';
+import { Col, Flex, Row, Tooltip, Typography } from 'antd';
 import { useDetail } from '../config/context';
 import { metricStateMessageId } from '../utils/metric-state';
 import {
@@ -31,9 +32,10 @@ const PDPerformanceStats = () => {
   const router = pdRoleMetric(metrics.router_requests, 'router');
   const prefill = pdRoleMetric(metrics.waiting_requests, 'prefill');
   const decode = pdRoleMetric(metrics.waiting_requests, 'decode');
-  const current = t(
-    scope.start != null && scope.end != null ? 'selectedEnd' : 'current'
-  );
+  const fixedRange = scope.start != null && scope.end != null;
+  const current = t(fixedRange ? 'selectedEnd' : 'current');
+  const currentBadge = t(fixedRange ? 'badge.selectedEnd' : 'badge.current');
+  const avgBadge = t('badge.avg');
   const items = [
     {
       key: 'ingressTTFT',
@@ -44,6 +46,7 @@ const PDPerformanceStats = () => {
         ingressTTFT,
         pdIngressStatistic(ingressTTFT)
       ),
+      badge: pdIngressStatistic(ingressTTFT) === 'avg' ? avgBadge : 'P99',
       note: t(
         pdIngressStatistic(ingressTTFT) === 'avg'
           ? 'windowAverage'
@@ -58,6 +61,7 @@ const PDPerformanceStats = () => {
       metricKey: 'e2e',
       value: pdMetricValue(ingressE2E, pdIngressStatistic(ingressE2E)),
       lowerBound: metricLowerBound(ingressE2E, pdIngressStatistic(ingressE2E)),
+      badge: pdIngressStatistic(ingressE2E) === 'avg' ? avgBadge : 'P99',
       note: t(
         pdIngressStatistic(ingressE2E) === 'avg' ? 'windowAverage' : 'windowP99'
       ),
@@ -69,6 +73,7 @@ const PDPerformanceStats = () => {
       metric: input,
       metricKey: 'input_tokens',
       value: pdMetricValue(input, 'sum'),
+      badge: avgBadge,
       note: t('windowAverage'),
       help: t('pd.prefillResponsibility')
     },
@@ -77,6 +82,7 @@ const PDPerformanceStats = () => {
       metric: output,
       metricKey: 'output_tokens',
       value: pdMetricValue(output, 'sum'),
+      badge: avgBadge,
       note: t('windowAverage'),
       help: t('pd.decodeResponsibility')
     },
@@ -85,6 +91,7 @@ const PDPerformanceStats = () => {
       metric: router,
       metricKey: 'router_requests',
       value: pdMetricValue(router, 'sum'),
+      badge: avgBadge,
       note: t('windowAverage'),
       help: t('pd.routerRequestHelp')
     },
@@ -93,6 +100,7 @@ const PDPerformanceStats = () => {
       metric: prefill,
       metricKey: 'waiting_requests',
       value: pdMetricValue(prefill, 'sum'),
+      badge: currentBadge,
       note: current,
       help: t('pd.poolCurrent')
     },
@@ -101,6 +109,7 @@ const PDPerformanceStats = () => {
       metric: decode,
       metricKey: 'waiting_requests',
       value: pdMetricValue(decode, 'sum'),
+      badge: currentBadge,
       note: current,
       help: t('pd.poolCurrent')
     }
@@ -118,24 +127,39 @@ const PDPerformanceStats = () => {
           xs={24}
           sm={12}
           md={8}
-          xl={{ span: 24, flex: '1 1 0px' }}
+          xl={6}
+          xxl={{ span: 24, flex: '1 1 0px' }}
           key={item.key}
         >
           <div className={styles.card} data-pd-kpi={item.key}>
-            <Flex gap={4} align="center" className={styles.labelRow}>
-              <span className={styles.label}>{t(`pd.${item.key}`)}</span>
-              <HelpTooltip
-                label={t(`pd.${item.key}`)}
-                content={
-                  <Flex vertical gap={8}>
-                    <span>{item.note}</span>
-                    <span>{item.help}</span>
-                    {item.lowerBound != null && (
-                      <span>{t('histogramBoundsHelp')}</span>
-                    )}
-                  </Flex>
-                }
-              />
+            <Flex
+              justify="space-between"
+              gap={6}
+              align="center"
+              className={styles.labelRow}
+            >
+              <Flex gap={4} align="center" className={styles.labelMain}>
+                <span className={styles.label}>{t(`pd.${item.key}`)}</span>
+                <HelpTooltip
+                  label={t(`pd.${item.key}`)}
+                  content={
+                    <Flex vertical gap={8}>
+                      <span>{item.note}</span>
+                      <span>{item.help}</span>
+                      {item.lowerBound != null && (
+                        <span>{t('histogramBoundsHelp')}</span>
+                      )}
+                    </Flex>
+                  }
+                />
+              </Flex>
+              <Tooltip title={item.note}>
+                <span>
+                  <TextAttribute variant="filled" className={styles.badge}>
+                    {item.badge}
+                  </TextAttribute>
+                </span>
+              </Tooltip>
             </Flex>
             <div className={styles.value}>
               <span style={{ whiteSpace: 'nowrap' }}>
@@ -148,9 +172,8 @@ const PDPerformanceStats = () => {
               {(item.value != null || item.lowerBound != null) && (
                 <Typography.Text
                   type="secondary"
+                  className={styles.unit}
                   style={{
-                    fontSize: 12,
-                    marginInlineStart: 4,
                     display: 'inline-block',
                     whiteSpace: 'nowrap'
                   }}

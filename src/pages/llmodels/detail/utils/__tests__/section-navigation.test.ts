@@ -22,16 +22,15 @@ const setGlobal = (key: string, value: unknown) =>
     value
   });
 
-const setup = () => {
-  const dom = new JSDOM(
-    '<div class="ant-collapse-item"><div role="button" tabindex="0"><span id="gpu">GPU</span></div></div>'
-  );
+const setup = (
+  markup = '<div class="ant-collapse-item"><div role="button" tabindex="0"><span id="gpu">GPU</span></div></div>'
+) => {
+  const dom = new JSDOM(markup);
   setGlobal('document', dom.window.document);
   let height = 58;
-  dom.window.document.querySelector(
-    '.ant-collapse-item'
-  )!.getBoundingClientRect = () => ({ height }) as DOMRect;
   const target = dom.window.document.getElementById('gpu')!;
+  const panel = target.closest('.ant-collapse-item') || target;
+  panel.getBoundingClientRect = () => ({ height, top: 0 }) as DOMRect;
   const scroll = mock.fn();
   target.scrollIntoView = scroll;
   const frames = new Map<number, FrameRequestCallback>();
@@ -105,6 +104,31 @@ test('a delayed opening panel cannot be mistaken for a settled collapsed page', 
   page.resize(658);
   for (let frame = 0; frame < 5; frame++) page.tick();
   assert.equal(page.scroll.mock.callCount(), 1);
+  page.dom.window.close();
+});
+
+test('section navigation waits for the CoreUI card and focuses its toggle', () => {
+  const page = setup(`
+    <div id="gpu">
+      <button data-monitoring-section-toggle aria-expanded="false" aria-controls="gpu-content">GPU</button>
+      <div id="gpu-content"></div>
+    </div>
+  `);
+  const document = page.dom.window.document;
+  const toggle = document.querySelector('button')!;
+  const content = document.getElementById('gpu-content')!;
+  let contentHeight = 0;
+  content.getBoundingClientRect = () => ({ height: contentHeight }) as DOMRect;
+  scrollWhenSectionSettles('gpu');
+  for (let frame = 0; frame < 5; frame++) page.tick();
+  toggle.setAttribute('aria-expanded', 'true');
+  for (let frame = 0; frame < 5; frame++) page.tick();
+  assert.equal(page.scroll.mock.callCount(), 0);
+  contentHeight = 600;
+  page.resize(658);
+  for (let frame = 0; frame < 5; frame++) page.tick();
+  assert.equal(page.scroll.mock.callCount(), 1);
+  assert.equal(document.activeElement, toggle);
   page.dom.window.close();
 });
 

@@ -51,6 +51,9 @@ export default {
   'modelMonitoring.legendValuesHelp':
     'Legend values are the last valid sample of each curve. Performance summaries use the statistic and scope described in their help.',
   'modelMonitoring.jumpTo': 'Jump to',
+  'modelMonitoring.badge.avg': 'Avg',
+  'modelMonitoring.badge.current': 'Live',
+  'modelMonitoring.badge.selectedEnd': 'End',
   'modelMonitoring.metric.total_tokens': 'Total tokens',
   'modelMonitoring.tokenTotalDefinition':
     'Total tokens = input tokens + output tokens; missing observations remain gaps',
@@ -162,6 +165,9 @@ export default {
   'modelMonitoring.source': 'Source',
   'modelMonitoring.backend': 'Backend',
   'modelMonitoring.cluster': 'Cluster',
+  'modelMonitoring.deploymentCluster': 'Deployment cluster',
+  'modelMonitoring.readyInstances': 'Ready instances',
+  'modelMonitoring.modelSource': 'Model source',
   'modelMonitoring.created': 'Created',
   'modelMonitoring.access': 'Access policy',
   'modelMonitoring.status': 'Status',

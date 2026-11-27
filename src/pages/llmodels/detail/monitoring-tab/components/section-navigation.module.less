@@ -1,10 +1,17 @@
-.navigation {
+.panel {
   position: sticky;
-  top: calc(-1 * var(--layout-content-blockpadding));
+  inset-block-start: calc(-1 * var(--layout-content-blockpadding, 0px));
   z-index: 5;
-  padding-block: var(--ant-padding-xs);
-  border-bottom: 1px solid var(--ant-color-border-secondary);
+  border: 1px solid var(--ant-color-border);
+  border-radius: var(--ant-border-radius-lg);
   background: var(--ant-color-bg-container);
+}
+
+.embeddedBar {
+  padding: 6px var(--ant-padding);
+  border-top: 1px solid var(--ant-color-border-secondary);
+  border-radius: 0 0 var(--ant-border-radius-lg) var(--ant-border-radius-lg);
+  background: var(--ant-color-fill-quaternary);
 }
 
 .links {
@@ -12,26 +19,61 @@
   flex: 1 1 360px;
 }
 
+.prefix {
+  font-size: var(--font-size-small);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .actions {
   margin-inline-start: auto;
   max-width: 100%;
 }
 
+.actionDivider {
+  width: 1px;
+  height: 16px;
+  background: var(--ant-color-border);
+  flex-shrink: 0;
+}
+
 .sections {
   flex: 1;
   min-width: 0;
+  margin-inline-start: calc(-1 * var(--ant-padding-xs));
   padding-block: 2px;
+}
+
+.embeddedBar .sections {
+  margin-inline-start: 0;
+  padding-block: 0;
 }
 
 .sectionLink {
   flex-shrink: 0;
-  padding-inline: var(--ant-padding-xs);
-  color: var(--ant-color-text-secondary);
+  height: 28px;
+  padding-inline: 10px;
+  border-radius: var(--ant-border-radius);
+  color: var(--ant-color-text);
   background: transparent;
-  font-size: 12px;
+  font-size: var(--font-size-small);
 }
 
 .sectionLink:not(:disabled):hover {
+  color: var(--ant-color-text);
+  background: var(--ant-color-fill-secondary);
+}
+
+.sectionLinkActive,
+.sectionLinkActive:not(:disabled):hover {
   color: var(--ant-color-primary);
-  background: var(--ant-color-primary-bg);
+  background: var(--ant-color-bg-elevated);
+  font-weight: var(--font-weight-medium);
+  box-shadow: var(--ant-box-shadow-tertiary);
+}
+
+:global([data-model-monitor-layout]) [id^='model-monitor-'] {
+  scroll-margin-top: calc(
+    var(--model-monitor-nav-height, 56px) + var(--ant-margin-lg)
+  );
 }

@@ -11,6 +11,14 @@ Object.defineProperty(globalThis, 'document', {
 });
 after(() => dom.window.close());
 let options: any;
+const { Select } = await import('antd');
+mock.module('@gpustack/core-ui', {
+  namedExports: {
+    BaseSelect: Select,
+    TextAttribute: ({ children, ...props }: any) =>
+      createElement('span', props, children)
+  }
+});
 mock.module('@gpustack/core-ui/charts', {
   namedExports: {
     echarts: { use() {} },

@@ -95,7 +95,7 @@ test('GPU styles and selection identity survive filtering, sorting and readable 
 });
 
 test('each statistic and instance has a distinct Benchmark color that survives filtering and missing statistics', () => {
-  const source: any[] = [11, 25].flatMap((id) =>
+  const source: any[] = [11, 25, 38].flatMap((id) =>
     ['avg', 'p50', 'p95', 'p99'].map((statistic) => ({
       name: `Instance ${id}`,
       statistic,
@@ -103,10 +103,10 @@ test('each statistic and instance has a distinct Benchmark color that survives f
       points: []
     }))
   );
-  const domain = ['instance:11', 'instance:25'];
+  const domain = ['instance:11', 'instance:25', 'instance:38'];
   const full = assignEntityColors(source, domain, new Map());
   const subset = assignEntityColors(
-    source.filter((item) => item.dimensions.model_instance_id === 25),
+    source.filter((item) => item.dimensions.model_instance_id === 38),
     domain,
     new Map()
   );
@@ -114,10 +114,14 @@ test('each statistic and instance has a distinct Benchmark color that survives f
     const color = (item: any, slots: Map<string, number>) =>
       seriesAppearance(item, true, [], dark, slots).color;
     assert.deepEqual(
-      source.map((item) => color(item, full)),
-      [...CHART_SERIES_COLORS[dark ? 'dark' : 'light']]
+      new Set(source.slice(0, 8).map((item) => color(item, full))),
+      new Set(CHART_SERIES_COLORS[dark ? 'dark' : 'light'])
     );
-    assert.equal(new Set(source.map((item) => color(item, full))).size, 8);
+    assert.equal(new Set(source.map((item) => color(item, full))).size, 12);
+    assert.deepEqual(
+      [source[9], source[11]].map((item) => color(item, full)),
+      dark ? ['#cf404b', '#f25394'] : ['#ca3f44', '#c12269']
+    );
     for (const item of [...source].reverse()) {
       assert.equal(color(item, full), color(item, subset));
       assert.equal(
@@ -125,8 +129,8 @@ test('each statistic and instance has a distinct Benchmark color that survives f
         color(item, full)
       );
     }
-    const partial = assignEntityColors([source[7]], domain, new Map());
-    assert.equal(color(source[7], full), color(source[7], partial));
+    const partial = assignEntityColors([source[11]], domain, new Map());
+    assert.equal(color(source[11], full), color(source[11], partial));
   }
 });
 

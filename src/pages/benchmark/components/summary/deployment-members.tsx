@@ -31,7 +31,11 @@ const DeploymentMembers: React.FC = () => {
     return null;
   }
 
-  const endpointName = detailData?.model_instance_name;
+  const targetMode = detailData?.target_mode ?? 'model_instance';
+  const endpointName =
+    targetMode === 'model_instance'
+      ? detailData?.model_instance_name
+      : undefined;
 
   const columns = [
     {
@@ -48,9 +52,6 @@ const DeploymentMembers: React.FC = () => {
       render: (name: string) => (
         <Flex align="center" gap={4}>
           <AutoTooltip ghost>{name}</AutoTooltip>
-          {/* The member the load was actually sent to. Without it a group's
-              table reads as several equal members, when one of them is the
-              address every request went through. */}
           {name === endpointName && (
             <ThemeTag color="geekblue">
               {intl.formatMessage({ id: 'benchmark.detail.members.endpoint' })}

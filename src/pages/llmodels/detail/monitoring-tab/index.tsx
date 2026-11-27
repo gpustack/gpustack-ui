@@ -8,7 +8,7 @@ import {
 } from '../components/hardware-content';
 import MetricChart from '../components/metric-chart';
 import { AvailabilityNotice, RequestNotice } from '../components/metric-state';
-import MonitoringSection from '../components/monitoring-section';
+import MonitoringViewControl from '../components/monitoring-view-control';
 import ObservationNotes from '../components/observation-notes';
 import PerformanceStats from '../components/performance-stats';
 import ResourceTable from '../components/resource-table';
@@ -26,8 +26,10 @@ import { monitoringObservationGroups } from '../utils/observation-visibility';
 import { scrollWhenSectionSettles } from '../utils/section-navigation';
 import { scopeTimeLabel } from '../utils/time-range';
 import { withTokenTotal } from '../utils/token-throughput';
+import MonitoringSectionCard from './components/monitoring-section-card';
 import PDMonitoringTab from './components/pd-monitoring';
 import SectionNavigation from './components/section-navigation';
+import navStyles from './components/section-navigation.module.less';
 
 export interface MonitoringTabHandle {
   openSection: (section: string) => void;
@@ -243,16 +245,27 @@ const OrdinaryMonitoringTab = forwardRef<MonitoringTabHandle>((_props, ref) => {
       data-model-monitor-layout
       aria-busy={runtime.loading}
     >
-      <ScopeToolbar
-        extra={<ObservationNotes metrics={allMetrics} groups={groups} />}
-      />
-      <SectionNavigation
-        sections={sections}
-        expanded={expanded}
-        onOpen={openSection}
-        onChange={changeExpanded}
-        contextNote={contextNote}
-      />
+      <div className={navStyles.panel} data-model-monitor-panel>
+        <ScopeToolbar
+          embedded
+          extra={
+            <ObservationNotes
+              metrics={allMetrics}
+              groups={groups}
+              size="middle"
+            />
+          }
+        />
+        <SectionNavigation
+          embedded
+          sections={sections}
+          expanded={expanded}
+          onOpen={openSection}
+          onChange={changeExpanded}
+          contextNote={contextNote}
+          extra={<MonitoringViewControl compact />}
+        />
+      </div>
       <RequestNotice state={runtime} showLoading={false} />
       <AvailabilityNotice
         available={runtime.data?.available}
@@ -260,7 +273,7 @@ const OrdinaryMonitoringTab = forwardRef<MonitoringTabHandle>((_props, ref) => {
       />
       <PerformanceStats />
       {sections.map((section) => (
-        <MonitoringSection
+        <MonitoringSectionCard
           key={section.key}
           sectionKey={section.key}
           id={`model-monitor-${section.key}`}
@@ -283,7 +296,7 @@ const OrdinaryMonitoringTab = forwardRef<MonitoringTabHandle>((_props, ref) => {
           }
         >
           {section.children}
-        </MonitoringSection>
+        </MonitoringSectionCard>
       ))}
     </Flex>
   );

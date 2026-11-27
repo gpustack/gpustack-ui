@@ -49,6 +49,15 @@ after(() => dom.window.close());
 const dispatchAction = mock.fn();
 let options: any;
 let coordinateMultiplier = 1000;
+const { Select } = await import('antd');
+mock.module('@gpustack/core-ui', {
+  namedExports: {
+    BaseSelect: Select,
+    SimpleSelect: Select,
+    TextAttribute: ({ children, ...props }: any) =>
+      createElement('span', props, children)
+  }
+});
 mock.module('@gpustack/core-ui/charts', {
   namedExports: {
     echarts: { use() {} },
@@ -1301,12 +1310,23 @@ test('one shared multi-selection updates ordinary, PD, KV and per-token latency 
       '[aria-label="modelMonitoring.seriesLegend"] button'
     );
   const click = async (label: string) => {
-    const button = [
-      ...document.querySelectorAll<HTMLButtonElement>(
-        '[data-latency-statistics-control] button'
+    const input = document.querySelector<HTMLInputElement>(
+      '[data-latency-statistics-control] input[role="combobox"]'
+    )!;
+    if (input.getAttribute('aria-expanded') !== 'true') {
+      await act(async () =>
+        input.dispatchEvent(
+          new dom.window.MouseEvent('mousedown', { bubbles: true })
+        )
+      );
+    }
+    const option = [
+      ...document.querySelectorAll<HTMLElement>(
+        '.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option'
       )
-    ].find((item) => item.textContent === label)!;
-    await act(async () => button.click());
+    ].find((item) => item.textContent === label);
+    assert.ok(option);
+    await act(async () => option.click());
   };
   assert.equal(card('ttft').getAttribute('data-latency-statistics'), 'P99');
   assert.equal(legends('pd_request_timing').length, 3);

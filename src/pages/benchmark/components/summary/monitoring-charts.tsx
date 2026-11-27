@@ -1,3 +1,4 @@
+import navigationStyles from '@/pages/_components/monitoring/monitoring-navigation.module.less';
 import ChartInteractionHelp from '@/pages/llmodels/detail/components/chart-interaction-help';
 import { combineMetrics } from '@/pages/llmodels/detail/components/hardware-content';
 import { labelHardwareMetric } from '@/pages/llmodels/detail/components/hardware-metrics';
@@ -93,24 +94,12 @@ const useStyles = createStyles(({ css }) => ({
         var(--benchmark-navigation-height, 0px) + var(--ant-padding-lg)
       );
     }
-    @media (max-width: 980px) {
-      --benchmark-navigation-height: 0px !important;
-    }
   `,
   navigation: css`
-    position: sticky;
-    top: 0;
-    z-index: 19;
-    background: var(--ant-color-bg-container);
-    padding-block: var(--ant-padding-xs);
-    border-bottom: 1px solid var(--ant-color-border-secondary);
     .ant-space,
     .ant-space-item {
       min-width: 0;
       max-width: 100%;
-    }
-    @media (max-width: 980px) {
-      position: static;
     }
   `
 }));
@@ -772,7 +761,7 @@ const MonitoringCharts = forwardRef<MonitoringChartsHandle, Props>(
             justify="space-between"
             gap={12}
             wrap
-            className={styles.navigation}
+            className={`${navigationStyles.navigation} ${styles.navigation}`}
             ref={navigationRef}
             data-benchmark-monitoring-navigation
           >

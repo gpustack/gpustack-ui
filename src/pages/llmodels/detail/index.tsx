@@ -6,7 +6,8 @@ import {
   useEffect,
   useLayoutEffect,
   useRef,
-  useState
+  useState,
+  type CSSProperties
 } from 'react';
 import breadcrumbStyles from '../../_components/page-breadcrumb/index.module.less';
 import DetailHeader from './components/detail-header';
@@ -122,8 +123,8 @@ const DetailPage = ({
   const items = [
     {
       key: 'overview',
-      label: t('overview'),
-      children: <OverviewTab metadata={metadata} />
+      label: t('performance'),
+      children: <OverviewTab />
     },
     {
       key: 'monitoring',
@@ -159,6 +160,7 @@ const DetailPage = ({
                 key={`${tenant}:${model.id}:${model.cluster_id}:${model.owner_principal_id ?? ''}`}
                 model={model}
                 tenant={tenant}
+                deploymentMetadata={metadata.data}
                 resources={data.resources.data}
                 onResources={() => setTab('gpu')}
               />
@@ -166,6 +168,15 @@ const DetailPage = ({
               <div aria-hidden style={{ minBlockSize: 56 }} />
             )}
             <Tabs
+              type="card"
+              size="middle"
+              style={
+                {
+                  '--metric-chart-card-border-color': 'var(--ant-color-border)',
+                  '--metric-chart-heading-font-weight':
+                    'var(--font-weight-medium)'
+                } as CSSProperties
+              }
               activeKey={tab}
               onChange={(value) => setTab(value as DetailTab)}
               items={

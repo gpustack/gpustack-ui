@@ -48,30 +48,15 @@ mock.module('@ant-design/icons', {
   namedExports: { CalendarOutlined: () => null }
 });
 mock.module('@gpustack/core-ui', {
-  namedExports: {
-    BaseSelect: (props: any) =>
-      createElement(
-        'select',
-        {
-          id: props.id,
-          'aria-label': props['aria-label'],
-          value: props.value,
-          onChange: (event: any) => props.onChange(event.target.value)
-        },
-        props.options.map((option: any) =>
-          createElement(
-            'option',
-            {
-              key: option.value,
-              value: option.value,
-              disabled: option.disabled
-            },
-            option.label
-          )
-        )
-      )
-  }
+  namedExports: { BaseSelect: () => null }
 });
+mock.module(
+  new URL(
+    '../../../../_components/monitoring/time-range-presets.module.less',
+    import.meta.url
+  ).href,
+  { defaultExport: {} }
+);
 mock.module('@umijs/max', {
   namedExports: {
     useIntl: () => ({
@@ -83,7 +68,51 @@ mock.module('@umijs/max', {
 mock.module('antd', {
   namedExports: {
     Grid: { useBreakpoint: () => ({ xs: compact }) },
-    Flex: ({ children }: any) => createElement('div', {}, children),
+    Flex: ({ children, role, 'aria-label': label }: any) =>
+      createElement('div', { role, 'aria-label': label }, children),
+    Segmented: ({ options, value, onChange, 'aria-label': label }: any) =>
+      createElement(
+        'div',
+        { role: 'radiogroup', 'aria-label': label },
+        options.map((option: any) =>
+          createElement(
+            'label',
+            { key: option.value },
+            createElement('input', {
+              type: 'radio',
+              name: label,
+              value: option.value,
+              checked: option.value === value,
+              disabled: option.disabled,
+              onChange: () => onChange(option.value)
+            }),
+            option.label
+          )
+        )
+      ),
+    Dropdown: ({ children, menu }: any) =>
+      createElement(
+        'div',
+        null,
+        children,
+        createElement(
+          'div',
+          { role: 'menu' },
+          menu.items.map((item: any) =>
+            createElement(
+              'button',
+              {
+                key: item.key,
+                'data-range': item.key,
+                role: 'menuitem',
+                disabled: item.disabled,
+                onClick: () => menu.onClick({ key: item.key })
+              },
+              item.label
+            )
+          )
+        )
+      ),
     Typography: {
       Text: ({ children, role }: any) =>
         createElement('span', { role }, children)
@@ -153,6 +182,8 @@ const mount = async (capabilities?: any, mobile = false) => {
   await act(async () => root.render(createElement(TimeRangeFilter)));
   return { changeScope, unmount: () => act(async () => root.unmount()) };
 };
+const customRange = () =>
+  document.querySelector<HTMLButtonElement>('button[data-range="custom"]')!;
 const capability = {
   min_query_seconds: 300,
   max_query_seconds: 604800,
@@ -165,16 +196,17 @@ const capability = {
 test('quick ranges use the service span cap independently from a shorter configured retention', async (t) => {
   const view = await mount(capability);
   t.after(view.unmount);
-  const option =
-    document.querySelector<HTMLOptionElement>('option[value="1h"]')!;
-  assert.equal(option.disabled, false);
-  const select = document.querySelector<HTMLSelectElement>('select')!;
-  await act(async () => {
-    select.value = '6h';
-    select.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
-  });
+  const radios = [
+    ...document.querySelectorAll<HTMLInputElement>('input[type="radio"]')
+  ];
+  assert.deepEqual(
+    radios.map((radio) => radio.value),
+    ['15m', '1h', '24h', '7d']
+  );
+  assert.equal(radios.find((radio) => radio.value === '1h')?.checked, true);
+  await act(async () => radios.find((radio) => radio.value === '24h')!.click());
   assert.deepEqual(view.changeScope.mock.calls.at(-1)?.arguments, [
-    { window: '6h' }
+    { window: '24h' }
   ]);
   assert.ok(
     !document.body.textContent?.includes('modelMonitoring.queryRangeLimit')
@@ -189,13 +221,7 @@ test('quick ranges use the service span cap independently from a shorter configu
 test('custom range is a draft until Apply, and then sends integer fixed endpoints only', async (t) => {
   const view = await mount(capability);
   t.after(view.unmount);
-  await act(async () =>
-    document
-      .querySelector<HTMLButtonElement>(
-        'button[aria-label="modelMonitoring.customTimeRange"]'
-      )!
-      .click()
-  );
+  await act(async () => customRange().click());
   assert.equal(view.changeScope.mock.calls.length, 0);
   assert.equal(picker.needConfirm, false);
   const dialog = document.querySelector('[role="dialog"]')!;
@@ -214,13 +240,7 @@ test('custom range is a draft until Apply, and then sends integer fixed endpoint
 test('invalid, future, short and oversized drafts cannot issue scope changes', async (t) => {
   const view = await mount(capability);
   t.after(view.unmount);
-  await act(async () =>
-    document
-      .querySelector<HTMLButtonElement>(
-        'button[aria-label="modelMonitoring.customTimeRange"]'
-      )!
-      .click()
-  );
+  await act(async () => customRange().click());
   const now = Math.floor(Date.now() / 1000);
   for (const [start, end, error] of [
     [1000, 1200, 'tooShort'],
@@ -247,16 +267,16 @@ test('invalid, future, short and oversized drafts cannot issue scope changes', a
 test('an unknown backend keeps quick ranges but disables unsupported custom selection', async (t) => {
   const view = await mount();
   t.after(view.unmount);
-  assert.equal(
-    document.querySelector<HTMLOptionElement>('option[value="custom"]')!
-      .disabled,
-    true
-  );
-  const custom = document.querySelector<HTMLButtonElement>(
-    'button[aria-label="modelMonitoring.customTimeRange"]'
+  assert.equal(customRange().disabled, true);
+  await act(async () => customRange().click());
+  const otherRange = document.querySelector<HTMLButtonElement>(
+    'button[data-range="6h"]'
   )!;
-  assert.equal(custom.disabled, true);
-  await act(async () => custom.click());
+  assert.equal(otherRange.disabled, false);
+  await act(async () => otherRange.click());
+  assert.deepEqual(view.changeScope.mock.calls.at(-1)?.arguments, [
+    { window: '6h' }
+  ]);
   assert.equal(document.querySelector('[role="dialog"]'), null);
   assert.ok(
     !document.body.textContent?.includes('modelMonitoring.retentionUnknown')
@@ -266,15 +286,9 @@ test('an unknown backend keeps quick ranges but disables unsupported custom sele
 test('compact endpoint panels preserve the other date/time part and only Apply changes the scope', async (t) => {
   const view = await mount(capability, true);
   t.after(view.unmount);
-  await act(async () =>
-    document
-      .querySelector<HTMLButtonElement>(
-        'button[aria-label="modelMonitoring.customTimeRange"]'
-      )!
-      .click()
-  );
+  await act(async () => customRange().click());
   assert.equal(document.querySelector('[data-picker]'), null);
-  assert.equal(document.querySelectorAll('input').length, 4);
+  assert.equal(document.querySelectorAll('[role="dialog"] input').length, 4);
   const startTime = dates[0].value.format('HH:mm:ss');
   await act(async () => dates[0].onChange(dayjs('2020-02-29')));
   assert.equal(dates[0].value.format('YYYY-MM-DD'), '2020-02-29');
@@ -301,13 +315,7 @@ test('compact endpoint panels preserve the other date/time part and only Apply c
 test('compact fields keep future and invalid endpoints unapplied, with the same service span validation', async (t) => {
   const view = await mount(capability, true);
   t.after(view.unmount);
-  await act(async () =>
-    document
-      .querySelector<HTMLButtonElement>(
-        'button[aria-label="modelMonitoring.customTimeRange"]'
-      )!
-      .click()
-  );
+  await act(async () => customRange().click());
   for (const [start, end, error] of [
     ['2020-02-29T10:00:00', '2020-02-29T10:02:00', 'tooShort'],
     ['2020-02-29T11:00:00', '2020-02-29T10:00:00', 'invalid'],

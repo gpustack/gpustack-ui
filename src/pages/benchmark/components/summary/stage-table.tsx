@@ -11,7 +11,13 @@ const useStyles = createStyles(({ css }) => ({
     .header-row-wrapper {
       height: auto;
       min-height: 80px;
+      flex-shrink: 0;
       align-items: stretch;
+      background-color: var(--ant-color-bg-container);
+      background-image: linear-gradient(
+        var(--ant-color-fill-tertiary),
+        var(--ant-color-fill-tertiary)
+      );
     }
     .table-header {
       height: auto;

@@ -1,5 +1,6 @@
 import ChartViewToggle from '@/pages/_components/monitoring/chart-view-toggle';
 import { UndoOutlined } from '@ant-design/icons';
+import { BaseSelect, TextAttribute } from '@gpustack/core-ui';
 import {
   Chart,
   echarts,
@@ -7,16 +8,7 @@ import {
   type ECOption
 } from '@gpustack/core-ui/charts';
 import { useIntl } from '@umijs/max';
-import {
-  Button,
-  Col,
-  Flex,
-  Row,
-  Select,
-  Space,
-  Tooltip,
-  Typography
-} from 'antd';
+import { Button, Col, Flex, Row, Space, Tooltip, Typography } from 'antd';
 import dayjs from 'dayjs';
 import {
   AriaComponent,
@@ -310,11 +302,15 @@ const MetricChart = ({
       colorSlots.current,
       neutralMeasures
     );
-  const axisInk = config.isDark ? config.token.colorTextTertiary : '#8b939e';
-  const axisBorder = config.isDark ? config.token.colorBorder : '#e5e8ec';
+  const axisInk = config.isDark
+    ? config.token.colorTextSecondary || config.token.colorTextTertiary
+    : config.token.colorTextSecondary || '#595959';
+  const axisBorder = config.isDark
+    ? config.token.colorBorder
+    : config.token.colorBorderSecondary || '#e5e8ec';
   const pointerColor = config.isDark
     ? config.token.colorTextQuaternary
-    : '#c8cfd8';
+    : config.token.colorBorder || '#c8cfd8';
   const bands = visibleTimeBands(timeBands, timeRange);
   const timeAxis = !!timeRange;
   const options = {
@@ -754,76 +750,82 @@ const MetricChart = ({
         gap={8}
         className={styles.header}
       >
-        <Flex gap={4} align="center">
-          <Typography.Title level={5} className={styles.heading}>
-            {title} {unit && `(${unit})`}
-            {statisticLabel && ` · ${statisticLabel}`}
-          </Typography.Title>
-          {(metric?.kind === 'histogram' || note) && (
-            <HelpTooltip
-              label={`${title} · ${intl.formatMessage({ id: metric?.kind === 'histogram' ? 'modelMonitoring.statisticsHelp' : 'modelMonitoring.definition' })}`}
-              content={
-                <Flex vertical gap={8}>
-                  {note && <span>{note}</span>}
-                  {selectedStatistics.fixedAverage && (
-                    <span>
-                      {intl.formatMessage({
-                        id: 'modelMonitoring.fixedAverageStatistics'
-                      })}
-                    </span>
-                  )}
-                  {metric?.kind === 'histogram' && (
-                    <>
-                      <strong>
-                        {intl.formatMessage({
-                          id: 'modelMonitoring.statisticsHelp'
-                        })}
-                      </strong>
+        <Flex gap={6} align="center" wrap>
+          <Flex gap={4} align="center">
+            <Typography.Title level={5} className={styles.heading}>
+              {title} {unit && `(${unit})`}
+            </Typography.Title>
+            {(metric?.kind === 'histogram' || note) && (
+              <HelpTooltip
+                label={`${title} · ${intl.formatMessage({ id: metric?.kind === 'histogram' ? 'modelMonitoring.statisticsHelp' : 'modelMonitoring.definition' })}`}
+                content={
+                  <Flex vertical gap={8}>
+                    {note && <span>{note}</span>}
+                    {selectedStatistics.fixedAverage && (
                       <span>
                         {intl.formatMessage({
-                          id:
-                            showSummary && !compact
-                              ? 'modelMonitoring.statisticsExplanation'
-                              : 'modelMonitoring.trendStatisticsExplanation'
+                          id: 'modelMonitoring.fixedAverageStatistics'
                         })}
                       </span>
-                      {!!rateWindowSeconds && (
+                    )}
+                    {metric?.kind === 'histogram' && (
+                      <>
+                        <strong>
+                          {intl.formatMessage({
+                            id: 'modelMonitoring.statisticsHelp'
+                          })}
+                        </strong>
                         <span>
                           {intl.formatMessage({
                             id:
                               showSummary && !compact
-                                ? 'modelMonitoring.intervalVsTrend'
-                                : 'modelMonitoring.trendWindow'
-                          })}{' '}
-                          {rateWindowSeconds}s
-                        </span>
-                      )}
-                      {(hasBounds ||
-                        summaries.some(
-                          (summary) => summary.lowerBound != null
-                        )) && (
-                        <span>
-                          {intl.formatMessage({
-                            id: 'modelMonitoring.histogramBoundsHelp'
+                                ? 'modelMonitoring.statisticsExplanation'
+                                : 'modelMonitoring.trendStatisticsExplanation'
                           })}
                         </span>
-                      )}
-                      {series.some(
-                        (item) => item.dimensions.model_instance_id != null
-                      ) &&
-                        new Set(series.map((item) => item.statistic)).size >
-                          1 && (
+                        {!!rateWindowSeconds && (
                           <span>
                             {intl.formatMessage({
-                              id: 'modelMonitoring.instanceLatencyStatistics'
+                              id:
+                                showSummary && !compact
+                                  ? 'modelMonitoring.intervalVsTrend'
+                                  : 'modelMonitoring.trendWindow'
+                            })}{' '}
+                            {rateWindowSeconds}s
+                          </span>
+                        )}
+                        {(hasBounds ||
+                          summaries.some(
+                            (summary) => summary.lowerBound != null
+                          )) && (
+                          <span>
+                            {intl.formatMessage({
+                              id: 'modelMonitoring.histogramBoundsHelp'
                             })}
                           </span>
                         )}
-                    </>
-                  )}
-                </Flex>
-              }
-            />
+                        {series.some(
+                          (item) => item.dimensions.model_instance_id != null
+                        ) &&
+                          new Set(series.map((item) => item.statistic)).size >
+                            1 && (
+                            <span>
+                              {intl.formatMessage({
+                                id: 'modelMonitoring.instanceLatencyStatistics'
+                              })}
+                            </span>
+                          )}
+                      </>
+                    )}
+                  </Flex>
+                }
+              />
+            )}
+          </Flex>
+          {statisticLabel && (
+            <TextAttribute variant="filled" className={styles.statBadge}>
+              {statisticLabel}
+            </TextAttribute>
           )}
         </Flex>
         <Space size={8} className={styles.actions}>
@@ -881,7 +883,7 @@ const MetricChart = ({
       {!compact && showSummary && metric?.kind === 'histogram' && (
         <>
           {groups.length > 1 && (
-            <Select
+            <BaseSelect
               size="small"
               aria-label={intl.formatMessage({
                 id: 'modelMonitoring.summaryScope'

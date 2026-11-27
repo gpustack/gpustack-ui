@@ -10,10 +10,13 @@ export const scrollWhenSectionSettles = (id: string) => {
     const target = document.getElementById(id);
     if (!target?.isConnected) return;
     const panel = target.closest('.ant-collapse-item') || target;
-    const header = panel.querySelector('.ant-collapse-header');
-    const content = panel.querySelector(
-      '.ant-collapse-panel, .ant-collapse-content'
+    const toggle = target.querySelector<HTMLButtonElement>(
+      '[data-monitoring-section-toggle]'
     );
+    const header = toggle || panel.querySelector('.ant-collapse-header');
+    const content = toggle
+      ? document.getElementById(toggle.getAttribute('aria-controls') || '')
+      : panel.querySelector('.ant-collapse-panel, .ant-collapse-content');
     const ready =
       !header ||
       (header.getAttribute('aria-expanded') === 'true' &&
@@ -31,9 +34,9 @@ export const scrollWhenSectionSettles = (id: string) => {
     previousTop = top;
     if (stableFrames >= 4 || performance.now() - started > 1000) {
       target.scrollIntoView({ block: 'start', behavior: 'auto' });
-      target
-        .closest<HTMLElement>('[role="button"]')
-        ?.focus({ preventScroll: true });
+      (toggle || target.closest<HTMLElement>('[role="button"]'))?.focus({
+        preventScroll: true
+      });
       const viewport = target.closest<HTMLElement>(
         '[data-overlayscrollbars-viewport]'
       );

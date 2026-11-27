@@ -7,6 +7,7 @@ let context: any;
 const tables: any[] = [];
 mock.module('@gpustack/core-ui', {
   namedExports: {
+    AutoTooltip: ({ children }: any) => createElement('span', null, children),
     SectionTitle: ({ children }: any) =>
       createElement('strong', null, children),
     DropdownButtons: ({ items, onSelect }: any) =>
@@ -120,11 +121,11 @@ test('GPU resources use one compact row per authorized physical device without d
   );
 });
 
-test('shared resource tables retain History by default', () => {
+test('shared resource tables omit the History column', () => {
   prepare();
   renderToStaticMarkup(createElement(ResourceTable));
   assert.ok(
-    tables[0].columns.some(
+    !tables[0].columns.some(
       (column: any) => column.dataIndex === 'history_available'
     )
   );

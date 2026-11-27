@@ -1,55 +1,51 @@
 import { ArrowsAltOutlined, ShrinkOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Space, Tooltip } from 'antd';
+import { Button, Tooltip } from 'antd';
 
 export default function MonitoringVisibilityActions({
   keys,
   expanded,
   onChange,
-  single = false
+  showLabel = false
 }: {
   keys: string[];
   expanded: string[];
   onChange: (keys: string[]) => void;
-  single?: boolean;
+  showLabel?: boolean;
 }) {
   const intl = useIntl();
+  if (!keys.length) return null;
   const allExpanded = keys.every((key) => expanded.includes(key));
-  const expand = {
-    key: 'expandAll',
-    icon: <ArrowsAltOutlined />,
-    disabled: allExpanded,
-    next: keys
-  };
-  const collapse = {
-    key: 'collapseAll',
-    icon: <ShrinkOutlined />,
-    disabled: keys.every((key) => !expanded.includes(key)),
-    next: []
-  };
-  if (single && !keys.length) return null;
-  const actions = single
-    ? [allExpanded ? collapse : expand]
-    : [expand, collapse];
-  return (
-    <Space size={4}>
-      {actions.map((action) => {
-        const label = intl.formatMessage({
-          id: `modelMonitoring.${action.key}`
-        });
-        return (
-          <Tooltip key={single ? 'visibility' : action.key} title={label}>
-            <Button
-              size="small"
-              type="text"
-              aria-label={label}
-              icon={action.icon}
-              disabled={action.disabled}
-              onClick={() => onChange(action.next)}
-            />
-          </Tooltip>
-        );
-      })}
-    </Space>
+  const label = intl.formatMessage({
+    id: allExpanded
+      ? 'modelMonitoring.collapseAll'
+      : 'modelMonitoring.expandAll'
+  });
+  const button = (
+    <Button
+      size="small"
+      type={showLabel ? 'default' : 'text'}
+      aria-label={label}
+      icon={
+        showLabel ? undefined : allExpanded ? (
+          <ShrinkOutlined />
+        ) : (
+          <ArrowsAltOutlined />
+        )
+      }
+      style={
+        showLabel
+          ? {
+              height: 28,
+              paddingInline: 10,
+              fontSize: 'var(--font-size-small)'
+            }
+          : undefined
+      }
+      onClick={() => onChange(allExpanded ? [] : keys)}
+    >
+      {showLabel ? label : null}
+    </Button>
   );
+  return showLabel ? button : <Tooltip title={label}>{button}</Tooltip>;
 }

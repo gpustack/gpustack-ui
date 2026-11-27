@@ -1,5 +1,6 @@
+import { TextAttribute } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
-import { Col, Flex, Row, Typography } from 'antd';
+import { Col, Flex, Row, Tooltip, Typography } from 'antd';
 import { isPDModel } from '../../config';
 import { useDetail } from '../config/context';
 import type { ModelMetric } from '../config/types';
@@ -40,15 +41,27 @@ const PerformanceStats = () => {
   const kv = (metrics.kv_usage?.summaries || [])
     .filter((item) => finite(item.value) != null)
     .sort((a, b) => b.value! - a.value!)[0];
+  const fixedRange = scope.start != null && scope.end != null;
+  const pointBadge = intl.formatMessage({
+    id: fixedRange
+      ? 'modelMonitoring.badge.selectedEnd'
+      : 'modelMonitoring.badge.current'
+  });
+  const pointTooltip = intl.formatMessage({
+    id: fixedRange ? 'modelMonitoring.selectedEnd' : 'modelMonitoring.current'
+  });
+  const kvSource = kv ? metricDimensionsLabel(kv.dimensions) : '';
   const items = [
     {
       key: 'ttft',
       metric: local('ttft'),
       value: metricValue(local('ttft'), 'p99'),
       lowerBound: metricLowerBound(local('ttft'), 'p99'),
-      note:
+      badge: 'P99',
+      badgeTooltip:
         intl.formatMessage({ id: 'modelMonitoring.windowP99' }) +
         (pd ? ` · ${role}` : ''),
+      note: '',
       help: true
     },
     {
@@ -56,54 +69,44 @@ const PerformanceStats = () => {
       metric: timing,
       value: metricValue(timing, 'p99'),
       lowerBound: metricLowerBound(timing, 'p99'),
-      note:
+      badge: 'P99',
+      badgeTooltip:
         intl.formatMessage({ id: 'modelMonitoring.windowP99' }) +
         (pd ? ' · Decode' : ''),
+      note: '',
       help: true
     },
     {
       key: 'output_tokens',
       metric: metrics.output_tokens,
       value: sum(metrics.output_tokens),
-      note: intl.formatMessage({ id: 'modelMonitoring.windowAverage' })
+      badge: intl.formatMessage({ id: 'modelMonitoring.badge.avg' }),
+      badgeTooltip: intl.formatMessage({ id: 'modelMonitoring.windowAverage' }),
+      note: ''
     },
     {
       key: 'running_requests',
       metric: local('running_requests'),
       value: sum(local('running_requests')),
-      note:
-        intl.formatMessage({
-          id:
-            scope.start != null && scope.end != null
-              ? 'modelMonitoring.selectedEnd'
-              : 'modelMonitoring.current'
-        }) + (pd ? ` · ${role}` : '')
+      badge: pointBadge,
+      badgeTooltip: pointTooltip + (pd ? ` · ${role}` : ''),
+      note: ''
     },
     {
       key: 'waiting_requests',
       metric: local('waiting_requests'),
       value: sum(local('waiting_requests')),
-      note:
-        intl.formatMessage({
-          id:
-            scope.start != null && scope.end != null
-              ? 'modelMonitoring.selectedEnd'
-              : 'modelMonitoring.current'
-        }) + (pd ? ` · ${role}` : '')
+      badge: pointBadge,
+      badgeTooltip: pointTooltip + (pd ? ` · ${role}` : ''),
+      note: ''
     },
     {
       key: 'kvMaximum',
       metric: metrics.kv_usage,
       value: finite(kv?.value),
-      note: kv
-        ? metricDimensionsLabel(kv.dimensions) ||
-          intl.formatMessage({
-            id:
-              scope.start != null && scope.end != null
-                ? 'modelMonitoring.selectedEnd'
-                : 'modelMonitoring.current'
-          })
-        : '—'
+      badge: pointBadge,
+      badgeTooltip: pointTooltip,
+      note: kvSource
     }
   ];
   return (
@@ -128,41 +131,55 @@ const PerformanceStats = () => {
               })
             : item.note;
         return (
-          <Col xs={12} md={8} xl={4} key={item.key}>
+          <Col xs={12} md={8} xxl={4} key={item.key}>
             <div className={styles.card}>
-              <Flex gap={4} align="center" className={styles.labelRow}>
-                <span
-                  className={styles.label}
-                  title={
-                    item.key === 'ttft'
+              <Flex
+                justify="space-between"
+                gap={6}
+                align="center"
+                className={styles.labelRow}
+              >
+                <Flex gap={4} align="center" className={styles.labelMain}>
+                  <span
+                    className={styles.label}
+                    title={
+                      item.key === 'ttft'
+                        ? `${pd ? role + ' · ' : ''}TTFT`
+                        : intl.formatMessage({
+                            id: `modelMonitoring.metric.${item.key}`
+                          })
+                    }
+                  >
+                    {item.key === 'ttft'
                       ? `${pd ? role + ' · ' : ''}TTFT`
                       : intl.formatMessage({
                           id: `modelMonitoring.metric.${item.key}`
-                        })
-                  }
-                >
-                  {item.key === 'ttft'
-                    ? `${pd ? role + ' · ' : ''}TTFT`
-                    : intl.formatMessage({
-                        id: `modelMonitoring.metric.${item.key}`
-                      })}
-                </span>
-                {item.help && (
-                  <HelpTooltip
-                    label={`${item.key.toUpperCase()} · ${intl.formatMessage({ id: 'modelMonitoring.definition' })}`}
-                    content={
-                      <span>
-                        {intl.formatMessage({
-                          id: `modelMonitoring.help.${item.key}`
                         })}
-                        {pd &&
-                          ` ${intl.formatMessage({ id: 'modelMonitoring.localLatency' })}`}
-                        {item.lowerBound != null &&
-                          ` ${intl.formatMessage({ id: 'modelMonitoring.histogramBoundsHelp' })}`}
-                      </span>
-                    }
-                  />
-                )}
+                  </span>
+                  {item.help && (
+                    <HelpTooltip
+                      label={`${item.key.toUpperCase()} · ${intl.formatMessage({ id: 'modelMonitoring.definition' })}`}
+                      content={
+                        <span>
+                          {intl.formatMessage({
+                            id: `modelMonitoring.help.${item.key}`
+                          })}
+                          {pd &&
+                            ` ${intl.formatMessage({ id: 'modelMonitoring.localLatency' })}`}
+                          {item.lowerBound != null &&
+                            ` ${intl.formatMessage({ id: 'modelMonitoring.histogramBoundsHelp' })}`}
+                        </span>
+                      }
+                    />
+                  )}
+                </Flex>
+                <Tooltip title={item.badgeTooltip}>
+                  <span>
+                    <TextAttribute variant="filled" className={styles.badge}>
+                      {item.badge}
+                    </TextAttribute>
+                  </span>
+                </Tooltip>
               </Flex>
               <div className={styles.value}>
                 {displayObservationValue(
@@ -171,17 +188,16 @@ const PerformanceStats = () => {
                   item.metric?.unit
                 )}
                 {(item.value != null || item.lowerBound != null) && (
-                  <Typography.Text
-                    type="secondary"
-                    style={{ fontSize: 12, marginInlineStart: 4 }}
-                  >
+                  <Typography.Text type="secondary" className={styles.unit}>
                     {displayUnit(item.metric?.unit, item.key)}
                   </Typography.Text>
                 )}
               </div>
-              <div className={styles.note} title={note}>
-                {note}
-              </div>
+              {note && (
+                <div className={styles.note} title={note}>
+                  {note}
+                </div>
+              )}
             </div>
           </Col>
         );

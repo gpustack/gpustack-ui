@@ -13,11 +13,18 @@ const passthrough = ({ children }: any) =>
   createElement(Fragment, null, children);
 mock.module('@gpustack/core-ui', {
   namedExports: {
+    AutoTooltip: passthrough,
     CardWrapper: passthrough,
+    CopyButton: () => null,
+    icons: { Permission: null },
     SectionTitle: passthrough,
     TextAttribute: passthrough,
     ThemeTag: passthrough,
     StatusDot: () => null,
+    useBodyScroll: () => ({
+      saveScrollHeight() {},
+      restoreScrollHeight() {}
+    }),
     DropdownButtons: (props: any) => {
       rowActions.push(props);
       return null;
@@ -304,7 +311,7 @@ test('resource table retains authorized device rows and renders current zero uti
 
 test('PD overview keeps ingress unavailable and shows separate P input and D output evidence', () => {
   prepare();
-  const html = renderToStaticMarkup(createElement(OverviewTab, { metadata }));
+  const html = renderToStaticMarkup(createElement(OverviewTab));
   assert.deepEqual(
     charts.map((chart) => chart.metricKey),
     ['input_tokens', 'output_tokens']
@@ -319,6 +326,7 @@ test('PD overview keeps ingress unavailable and shows separate P input and D out
   );
   assert.ok(html.includes('data-pd-kpi="ingressTTFT"'));
   assert.ok(html.includes('modelMonitoring.pd.ingressUnavailable'));
+  assert.ok(!html.includes('modelMonitoring.viewResources'));
   assert.ok(
     html.indexOf('modelMonitoring.pd.roleInstances') >
       html.indexOf('data-pd-kpi="dWaiting"')
@@ -334,20 +342,52 @@ test('PD overview keeps ingress unavailable and shows separate P input and D out
   );
 });
 
-test('PD overview relies on the page identity while preserving its distinct route', () => {
+test('clicking a PD role link in overview filters the Instances tab to that role', () => {
   prepare();
-  const html = renderToStaticMarkup(createElement(OverviewTab, { metadata }));
-  assert.ok(html.includes('modelMonitoring.deploymentOverview'));
+  let scopePatch: any;
+  let nextTab: any;
+  context.changeScope = (patch: any) => (scopePatch = patch);
+  context.setTab = (tab: any) => (nextTab = tab);
+  renderToStaticMarkup(createElement(OverviewTab));
+  const roleCol = tables[0].columns.find(
+    (column: any) => column.dataIndex === 'role'
+  );
+  buttons = [];
+  renderToStaticMarkup(roleCol.render('decode', tables[0].dataSource[1]));
+  buttons[0].onClick();
+  assert.deepEqual(scopePatch, { role: 'decode', instanceIds: [] });
+  assert.equal(nextTab, 'instances');
+});
+
+test('ordinary overview lets users clear inherited instance filters directly', () => {
+  prepare();
+  context.model.data.roles = [];
+  context.scope.instanceIds = [7];
+  let scopePatch: any;
+  context.changeScope = (patch: any) => (scopePatch = patch);
+  renderToStaticMarkup(createElement(OverviewTab));
+  const clearButton = buttons.find(
+    (button) => button['aria-label'] === 'modelMonitoring.clearInstances'
+  );
+  assert.ok(clearButton);
+  clearButton.onClick();
+  assert.deepEqual(scopePatch, { role: 'all', instanceIds: [] });
+});
+
+test('PD overview leaves deployment identity and route to the page header', () => {
+  prepare();
+  const html = renderToStaticMarkup(createElement(OverviewTab));
+  assert.ok(!html.includes('modelMonitoring.deploymentOverview'));
   assert.ok(!html.includes('PD model'));
   assert.ok(!html.includes('Readable cluster'));
-  assert.ok(html.includes('actual-route'));
+  assert.ok(!html.includes('actual-route'));
 });
 
 test('a table instance filter does not erase the opposite PD role from overview evidence', () => {
   prepare();
   context.instances.data[0].role = 'prefill';
   context.scope.instanceIds = [7];
-  renderToStaticMarkup(createElement(OverviewTab, { metadata }));
+  renderToStaticMarkup(createElement(OverviewTab));
   assert.deepEqual(
     charts[0].metric.series.map((series: any) => series.dimensions.role),
     ['prefill']
@@ -380,6 +420,7 @@ test('configuration groups actual fields, preserves role parameter inheritance, 
   }
   assert.equal(html.match(/--global-setting=1/g)?.length, 2);
   assert.equal(html.match(/--prefill-setting=2/g)?.length, 1);
+  assert.equal(html.match(/vLLM/g)?.length, 3);
   assert.ok(!html.includes('do-not-display'));
   assert.ok(!html.includes('revision-0007'));
   assert.ok(!html.includes('32,768'));

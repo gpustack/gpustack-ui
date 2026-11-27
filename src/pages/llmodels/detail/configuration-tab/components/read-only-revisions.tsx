@@ -1,14 +1,36 @@
-import { GSDrawer } from '@gpustack/core-ui';
+import useUserSettings from '@/hooks/use-user-settings';
+import { ReloadOutlined } from '@ant-design/icons';
+import { GSDrawer, HighlightCode, useBodyScroll } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Button, Descriptions, Flex, Select, Spin, Typography } from 'antd';
 import dayjs from 'dayjs';
+import { useEffect, useRef } from 'react';
 import type { ListItem } from '../../../config/types';
 import { dumpDeploymentConfig } from '../../../utils/deployment-yaml';
 import useReadOnlyRevisions from '../hooks/use-read-only-revisions';
 
 export default function ReadOnlyRevisions({ model }: { model: ListItem }) {
   const intl = useIntl();
+  const { isDarkTheme } = useUserSettings();
   const history = useReadOnlyRevisions(model);
+  const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
+  const drawerOpen = history.selected != null;
+  const scrollSavedRef = useRef(false);
+  useEffect(() => {
+    if (drawerOpen && !scrollSavedRef.current) {
+      saveScrollHeight();
+      scrollSavedRef.current = true;
+    } else if (!drawerOpen && scrollSavedRef.current) {
+      restoreScrollHeight();
+      scrollSavedRef.current = false;
+    }
+    return () => {
+      if (scrollSavedRef.current) {
+        restoreScrollHeight();
+        scrollSavedRef.current = false;
+      }
+    };
+  }, [drawerOpen, restoreScrollHeight, saveScrollHeight]);
   const t = (key: string) =>
     intl.formatMessage({ id: `modelMonitoring.${key}` });
   const latest = history.list?.data?.items[0];
@@ -16,10 +38,30 @@ export default function ReadOnlyRevisions({ model }: { model: ListItem }) {
   const unavailable = t('metadataUnavailable');
   const revisionLabel = (revision: number) =>
     intl.formatMessage({ id: 'models.revisions.target' }, { revision });
+  const snapshotYaml = history.detail?.data
+    ? dumpDeploymentConfig(history.detail.data.spec)
+    : '';
   return (
     <>
       <Descriptions
+        size="small"
         column={1}
+        colon={false}
+        styles={{
+          label: {
+            alignItems: 'center',
+            minHeight: 28,
+            maxWidth: '45%',
+            overflowWrap: 'anywhere'
+          },
+          content: {
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            minWidth: 0,
+            overflowWrap: 'anywhere',
+            textAlign: 'end'
+          }
+        }}
         items={[
           {
             key: 'revision',
@@ -44,10 +86,11 @@ export default function ReadOnlyRevisions({ model }: { model: ListItem }) {
       {history.list?.stale && (
         <Typography.Text type="warning">{t('stale')}</Typography.Text>
       )}
-      <Flex gap={8} wrap>
+      <Flex gap={8} wrap style={{ marginTop: 8 }}>
         <Button
           type="link"
           size="small"
+          style={{ paddingInline: 0 }}
           disabled={!latest || pending}
           onClick={() => latest && history.select(latest.revision)}
         >
@@ -56,7 +99,10 @@ export default function ReadOnlyRevisions({ model }: { model: ListItem }) {
         <Button
           type="link"
           size="small"
-          loading={pending}
+          style={{ paddingInline: 0 }}
+          icon={<ReloadOutlined spin={pending} aria-hidden="true" />}
+          aria-busy={pending}
+          disabled={pending}
           onClick={() => void history.reload()}
         >
           {t('refresh')}
@@ -67,7 +113,7 @@ export default function ReadOnlyRevisions({ model }: { model: ListItem }) {
           { id: 'models.revisions.titleWithName' },
           { name: model.name }
         )}
-        open={history.selected != null}
+        open={drawerOpen}
         onClose={history.clear}
         destroyOnHidden
         styles={{
@@ -108,19 +154,15 @@ export default function ReadOnlyRevisions({ model }: { model: ListItem }) {
           ) : history.detail.error || !history.detail.data ? (
             <Typography.Text type="secondary">{unavailable}</Typography.Text>
           ) : (
-            <pre
-              style={{
-                whiteSpace: 'pre-wrap',
-                overflowWrap: 'anywhere',
-                overflow: 'auto',
-                maxHeight: '65vh',
-                padding: 'var(--ant-padding)',
-                background: 'var(--ant-color-fill-quaternary)',
-                borderRadius: 'var(--ant-border-radius)'
-              }}
-            >
-              {dumpDeploymentConfig(history.detail.data.spec)}
-            </pre>
+            <HighlightCode
+              code={snapshotYaml}
+              copyValue={snapshotYaml}
+              lang="yaml"
+              copyable
+              theme={isDarkTheme ? 'dark' : 'light'}
+              height="65vh"
+              xScrollable
+            />
           )}
         </Flex>
       </GSDrawer>

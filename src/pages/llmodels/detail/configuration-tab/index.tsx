@@ -1,4 +1,10 @@
-import { CardWrapper, SectionTitle } from '@gpustack/core-ui';
+import {
+  CardWrapper,
+  CopyButton,
+  icons,
+  SectionTitle,
+  ThemeTag
+} from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
 import { Col, Descriptions, Flex, Row, Typography } from 'antd';
 import dayjs from 'dayjs';
@@ -6,6 +12,58 @@ import DeploymentCacheSummary from '../components/deployment-cache-summary';
 import { useDetail } from '../config/context';
 import useDeploymentMetadata from '../hooks/use-deployment-metadata';
 import ReadOnlyRevisions from './components/read-only-revisions';
+
+const descriptionStyles = {
+  label: {
+    alignItems: 'center',
+    minHeight: 28,
+    maxWidth: '45%',
+    overflowWrap: 'anywhere'
+  },
+  content: {
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    minWidth: 0,
+    overflowWrap: 'anywhere',
+    textAlign: 'end'
+  }
+} as const;
+
+const ParameterBlock = ({
+  text,
+  ariaLabel
+}: {
+  text: string;
+  ariaLabel?: string;
+}) => (
+  <Flex
+    align="flex-start"
+    justify="space-between"
+    gap={8}
+    style={{
+      padding: 'var(--ant-padding-xs) var(--ant-padding-sm)',
+      background: 'var(--ant-color-fill-quaternary)',
+      border: '1px solid var(--ant-color-border-secondary)',
+      borderRadius: 'var(--ant-border-radius)'
+    }}
+  >
+    <Typography.Paragraph
+      aria-label={ariaLabel}
+      style={{
+        margin: 0,
+        minWidth: 0,
+        flex: 1,
+        fontFamily: 'var(--ant-font-family-code)',
+        fontSize: 'var(--font-size-code)',
+        whiteSpace: 'pre-wrap',
+        overflowWrap: 'anywhere'
+      }}
+    >
+      {text || '—'}
+    </Typography.Paragraph>
+    {text && <CopyButton text={text} size="small" />}
+  </Flex>
+);
 
 const ConfigurationTab = () => {
   const intl = useIntl();
@@ -90,7 +148,26 @@ const ConfigurationTab = () => {
           label: t('autoRestart'),
           children: enabled(configuration.restart_on_error)
         },
-        { key: 'access', label: t('access'), children: data.access_policy }
+        {
+          key: 'access',
+          label: t('access'),
+          children: data.access_policy ? (
+            <ThemeTag
+              icon={<span aria-hidden>{icons.Permission}</span>}
+              styles={{
+                icon: {
+                  color: 'var(--ant-color-text-secondary)',
+                  flexShrink: 0
+                }
+              }}
+              style={{ gap: 'var(--ant-margin-xxs)' }}
+            >
+              {data.access_policy}
+            </ThemeTag>
+          ) : (
+            '—'
+          )
+        }
       ]
     },
     {
@@ -100,10 +177,13 @@ const ConfigurationTab = () => {
           key: 'cache',
           label: t('cacheConfiguration'),
           children: (
-            <DeploymentCacheSummary model={data} metadata={metadata.data} />
+            <DeploymentCacheSummary
+              model={data}
+              metadata={metadata.data}
+              tagged
+            />
           )
-        },
-        { key: 'backend', label: t('backend'), children: backend }
+        }
       ]
     },
     {
@@ -124,29 +204,27 @@ const ConfigurationTab = () => {
       <Row gutter={[16, 16]}>
         {groups.map((group) => (
           <Col xs={24} xl={12} key={group.key}>
-            <CardWrapper style={{ height: '100%' }}>
+            <CardWrapper style={{ paddingBlock: 16, height: '100%' }}>
               <SectionTitle>{t(group.key)}</SectionTitle>
-              <Descriptions column={1} items={group.items} />
+              <Descriptions
+                size="small"
+                column={1}
+                colon={false}
+                styles={descriptionStyles}
+                items={group.items}
+              />
               {group.key === 'revisionCapabilities' && (
                 <ReadOnlyRevisions model={data} />
               )}
               {group.key === 'cacheEngineParameters' && (
-                <>
-                  <Typography.Paragraph
-                    code
-                    aria-label={t('engineParameters')}
-                    style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}
-                  >
-                    {(configuration.backend_parameters || []).join('\n') || '—'}
-                  </Typography.Paragraph>
+                <Flex vertical gap={12} style={{ marginTop: 12 }}>
+                  <ParameterBlock
+                    ariaLabel={t('engineParameters')}
+                    text={(configuration.backend_parameters || []).join('\n')}
+                  />
                   {(data.roles || []).map((role) => (
-                    <Flex
-                      key={role.name}
-                      vertical
-                      gap={6}
-                      style={{ marginTop: 12 }}
-                    >
-                      <strong>
+                    <Flex key={role.name} vertical gap={6}>
+                      <Typography.Text strong>
                         {role.name} ·{' '}
                         {[
                           role.backend || data.backend,
@@ -154,23 +232,17 @@ const ConfigurationTab = () => {
                         ]
                           .filter(Boolean)
                           .join(' ')}
-                      </strong>
-                      <Typography.Paragraph
-                        code
-                        style={{
-                          whiteSpace: 'pre-wrap',
-                          overflowWrap: 'anywhere'
-                        }}
-                      >
-                        {(
+                      </Typography.Text>
+                      <ParameterBlock
+                        text={(
                           role.backend_parameters ??
                           configuration.backend_parameters ??
                           []
-                        ).join('\n') || '—'}
-                      </Typography.Paragraph>
+                        ).join('\n')}
+                      />
                     </Flex>
                   ))}
-                </>
+                </Flex>
               )}
             </CardWrapper>
           </Col>

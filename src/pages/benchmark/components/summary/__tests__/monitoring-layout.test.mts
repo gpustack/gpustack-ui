@@ -19,6 +19,15 @@ const popoverProps: any[] = [];
 const navigateSection = mock.fn((_id: string) => () => {});
 mock.module(
   new URL(
+    '../../../../_components/monitoring/monitoring-navigation.module.less',
+    import.meta.url
+  ).href,
+  {
+    defaultExport: { navigation: 'monitoring-navigation' }
+  }
+);
+mock.module(
+  new URL(
     '../../../../llmodels/detail/utils/section-navigation.ts',
     import.meta.url
   ).href,
@@ -34,8 +43,27 @@ mock.module('@umijs/max', {
 });
 mock.module('@gpustack/core-ui', {
   namedExports: {
+    AutoTooltip: element,
     SectionTitle: element,
+    StatusDot: ({ statusValue }: any) =>
+      createElement(
+        'span',
+        { 'data-status': statusValue?.status },
+        statusValue?.text
+      ),
     TextAttribute: element,
+    SimpleSelect: ({ mode, value, options }: any) =>
+      createElement(
+        'select',
+        { multiple: mode === 'multiple', defaultValue: value },
+        options.map((option: any) =>
+          createElement(
+            'option',
+            { key: option.value, value: option.value },
+            option.label
+          )
+        )
+      ),
     Table: (props: any) => {
       tableProps.push(props);
       return element(props);
@@ -856,9 +884,13 @@ test('PD Router observations resolve both recorded member identities and keep re
   assert.equal(table.dataSource[0].instance, 'instance-0');
   assert.equal(table.dataSource[0].observer, 'instance-2');
   assert.equal(table.dataSource[0].role, 'prefill');
-  assert.equal(
-    table.columns.find((c: any) => c.dataIndex === 'value').render(-1),
-    translations['modelMonitoring.removed']
+  assert.match(
+    renderToStaticMarkup(
+      table.columns.find((c: any) => c.dataIndex === 'value').render(-1)
+    ),
+    new RegExp(
+      `data-status="inactive"[^>]*>${translations['modelMonitoring.removed']}`
+    )
   );
 });
 
@@ -1188,17 +1220,21 @@ test('opening GPU observations preserves the expanded PD role and handoff sectio
     assert.deepEqual(latest('pd').activeKey, ['pd']);
     assert.deepEqual(latest('gpu').activeKey, ['gpu']);
     assert.equal(latest('router'), undefined);
-    await act(async () =>
-      document
-        .querySelector<HTMLButtonElement>('button[aria-label="Expand all"]')!
-        .click()
+    const toggle = document.querySelector<HTMLButtonElement>(
+      'button[aria-label="Expand all"]'
+    )!;
+    assert.ok(toggle);
+    assert.equal(
+      document.querySelector('button[aria-label="Collapse all"]'),
+      null
     );
+    await act(async () => toggle.click());
     assert.equal(latest('router'), undefined);
-    await act(async () =>
-      document
-        .querySelector<HTMLButtonElement>('button[aria-label="Collapse all"]')!
-        .click()
+    assert.equal(
+      document.querySelector('button[aria-label="Collapse all"]'),
+      toggle
     );
+    await act(async () => toggle.click());
     for (const key of ['pools', 'service', 'pd', 'gpu', 'host'])
       assert.deepEqual(latest(key).activeKey, []);
     await act(async () => chartsRef.current.openSection('router'));

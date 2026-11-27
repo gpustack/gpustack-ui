@@ -10,6 +10,7 @@ Object.defineProperties(globalThis, {
   IS_REACT_ACT_ENVIRONMENT: { configurable: true, value: true }
 });
 after(() => dom.window.close());
+let highlighted: any;
 mock.module('@gpustack/core-ui', {
   namedExports: {
     GSDrawer: ({ open, children, onClose }: any) =>
@@ -20,9 +21,21 @@ mock.module('@gpustack/core-ui', {
             children,
             createElement('button', { onClick: onClose }, 'Close')
           )
-        : null
+        : null,
+    HighlightCode: (props: any) => {
+      highlighted = props;
+      return createElement('pre', null, props.code);
+    },
+    useBodyScroll: () => ({
+      saveScrollHeight() {},
+      restoreScrollHeight() {}
+    })
   }
 });
+mock.module(
+  new URL('../../../../../../hooks/use-user-settings.ts', import.meta.url).href,
+  { defaultExport: () => ({ isDarkTheme: false }) }
+);
 mock.module('@umijs/max', {
   namedExports: {
     useIntl: () => ({
@@ -146,6 +159,8 @@ test('read-only history displays real revision metadata and snapshots without mu
       .querySelector('[role="dialog"] pre')
       ?.textContent?.includes('safe-config-7-v3')
   );
+  assert.equal(highlighted.lang, 'yaml');
+  assert.equal(highlighted.copyable, true);
   const actions = [...document.querySelectorAll('button')]
     .map((button) => button.textContent)
     .join(' ');

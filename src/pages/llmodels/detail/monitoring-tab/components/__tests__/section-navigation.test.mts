@@ -24,6 +24,15 @@ Object.defineProperty(globalThis, 'IS_REACT_ACT_ENVIRONMENT', {
   value: true
 });
 after(() => dom.window.close());
+mock.module(
+  new URL(
+    '../../../../../_components/monitoring/monitoring-navigation.module.less',
+    import.meta.url
+  ).href,
+  {
+    defaultExport: { navigation: 'monitoring-navigation' }
+  }
+);
 mock.module('@umijs/max', {
   namedExports: { useIntl: () => ({ formatMessage: ({ id }: any) => id }) }
 });
@@ -68,7 +77,7 @@ for (const pd of [false, true]) {
       );
     };
     await act(async () => root.render(createElement(Harness)));
-    assert.ok(!container.textContent?.includes('modelMonitoring.jumpTo'));
+    assert.ok(container.textContent?.includes('modelMonitoring.jumpTo'));
     assert.equal(container.querySelector('[role="tab"]'), null);
     const button = (id: string) =>
       [...container.querySelectorAll('button')].find(

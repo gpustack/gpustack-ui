@@ -2,6 +2,7 @@ import { JSDOM } from 'jsdom';
 import assert from 'node:assert/strict';
 import { after, mock, test } from 'node:test';
 import { act, createElement } from 'react';
+import type { ModelResourceMetrics } from '../../config/types';
 
 const dom = new JSDOM('<!doctype html><div id="root"></div>');
 Object.defineProperties(globalThis, {
@@ -26,8 +27,6 @@ mock.module('@umijs/max', {
     useNavigate: () => navigate,
     useIntl: () => ({
       formatMessage: ({ id }: any, values?: any) => {
-        if (id === 'modelMonitoring.instanceCount')
-          return `${values.count} instances`;
         if (id === 'modelMonitoring.clusterFallback')
           return `Cluster #${values.id}`;
         if (id === 'models.openinplayground') return 'Open in Playground';
@@ -46,6 +45,21 @@ mock.module('antd', {
         children
       ),
     Flex: ({ children }: any) => createElement('div', null, children),
+    Row: ({ children }: any) => createElement('div', null, children),
+    Col: ({ children }: any) => createElement('div', null, children),
+    Descriptions: ({ items, bordered, column }: any) =>
+      createElement(
+        'dl',
+        { 'data-bordered': bordered, 'data-columns': column },
+        items.map(({ key, label, children }: any) =>
+          createElement(
+            'div',
+            { key },
+            createElement('dt', null, label),
+            createElement('dd', null, children)
+          )
+        )
+      ),
     Space: ({ children }: any) => createElement('div', null, children),
     Typography: {
       Title: ({ children }: any) => createElement('h1', null, children),
@@ -55,9 +69,26 @@ mock.module('antd', {
 });
 mock.module('@gpustack/core-ui', {
   namedExports: {
+    CardWrapper: ({ children, style }: any) =>
+      createElement('div', { 'data-summary-frame': true, style }, children),
     IconFont: () => null,
+    icons: {
+      Permission: createElement('span', { 'data-permission-icon': true })
+    },
+    ThemeTag: ({ children, icon }: any) =>
+      createElement('span', { 'data-theme-tag': true }, icon, children),
+    StatusDot: ({ statusValue }: any) =>
+      createElement(
+        'span',
+        { 'data-status-dot': statusValue.status },
+        statusValue.text
+      ),
     StatusTag: ({ statusValue }: any) =>
-      createElement('span', null, statusValue.text)
+      createElement(
+        'span',
+        { 'data-status-tag': statusValue.status },
+        statusValue.text
+      )
   }
 });
 mock.module(
@@ -146,7 +177,11 @@ const deferred = () => {
   });
   return { resolve, promise };
 };
-const mount = async (patch: any = {}) => {
+const mount = async (
+  patch: any = {},
+  cacheServices = {},
+  resourceData: ModelResourceMetrics | null = null
+) => {
   currentTenant = 'tenant-a';
   navigate.mock.resetCalls();
   runBenchmark.mock.resetCalls();
@@ -161,7 +196,8 @@ const mount = async (patch: any = {}) => {
           key: `${currentTenant}:${model.id}:${model.cluster_id}:${model.owner_principal_id}`,
           model,
           tenant: currentTenant,
-          resources: null,
+          deploymentMetadata: { ...metadata(model), cacheServices },
+          resources: resourceData,
           onResources: resources
         })
       )
@@ -179,13 +215,77 @@ const mount = async (patch: any = {}) => {
   };
 };
 
-test('header shows category, readable cluster and ordinary replica shape', async (t) => {
-  const header = await mount();
+test('header shows deployment metadata and retains GPU navigation', async (t) => {
+  const header = await mount(
+    {
+      huggingface_repo_id: 'Qwen/Qwen3-0.6B',
+      state: 'partial',
+      ready_replicas: 1,
+      created_at: '2024-11-01T15:20:00',
+      access_policy: 'authed',
+      extended_kv_cache: { enabled: true, mode: 'shared', cache_service_id: 4 }
+    },
+    { 4: { name: 'Shared cache', provider: 'Provider' } },
+    {
+      allocated_gpu_count: 2,
+      allocated_worker_count: 1
+    } as ModelResourceMetrics
+  );
   t.after(header.unmount);
   assert.ok(document.querySelector('[data-category="llm"]'));
-  assert.ok(document.body.textContent?.includes('Readable cluster 9'));
-  assert.ok(document.body.textContent?.includes('2 instances'));
-  await act(async () => header.button('modelMonitoring.gpuResources')!.click());
+  const cards = [
+    ...document.querySelectorAll<HTMLElement>('[data-summary-frame]')
+  ];
+  assert.equal(cards.length, 3);
+  const labelsByCard = cards.map((card) => {
+    assert.equal(card.style.paddingBlock, '16px');
+    const summary = card.querySelector('dl');
+    assert.ok(summary);
+    assert.equal(summary.getAttribute('data-bordered'), null);
+    assert.equal(summary.getAttribute('data-columns'), '1');
+    return [...summary.querySelectorAll('dt')];
+  });
+  assert.deepEqual(
+    labelsByCard.map((labels) =>
+      labels.map((label) => label.textContent?.replace('modelMonitoring.', ''))
+    ),
+    [
+      ['backend', 'modelRoute', 'access'],
+      ['deploymentCluster', 'readyInstances', 'gpuResources'],
+      ['modelSource', 'cacheConfiguration', 'created']
+    ]
+  );
+  const labels = labelsByCard.flat();
+  const field = (label: string) =>
+    labels.find((entry) => entry.textContent === `modelMonitoring.${label}`)
+      ?.nextElementSibling;
+  assert.equal(field('backend')?.textContent, 'vLLM latest');
+  assert.equal(field('deploymentCluster')?.textContent, 'Readable cluster 9');
+  assert.equal(
+    field('readyInstances')?.textContent,
+    '1 / 2 · models.state.partial'
+  );
+  assert.ok(
+    field('readyInstances')?.querySelector('[data-status-tag="warning"]')
+  );
+  assert.equal(field('modelSource')?.textContent, 'Qwen/Qwen3-0.6B');
+  assert.equal(
+    field('modelRoute')?.querySelector('[data-status-dot="success"]')
+      ?.textContent,
+    'actual-route-7'
+  );
+  assert.match(
+    field('cacheConfiguration')?.querySelector('[data-theme-tag]')
+      ?.textContent || '',
+    /Shared cache · Provider/
+  );
+  assert.equal(field('created')?.textContent, '2024-11-01 15:20:00');
+  const accessTag = field('access')?.querySelector('[data-theme-tag]');
+  assert.equal(accessTag?.textContent, 'authed');
+  assert.ok(
+    accessTag?.querySelector('[aria-hidden="true"] [data-permission-icon]')
+  );
+  await act(async () => header.button('2 GPU · 1 Worker')!.click());
   assert.equal(header.resources.mock.callCount(), 1);
 });
 
@@ -241,7 +341,7 @@ test('Benchmark entry follows the same ready LLM gate as deployment list actions
   assert.equal(header.button('models.table.instance.benchmark'), undefined);
 });
 
-test('PD shape uses desired roles and pending groups cannot expose serving actions', async (t) => {
+test('PD shape shows ready and desired replicas and pending groups cannot expose serving actions', async (t) => {
   const header = await mount({
     state: 'pending',
     ready_replicas: 4,
@@ -253,8 +353,15 @@ test('PD shape uses desired roles and pending groups cannot expose serving actio
     role_status: { prefill: { desired: 2, ready: 2 } }
   });
   t.after(header.unmount);
-  assert.ok(
-    document.body.textContent?.includes('Prefill 2 / Decode 1 / Router 1')
+  assert.deepEqual(
+    [...document.querySelectorAll('[data-status-dot]')]
+      .filter((dot) => /^(Prefill|Decode|Router) /.test(dot.textContent || ''))
+      .map((dot) => [dot.textContent, dot.getAttribute('data-status-dot')]),
+    [
+      ['Prefill 2 / 2', 'success'],
+      ['Decode — / 1', 'inactive'],
+      ['Router — / 1', 'inactive']
+    ]
   );
   assert.ok(header.button('View YAML'));
   assert.equal(header.button('API info'), undefined);
@@ -285,6 +392,10 @@ test('a denied or removed route cannot leave a serving action or stale API dialo
   assert.equal(document.querySelector('[role="dialog"]'), null);
   assert.equal(header.button('Open in Playground'), undefined);
   assert.ok(document.body.textContent?.includes('Cluster #9'));
+  assert.equal(
+    document.querySelector('[data-status-dot="warning"]')?.textContent,
+    'modelMonitoring.metadataUnavailable'
+  );
 });
 
 test('a late serving lookup cannot open a dialog after switching models', async (t) => {

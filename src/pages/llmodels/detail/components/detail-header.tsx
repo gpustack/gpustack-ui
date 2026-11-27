@@ -9,9 +9,7 @@ import useOpenPlayground from '../../../model-routes/hooks/use-open-playground';
 import APIAccessInfoModal from '../../components/api-access-info';
 import {
   isModelServable,
-  isPDModel,
   modelCategoriesMap,
-  modelReplicaCounts,
   ModelStateLabelMap,
   ModelStateMap
 } from '../../config';
@@ -20,11 +18,14 @@ import { useBenchmarkTargetInstance } from '../../hooks/use-run-benchmark';
 import useViewAPIInfo from '../../hooks/use-view-api-info';
 import type { ModelResourceMetrics } from '../config/types';
 import useDetailHeaderMetadata from '../hooks/use-detail-header-metadata';
+import type { DeploymentMetadata } from '../services/deployment-metadata';
+import DeploymentSummary from './deployment-summary';
 import ViewDeploymentYaml from './view-deployment-yaml';
 
 interface DetailHeaderProps {
   model: ListItem;
   tenant: string;
+  deploymentMetadata: DeploymentMetadata | null;
   resources: ModelResourceMetrics | null;
   onResources: () => void;
 }
@@ -32,6 +33,7 @@ interface DetailHeaderProps {
 const DetailHeader = ({
   model,
   tenant,
+  deploymentMetadata,
   resources,
   onResources
 }: DetailHeaderProps) => {
@@ -88,90 +90,42 @@ const DetailHeader = ({
       if (isCurrent()) setPending(null);
     }
   };
-  const replicas = modelReplicaCounts(model);
-  const replicaShape = isPDModel(model)
-    ? model
-        .roles!.map((role) => {
-          const label =
-            (
-              {
-                prefill: 'Prefill',
-                decode: 'Decode',
-                router: 'Router'
-              } as Record<string, string>
-            )[role.name] || role.name;
-          const desired =
-            model.role_status?.[role.name]?.desired ?? role.replicas;
-          return `${label} ${desired}`;
-        })
-        .join(' / ')
-    : intl.formatMessage(
-        { id: 'modelMonitoring.instanceCount' },
-        { count: replicas.total }
-      );
   return (
-    <>
+    <Flex vertical gap={12}>
       <Flex align="flex-start" justify="space-between" wrap gap={16}>
-        <Flex vertical gap={8} style={{ minWidth: 0, flex: '1 1 420px' }}>
-          <Flex align="center" wrap gap={8}>
-            <Typography.Title
-              level={3}
-              style={{
-                margin: 0,
-                fontSize: 20,
-                minWidth: 0,
-                overflowWrap: 'anywhere'
-              }}
-            >
-              {model.name}
-            </Typography.Title>
-            <ModelTag categoryKey={model.categories?.[0] || ''} />
-            <StatusTag
-              statusValue={{
-                status:
-                  (ModelStateMap as Record<string, StatusType>)[
+        <Flex
+          align="center"
+          wrap
+          gap={8}
+          style={{ minWidth: 0, flex: '1 1 420px' }}
+        >
+          <Typography.Title
+            level={3}
+            style={{
+              margin: 0,
+              fontSize: 20,
+              minWidth: 0,
+              overflowWrap: 'anywhere'
+            }}
+          >
+            {model.name}
+          </Typography.Title>
+          <ModelTag categoryKey={model.categories?.[0] || ''} />
+          <StatusTag
+            statusValue={{
+              status:
+                (ModelStateMap as Record<string, StatusType>)[
+                  model.state || ''
+                ] || 'inactive',
+              text: intl.formatMessage({
+                id:
+                  (ModelStateLabelMap as Record<string, string>)[
                     model.state || ''
-                  ] || 'inactive',
-                text: intl.formatMessage({
-                  id:
-                    (ModelStateLabelMap as Record<string, string>)[
-                      model.state || ''
-                    ] || 'modelMonitoring.unknown'
-                }),
-                message: model.state_message || undefined
-              }}
-            />
-          </Flex>
-          <Flex align="center" gap={8} wrap>
-            <Typography.Text type="secondary">
-              {[
-                [model.backend, model.backend_version]
-                  .filter(Boolean)
-                  .join(' '),
-                metadata.data?.clusterName ||
-                  intl.formatMessage(
-                    { id: 'modelMonitoring.clusterFallback' },
-                    { id: model.cluster_id }
-                  ),
-                replicaShape
-              ]
-                .filter(Boolean)
-                .join(' · ')}
-            </Typography.Text>
-            <Typography.Text type="secondary" aria-hidden>
-              ·
-            </Typography.Text>
-            <Button
-              type="link"
-              size="small"
-              onClick={onResources}
-              style={{ paddingInline: 0, height: 'auto' }}
-            >
-              {resources
-                ? `${resources.allocated_gpu_count} GPU · ${resources.allocated_worker_count} Worker`
-                : t('gpuResources')}
-            </Button>
-          </Flex>
+                  ] || 'modelMonitoring.unknown'
+              }),
+              message: model.state_message || undefined
+            }}
+          />
         </Flex>
         <Flex
           role="group"
@@ -227,6 +181,13 @@ const DetailHeader = ({
           )}
         </Flex>
       </Flex>
+      <DeploymentSummary
+        model={model}
+        headerMetadata={metadata}
+        deploymentMetadata={deploymentMetadata}
+        resources={resources}
+        onResources={onResources}
+      />
       {apiAccessInfo.show && canAccess && target && (
         <APIAccessInfoModal
           key={target.route_id}
@@ -235,7 +196,7 @@ const DetailHeader = ({
           onClose={closeViewAPIInfo}
         />
       )}
-    </>
+    </Flex>
   );
 };
 

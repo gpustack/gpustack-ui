@@ -32,7 +32,10 @@ mock.module('antd', {
 });
 mock.module('@gpustack/core-ui', {
   namedExports: {
+    AutoTooltip: passthrough,
     SectionTitle: passthrough,
+    TextAttribute: ({ children, className }: any) =>
+      createElement('span', { className }, children),
     Table: (props: any) => {
       table = props;
       return null;
@@ -42,7 +45,13 @@ mock.module('@gpustack/core-ui', {
 mock.module('antd-style', {
   namedExports: {
     createStyles: () => () => ({
-      styles: { card: 'card', label: 'label', value: 'value', note: 'note' }
+      styles: {
+        card: 'card',
+        label: 'label',
+        badge: 'badge',
+        value: 'value',
+        note: 'note'
+      }
     })
   }
 });

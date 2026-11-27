@@ -4,6 +4,8 @@ import { INTERVAL_STATISTICS, seriesIdentity } from './metrics';
 
 const symbols = ['circle', 'rect', 'triangle', 'diamond'];
 const symbolLabels = ['●', '■', '▲', '◆'];
+// Give the two purple accents to different statistics in the first block.
+const histogramHueOrder = [0, 1, 2, 3, 4, 5, 7, 6];
 // Keep the default P99 measurement colors first; reserve the other statistics
 // even when they are not selected, so surviving curves retain their colors.
 const timingStatistics = ['p99', 'avg', 'p50', 'p95'];
@@ -116,10 +118,19 @@ const rotateColorHue = (color: string, degrees: number) => {
   );
 };
 
-const seriesColor = (slot: number, dark: boolean, comparison = false) => {
+const seriesColor = (
+  slot: number,
+  dark: boolean,
+  comparison: boolean,
+  interleaveHistogram: boolean
+) => {
   const palette = CHART_SERIES_COLORS[dark ? 'dark' : 'light'];
-  const color = palette[slot % palette.length];
   const depth = Math.floor(slot / palette.length);
+  // Histogram statistics are grouped in fours. Rotate the palette between
+  // blocks so the same statistic across replicas uses different hues.
+  const offset = interleaveHistogram ? depth * 3 : 0;
+  const hue = (slot + offset) % palette.length;
+  const color = palette[interleaveHistogram ? histogramHueOrder[hue] : hue];
   // Bounded shades keep the timing palette in range without repeating every
   // 32 slots when instance identities are interleaved with other PD roles.
   const shadeLimit = dark || color === '#0891b2' ? 0.12 : 0.24;
@@ -219,7 +230,12 @@ export const seriesAppearance = (
       ? dark
         ? '#9aa4b1'
         : '#8b939e'
-      : seriesColor(colorSlot, dark, comparison),
+      : seriesColor(
+          colorSlot,
+          dark,
+          comparison,
+          histogram && !comparison && !!entity
+        ),
     pattern: 'solid' as const,
     symbol: symbols[symbol],
     symbolLabel: symbolLabels[symbol],

@@ -147,6 +147,9 @@ export default function StageTimeline({
     return (
       <Popover
         key={point.id}
+        placement="topLeft"
+        align={{ overflow: { shiftX: true } }}
+        styles={{ root: { paddingInline: 'var(--ant-padding-sm)' } }}
         trigger={['hover', 'focus']}
         open={inspected === point.id}
         onOpenChange={(open) => setInspected(open ? point.id : null)}

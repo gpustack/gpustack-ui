@@ -68,10 +68,14 @@ export const resourceHref = (
   const params = new URLSearchParams();
   params.set(target.deviceId ? 'worker_id' : 'id', target.id);
   if (target.deviceId) params.set('device_id', target.deviceId);
-  if (scope)
-    Object.entries(resourceTimeParams(scope)).forEach(([key, value]) =>
-      params.set(key, String(value))
-    );
+  if (scope) {
+    const time = resourceTimeParams(scope);
+    if (!('window' in time) || time.window !== '1h') {
+      Object.entries(time).forEach(([key, value]) =>
+        params.set(key, String(value))
+      );
+    }
+  }
   if (tab && tab !== 'overview') params.set('tab', tab);
   return `#/resources/${target.kind === 'gpu' ? 'gpus' : 'workers'}/detail?${params}`;
 };

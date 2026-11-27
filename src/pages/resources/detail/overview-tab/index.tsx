@@ -2,11 +2,7 @@ import {
   ChartInteractionHelp,
   HelpTooltip
 } from '@/pages/_components/monitoring';
-import {
-  displayMetricValue,
-  displayValue,
-  finite
-} from '@/pages/llmodels/detail/utils/metrics';
+import { displayValue, finite } from '@/pages/llmodels/detail/utils/metrics';
 import { scopeTimeLabel } from '@/pages/llmodels/detail/utils/time-range';
 import { ReloadOutlined } from '@ant-design/icons';
 import { TextAttribute } from '@gpustack/core-ui';
@@ -19,9 +15,7 @@ import { useResource } from '../config/context';
 import type { ResourceTab } from '../config/types';
 import { useResourceIntl } from '../hooks/use-resource-intl';
 import InstancesTab from '../instances-tab';
-import { deviceHardware } from '../utils/device-hardware';
 import { reportedGPUCount } from '../utils/metrics';
-import { resourceHref } from '../utils/navigation';
 import GPUInventory from './components/gpu-inventory';
 import overviewStyles from './index.module.less';
 
@@ -33,7 +27,6 @@ export default function OverviewTab() {
   const data = detail.data!,
     worker = data.worker;
   const device = data.devices.find((d) => d.id === data.selected_device_id);
-  const raw = deviceHardware(device, worker.status?.gpu_devices);
   const stats: {
     label: string;
     value?: number | null;
@@ -123,112 +116,38 @@ export default function OverviewTab() {
                 ) : (
                   displayValue(s.value, s.bytes ? 'bytes' : undefined)
                 )}
-                {s.unit && finite(s.value) != null && (
-                  <span className={styles.statUnit}>{s.unit}</span>
+                {finite(s.total) != null ? (
+                  <span className={styles.statUnit}>
+                    / {displayValue(s.total, 'bytes')} {s.unit || 'GiB'}
+                  </span>
+                ) : (
+                  s.unit &&
+                  finite(s.value) != null && (
+                    <span className={styles.statUnit}>{s.unit}</span>
+                  )
                 )}
               </div>
-              {finite(s.total) != null && (
-                <Typography.Text type="secondary">
-                  / {displayValue(s.total, 'bytes')} GiB
-                </Typography.Text>
-              )}
             </div>
           </Col>
         ))}
       </Row>
-      {!device ? (
-        <GPUInventory />
-      ) : (
-        <Flex
-          component="dl"
-          wrap
-          align="baseline"
-          className={`${styles.info} ${overviewStyles.resourceSummary}`}
-        >
-          <Flex
-            wrap
-            align="baseline"
-            gap={8}
-            className={overviewStyles.summaryItem}
-          >
-            <dt className={overviewStyles.summaryLabel}>
-              {intl.formatMessage({ id: 'resources.worker' })}:
-            </dt>
-            <dd className={overviewStyles.summaryValue}>
-              <Typography.Link
-                href={resourceHref(
-                  { kind: 'worker', id: String(worker.id) },
-                  scope
-                )}
-              >
-                {worker.name}
-              </Typography.Link>
-            </dd>
-          </Flex>
-          <Flex
-            wrap
-            align="baseline"
-            gap={8}
-            className={overviewStyles.summaryItem}
-          >
-            <dt className={overviewStyles.summaryLabel}>{t('gpuUuid')}:</dt>
-            <dd className={overviewStyles.summaryValue}>{raw?.uuid || '—'}</dd>
-          </Flex>
-          <Flex
-            wrap
-            align="baseline"
-            gap={8}
-            className={overviewStyles.summaryItem}
-          >
-            <Flex
-              component="dt"
-              align="center"
-              gap={4}
-              className={overviewStyles.summaryLabel}
-            >
-              {t('allocatedMemory')}
-              <HelpTooltip
-                label={t('allocatedMemory')}
-                content={t('memoryHelp')}
-              />
-              <span>:</span>
-            </Flex>
-            <dd className={overviewStyles.summaryValue}>
-              {displayMetricValue(raw?.memory?.allocated, 'bytes')}
-            </dd>
-          </Flex>
-          <Flex
-            wrap
-            align="baseline"
-            gap={8}
-            className={overviewStyles.summaryItem}
-          >
-            <dt className={overviewStyles.summaryLabel}>
-              {t('relatedInstances')}:
-            </dt>
-            <dd className={overviewStyles.summaryValue}>
-              <Button
-                type="link"
-                className={overviewStyles.tabAction}
-                onClick={() => setTab('instances')}
-              >
-                {t('instanceCount', { count: data.instances.length })}
-              </Button>
-            </dd>
-          </Flex>
-        </Flex>
-      )}
+      {!device && <GPUInventory />}
       <Flex justify="space-between" align="center" gap={12}>
         <Flex gap={6} align="center">
           <h2 className={styles.sectionTitle}>{t('trends')}</h2>
           <span title={scopeTimeLabel(scope)}>
-            <TextAttribute>
+            <TextAttribute variant="filled" className={styles.statBadge}>
               {scope.start == null ? scope.window : t('custom')}
             </TextAttribute>
           </span>
           <ChartInteractionHelp contextNote={t('physicalHelp')} />
         </Flex>
-        <Button type="link" onClick={() => setTab('monitoring')}>
+        <Button
+          type="link"
+          size="small"
+          style={{ paddingInline: 0 }}
+          onClick={() => setTab('monitoring')}
+        >
           {t('viewMonitoring')} →
         </Button>
       </Flex>
@@ -247,7 +166,12 @@ export default function OverviewTab() {
         <>
           <Flex justify="space-between" align="center">
             <h2 className={styles.sectionTitle}>{t('relatedInstances')}</h2>
-            <Button type="link" onClick={() => setTab('instances')}>
+            <Button
+              type="link"
+              size="small"
+              style={{ paddingInline: 0 }}
+              onClick={() => setTab('instances')}
+            >
               {t('viewAll')} →
             </Button>
           </Flex>

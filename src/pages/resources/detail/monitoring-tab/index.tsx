@@ -1,8 +1,11 @@
-import MonitoringSection from '@/pages/llmodels/detail/components/monitoring-section';
+import { ChartInteractionHelp } from '@/pages/_components/monitoring';
+import MonitoringSectionCard from '@/pages/llmodels/detail/monitoring-tab/components/monitoring-section-card';
 import SectionNavigation from '@/pages/llmodels/detail/monitoring-tab/components/section-navigation';
+import navStyles from '@/pages/llmodels/detail/monitoring-tab/components/section-navigation.module.less';
 import { scrollWhenSectionSettles } from '@/pages/llmodels/detail/utils/section-navigation';
-import { Flex } from 'antd';
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { scopeTimeLabel } from '@/pages/llmodels/detail/utils/time-range';
+import { Flex, Typography } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 import CollectionNotice from '../components/collection-notice';
 import styles from '../components/detail.module.less';
 import MetricGrid, { useHardwareCharts } from '../components/metric-grid';
@@ -11,7 +14,7 @@ import { useResource } from '../config/context';
 import { useResourceIntl } from '../hooks/use-resource-intl';
 
 export default function MonitoringTab() {
-  const { detail, target } = useResource();
+  const { detail, target, scope } = useResource();
   const t = useResourceIntl(),
     charts = useHardwareCharts();
   const [expanded, setExpanded] = useState(['host', 'gpu', 'storage']);
@@ -61,24 +64,32 @@ export default function MonitoringTab() {
     cancelNavigation.current = null;
     setExpanded(keys);
   };
+  const hasMultipleGroups = groups.length > 1;
   return (
-    <Flex
-      vertical
-      gap={16}
-      data-model-monitor-layout
-      style={{ '--model-monitor-nav-height': '48px' } as CSSProperties}
-    >
-      <ScopeToolbar />
+    <Flex vertical gap={16} data-model-monitor-layout>
+      <div className={navStyles.panel} data-model-monitor-panel>
+        <ScopeToolbar
+          embedded
+          extra={
+            !hasMultipleGroups ? (
+              <ChartInteractionHelp contextNote={t('inventoryHelp')} />
+            ) : undefined
+          }
+        />
+        {hasMultipleGroups && (
+          <SectionNavigation
+            embedded
+            sections={groups}
+            expanded={expanded}
+            onOpen={open}
+            onChange={changeExpanded}
+            contextNote={t('inventoryHelp')}
+          />
+        )}
+      </div>
       <CollectionNotice />
-      <SectionNavigation
-        sections={groups}
-        expanded={expanded}
-        onOpen={open}
-        onChange={changeExpanded}
-        contextNote={t('inventoryHelp')}
-      />
       {groups.map((group) => (
-        <MonitoringSection
+        <MonitoringSectionCard
           key={group.key}
           sectionKey={group.key}
           id={`model-monitor-${group.key}`}
@@ -93,9 +104,14 @@ export default function MonitoringTab() {
                 : values.filter((key) => key !== group.key)
             )
           }
+          extra={
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {scopeTimeLabel(scope)}
+            </Typography.Text>
+          }
         >
           <MetricGrid charts={group.charts} />
-        </MonitoringSection>
+        </MonitoringSectionCard>
       ))}
     </Flex>
   );

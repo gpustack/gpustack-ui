@@ -64,6 +64,14 @@ mock.module(
 mock.module(new URL('../components/detail.module.less', import.meta.url).href, {
   defaultExport: {}
 });
+mock.module(
+  new URL('../../../_components/page-breadcrumb/index.module.less', import.meta.url)
+    .href,
+  { defaultExport: {} }
+);
+mock.module(new URL('../components/gpu-switcher.tsx', import.meta.url).href, {
+  defaultExport: () => createElement('div', {}, 'GPU switcher')
+});
 for (const [path, text] of [
   ['../../../_components/page-breadcrumb/index.tsx', 'Breadcrumb'],
   ['../components/resource-header.tsx', 'Resource header'],

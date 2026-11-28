@@ -14,20 +14,9 @@ import {
   TargetStatusValueMap
 } from '../../../model-routes/config';
 import { isRoleDraining, isRoleWaiting } from '../../components/pd/role-status';
-import {
-  isRestartInFlight,
-  modelReplicaCounts,
-  ModelStateLabelMap,
-  ModelStateMap,
-  ModelStateValueMap,
-  MyModelsStatusLabelMap,
-  MyModelsStatusValueMap
-} from '../../config';
+import { isRestartInFlight, modelReplicaCounts } from '../../config';
 import type { ListItem } from '../../config/types';
-import {
-  isSchedulePaused,
-  isWaitingForSchedule
-} from '../../utils/deployment-lifecycle';
+import type { getDeploymentStatus } from '../../utils/deployment-status';
 import type { ModelResourceMetrics } from '../config/types';
 import type { DeploymentMetadata } from '../services/deployment-metadata';
 import type { HeaderMetadata } from '../services/header-metadata';
@@ -36,6 +25,7 @@ import DeploymentCacheSummary from './deployment-cache-summary';
 
 interface DeploymentSummaryProps {
   model: ListItem;
+  deploymentStatus: ReturnType<typeof getDeploymentStatus>;
   headerMetadata: ResourceSnapshot<HeaderMetadata>;
   deploymentMetadata: DeploymentMetadata | null;
   resources: ModelResourceMetrics | null;
@@ -55,6 +45,7 @@ const statusDotStyles = {
 
 export default function DeploymentSummary({
   model,
+  deploymentStatus,
   headerMetadata,
   deploymentMetadata,
   resources,
@@ -64,39 +55,20 @@ export default function DeploymentSummary({
   const t = (key: string) =>
     intl.formatMessage({ id: `modelMonitoring.${key}` });
   const replicas = modelReplicaCounts(model);
-  const paused = isSchedulePaused(model);
-  const waitingForSchedule = isWaitingForSchedule(model);
-  const stopped = !model.replicas && replicas.ready === 0;
-  const state =
-    model.state ||
-    (replicas.ready > 0
-      ? ModelStateValueMap.Running
-      : ModelStateValueMap.Pending);
-  const inactive = paused || waitingForSchedule || stopped;
-  const replicaStatus: StatusType = inactive
-    ? 'inactive'
-    : ModelStateMap[state] || 'inactive';
-  const replicaLabel = paused
-    ? 'models.scaling.paused'
-    : waitingForSchedule
-      ? 'models.scaling.waiting'
-      : stopped
-        ? MyModelsStatusLabelMap[MyModelsStatusValueMap.Stopped]
-        : ModelStateLabelMap[state];
   const restarting = isRestartInFlight(model.restarting_since);
   const readyInstances = model.roles?.length ? (
     <Flex gap="small" justify="flex-end" wrap>
       {model.roles.map((role) => {
         const counts = model.role_status?.[role.name];
         let status: StatusType = 'inactive';
-        if (!inactive && counts) {
+        if (!deploymentStatus.inactive && counts) {
           const item = { ...counts, name: role.name };
           status = isRoleWaiting(item)
             ? restarting
               ? 'transitioning'
-              : replicaStatus === 'success'
+              : deploymentStatus.status === 'success'
                 ? 'warning'
-                : replicaStatus
+                : deploymentStatus.status
             : isRoleDraining(item)
               ? 'warning'
               : 'success';
@@ -116,13 +88,8 @@ export default function DeploymentSummary({
   ) : (
     <StatusTag
       statusValue={{
-        status: replicaStatus,
-        text: [
-          `${replicas.ready} / ${replicas.total}`,
-          replicaLabel && intl.formatMessage({ id: replicaLabel })
-        ]
-          .filter(Boolean)
-          .join(' · ')
+        status: deploymentStatus.status,
+        text: `${replicas.ready} / ${replicas.total}`
       }}
     />
   );

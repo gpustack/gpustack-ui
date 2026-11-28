@@ -1,4 +1,3 @@
-import type { StatusType } from '@/config/types';
 import { ApiOutlined, ExperimentOutlined } from '@ant-design/icons';
 import { IconFont, StatusTag } from '@gpustack/core-ui';
 import { useIntl } from '@umijs/max';
@@ -7,15 +6,11 @@ import { useEffect, useRef, useState } from 'react';
 import ModelTag from '../../../_components/model-tag';
 import useOpenPlayground from '../../../model-routes/hooks/use-open-playground';
 import APIAccessInfoModal from '../../components/api-access-info';
-import {
-  isModelServable,
-  modelCategoriesMap,
-  ModelStateLabelMap,
-  ModelStateMap
-} from '../../config';
+import { isModelServable, modelCategoriesMap } from '../../config';
 import type { ListItem } from '../../config/types';
 import { useBenchmarkTargetInstance } from '../../hooks/use-run-benchmark';
 import useViewAPIInfo from '../../hooks/use-view-api-info';
+import { getDeploymentStatus } from '../../utils/deployment-status';
 import type { ModelResourceMetrics } from '../config/types';
 import useDetailHeaderMetadata from '../hooks/use-detail-header-metadata';
 import type { DeploymentMetadata } from '../services/deployment-metadata';
@@ -51,6 +46,7 @@ const DetailHeader = ({
   const openedRoute = useRef<string | null>(null);
   const t = (key: string) =>
     intl.formatMessage({ id: `modelMonitoring.${key}` });
+  const deploymentStatus = getDeploymentStatus(model, intl);
   const canAccess =
     isCurrent() && isModelServable(model) && !!metadata.data?.target;
   const canBenchmark =
@@ -111,21 +107,7 @@ const DetailHeader = ({
             {model.name}
           </Typography.Title>
           <ModelTag categoryKey={model.categories?.[0] || ''} />
-          <StatusTag
-            statusValue={{
-              status:
-                (ModelStateMap as Record<string, StatusType>)[
-                  model.state || ''
-                ] || 'inactive',
-              text: intl.formatMessage({
-                id:
-                  (ModelStateLabelMap as Record<string, string>)[
-                    model.state || ''
-                  ] || 'modelMonitoring.unknown'
-              }),
-              message: model.state_message || undefined
-            }}
-          />
+          <StatusTag statusValue={deploymentStatus} />
         </Flex>
         <Flex
           role="group"
@@ -183,6 +165,7 @@ const DetailHeader = ({
       </Flex>
       <DeploymentSummary
         model={model}
+        deploymentStatus={deploymentStatus}
         headerMetadata={metadata}
         deploymentMetadata={deploymentMetadata}
         resources={resources}

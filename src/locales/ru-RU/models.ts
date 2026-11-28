@@ -689,6 +689,8 @@ export default {
   'models.form.roles.cache.param.conflict':
     'Конфликтует с выбранным режимом PD. Переключитесь на «Пользовательский» или удалите --kv-transfer-config.',
   'models.state.pending': 'Ожидание',
+  'models.state.pending.noReadyInstances':
+    'Нет готовых экземпляров. Подробности можно узнать из статуса каждого экземпляра.',
   'models.state.partial': 'Частично готово',
   'models.state.running': 'Работает',
   'models.state.error': 'Ошибка',

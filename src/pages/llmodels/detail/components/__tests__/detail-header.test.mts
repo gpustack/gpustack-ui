@@ -86,7 +86,7 @@ mock.module('@gpustack/core-ui', {
     StatusTag: ({ statusValue }: any) =>
       createElement(
         'span',
-        { 'data-status-tag': statusValue.status },
+        { 'data-status-tag': statusValue.status, title: statusValue.message },
         statusValue.text
       )
   }
@@ -261,10 +261,7 @@ test('header shows deployment metadata and retains GPU navigation', async (t) =>
       ?.nextElementSibling;
   assert.equal(field('backend')?.textContent, 'vLLM latest');
   assert.equal(field('deploymentCluster')?.textContent, 'Readable cluster 9');
-  assert.equal(
-    field('readyInstances')?.textContent,
-    '1 / 2 · models.state.partial'
-  );
+  assert.equal(field('readyInstances')?.textContent, '1 / 2');
   assert.ok(
     field('readyInstances')?.querySelector('[data-status-tag="warning"]')
   );
@@ -331,6 +328,60 @@ test('Benchmark does not require a gateway route and rejects a stale tenant', as
     header.button('models.table.instance.benchmark')!.click()
   );
   assert.equal(runBenchmark.mock.callCount(), 1);
+});
+
+test('header distinguishes manual stops, scheduled zero targets and unready deployments', async (t) => {
+  const stopped = {
+    ...baseModel,
+    replicas: 0,
+    ready_replicas: 0,
+    state: 'pending'
+  };
+  const header = await mount(stopped);
+  t.after(header.unmount);
+
+  const badge = () =>
+    document
+      .querySelector('h1')
+      ?.parentElement?.querySelector('[data-status-tag]');
+  assert.equal(badge()?.textContent, 'models.mymodels.status.inactive');
+  assert.equal(badge()?.getAttribute('data-status-tag'), 'inactive');
+  const readyInstances = [...document.querySelectorAll('dt')].find(
+    (label) => label.textContent === 'modelMonitoring.readyInstances'
+  );
+  assert.equal(readyInstances?.nextElementSibling?.textContent, '0 / 0');
+
+  for (const [paused, label] of [
+    [true, 'models.scaling.paused'],
+    [false, 'models.scaling.waiting']
+  ] as const) {
+    await header.render({
+      ...stopped,
+      scaling_schedule: { enabled: true, paused }
+    });
+    assert.equal(badge()?.textContent, label);
+  }
+
+  await header.render({ ...stopped, replicas: 1 });
+  assert.equal(badge()?.textContent, 'models.state.pending');
+  assert.equal(
+    badge()?.getAttribute('title'),
+    'models.state.pending.noReadyInstances'
+  );
+  await header.render({
+    ...stopped,
+    replicas: 1,
+    state_message: 'Worker is unreachable'
+  });
+  assert.equal(badge()?.getAttribute('title'), 'Worker is unreachable');
+  await header.render({
+    ...stopped,
+    replicas: 1,
+    state: 'error',
+    state_message: 'Worker is unreachable'
+  });
+  assert.equal(badge()?.textContent, 'models.state.error');
+  assert.equal(badge()?.getAttribute('title'), 'Worker is unreachable');
 });
 
 test('Benchmark entry follows the same ready LLM gate as deployment list actions', async (t) => {

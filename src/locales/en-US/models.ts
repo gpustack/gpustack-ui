@@ -680,6 +680,8 @@ export default {
   'models.form.roles.cache.param.conflict':
     'Conflicts with the selected PD mode. Switch to the Custom mode, or remove --kv-transfer-config.',
   'models.state.pending': 'Pending',
+  'models.state.pending.noReadyInstances':
+    'No instances are ready. Check the instance statuses for details.',
   'models.state.partial': 'Partially ready',
   'models.state.running': 'Running',
   'models.state.error': 'Error',

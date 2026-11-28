@@ -683,6 +683,8 @@ export default {
   'models.form.roles.cache.param.conflict':
     'Seçili PD modu ile çakışıyor. Özel moda geçin veya --kv-transfer-config parametresini kaldırın.',
   'models.state.pending': 'Bekliyor',
+  'models.state.pending.noReadyInstances':
+    'Hazır örnek yok. Ayrıntılar için örneklerin durumunu kontrol edin.',
   'models.state.partial': 'Kısmen hazır',
   'models.state.running': 'Çalışıyor',
   'models.state.error': 'Hata',

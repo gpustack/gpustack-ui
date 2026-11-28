@@ -645,6 +645,7 @@ export default {
   'models.form.roles.cache.param.conflict':
     '与所选 PD 模式冲突。改用「自定义」PD 模式，或删除该参数。',
   'models.state.pending': '等待中',
+  'models.state.pending.noReadyInstances': '目前没有就绪的实例。请查看各实例的状态以了解详情。',
   'models.state.partial': '部分就绪',
   'models.state.running': '运行中',
   'models.state.error': '异常',

@@ -687,6 +687,8 @@ export default {
   'models.form.roles.cache.param.conflict':
     '選択した PD モードと競合します。「カスタム」モードに切り替えるか、--kv-transfer-config を削除してください。',
   'models.state.pending': '待機中',
+  'models.state.pending.noReadyInstances':
+    '準備ができているインスタンスはありません。詳細は各インスタンスの状態を確認してください。',
   'models.state.partial': '一部準備完了',
   'models.state.running': '実行中',
   'models.state.error': 'エラー',

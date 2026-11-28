@@ -1,6 +1,5 @@
 // columns.ts
 import { systemConfigAtom } from '@/atoms/system';
-import { StatusMaps } from '@/config';
 import { OPENAI_COMPATIBLE, tableSorter } from '@/config/settings';
 import { TargetStatusValueMap } from '@/pages/model-routes/config';
 import { usePluginListColumns } from '@/plugins/list-extra-columns';
@@ -33,12 +32,7 @@ import {
   isModelServable,
   isPDModel,
   modelCategoriesMap,
-  modelReplicaCounts,
-  ModelStateLabelMap,
-  ModelStateMap,
-  ModelStateValueMap,
-  MyModelsStatusLabelMap,
-  MyModelsStatusValueMap
+  modelReplicaCounts
 } from '../config';
 import { generateSource } from '../config/button-actions';
 import { ListItem, RoleSpec } from '../config/types';
@@ -48,6 +42,7 @@ import {
   isSchedulePaused,
   isWaitingForSchedule
 } from '../utils/deployment-lifecycle';
+import { getDeploymentStatus } from '../utils/deployment-status';
 
 interface ActionItem {
   label: string;
@@ -256,46 +251,6 @@ const useModelsColumns = ({
     );
   });
 
-  // The replica cell's status, straight off `Model.state` — the UI never
-  // recomputes that judgement, because a second implementation of it would
-  // drift from the backend's.
-  //
-  // Two reads around it, neither of them a judgement:
-  //  - `state` is NULL between a model's creation and the first reconcile
-  //    pass over it. `isModelServable` handles that window by reading the
-  //    counter; the same fallback here keeps the cell from going blank.
-  //  - Pause and a scheduled zero target have distinct operational labels.
-  //    A manual zero target without a pause marker remains stopped.
-  const replicaStatus = useMemoizedFn((record: ListItem, ready: number) => {
-    if (isSchedulePaused(record) || isWaitingForSchedule(record)) {
-      const text = intl.formatMessage({
-        id: isSchedulePaused(record)
-          ? 'models.scaling.paused'
-          : 'models.scaling.waiting'
-      });
-      return { status: StatusMaps.inactive, text, message: text };
-    }
-    if (!record.replicas && !ready) {
-      return {
-        status: StatusMaps.inactive,
-        text: intl.formatMessage({
-          id: MyModelsStatusLabelMap[MyModelsStatusValueMap.Stopped]
-        }),
-        message: ''
-      };
-    }
-    const state =
-      record.state ||
-      (ready > 0 ? ModelStateValueMap.Running : ModelStateValueMap.Pending);
-    return {
-      status: ModelStateMap[state] || StatusMaps.inactive,
-      text: ModelStateLabelMap[state]
-        ? intl.formatMessage({ id: ModelStateLabelMap[state] })
-        : state,
-      message: record.state_message || ''
-    };
-  });
-
   return useMemo(() => {
     // Two prebuilt span maps for the 24-unit SealTable grid: one for
     // the default layout, one for when a plugin contributes an extra
@@ -426,14 +381,14 @@ const useModelsColumns = ({
             isPD
           );
 
-          // The colour still comes from `replicaStatus` — i.e. from
+          // The colour still comes from `getDeploymentStatus` — i.e. from
           // `Model.state` and `state_message`, not from the numbers. Only the
           // WORD is gone. Driving it off the counts instead (which is what
           // this cell did before PD) would have collapsed «starting» and
           // «failed» into one orange, and dropped the message entirely; a
           // status nobody can read the reason of is the silent-failure mode
           // this feature exists to beat.
-          const dotStatus = replicaStatus(record, ready);
+          const dotStatus = getDeploymentStatus(record, intl, ready);
           const statusLine = (
             <StatusDot
               statusValue={{
@@ -548,7 +503,6 @@ const useModelsColumns = ({
     intl,
     handleSelect,
     setModelActionList,
-    replicaStatus,
     pluginCols,
     styles.modelDetailLink,
     styles.pdReplicas
